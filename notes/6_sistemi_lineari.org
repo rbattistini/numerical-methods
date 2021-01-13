@@ -1,0 +1,1222 @@
+#+TITLE: Sistemi lineari
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Introduzione
+  :PROPERTIES:
+  :CUSTOM_ID: introduzione
+  :END:
+$$ Ax = b,\qquad A \in \mathbb{R}^{m \times n},\qquad x \in 
+\mathbb{R}^n,\qquad b \in \mathbb{R}^m $$
+
+Tre casi possibili:
+
+- *sistemi quadrati*: $m = n$
+- *sistemi sovradeterminati*: $m > n$
+- *sistemi sottodeterminati*: $m < n$
+
+Teorema di Rouchè-Capelli
+
+Nel caso di sistemi quadrati, con
+$A \in \mathbb{R}^{n \times n},\ b \in \mathbb{R}^n$ come dati in input,
+si ottiene $x \in \mathbb{R}^n$ in output.
+
+Esiste un'unica soluzione se e solo $\det(A) \ne 0$. Se $\det(A) = 0$
+allora:
+
+- se $rank(A) = rank(A|b)$
+- se $rank(A) \ne rank(A|b)$
+
+#+begin_quote
+  *Nota* se il sistema p omogeneo ($b = 0$) e $A$ è non singolare,
+  allora esiste solo la soluzione nulla $x = 0$.
+#+end_quote
+
+Non si risolvono i sistemi lineari con il metodo dell'inversa o il
+metodo di Cramer perché:
+
+- il metodo dell'inversa risulta poco efficiente e poco accurato,
+  infatti se si impiega la formula $x = A^{-1} b$ è necessario risolvere
+  $n$ sistemi lineari per il calcolo di $A^{-1}$.
+
+- la regola di Cramer per valori di $n$ anche molto bassi richiede il
+  calcolo di una quantità di prodotti tale da non renderlo un metodo
+  praticabile.
+
+Si impiegano tre algorimi che hanno in comune la fattorizzazione della
+matrice $A$ nel prodotto di due matrici $L$ e $U$ per rendere più
+semplice la risoluzione del sistema lineare di partenza.
+
+#+begin_quote
+  Quando $A$ ammette la fattorizzazione $LU$? E se non ammette la
+  fattorizzazione come procedere?
+#+end_quote
+
+$L$ è la *matrice triangolare inferiore* $U$ è la *matrice triangolare
+superiore*
+
+Allora la risoluzione di $Ax = b$ si riconduce alla risoluzione di due
+sistemi lineari *in questo ordine*:
+
+1. $Ly = b$, $y$ è l'incognita da determinare
+2. $Ux = y$, $x$ è l'incognita da determinare
+
+Se $L$ è la matrice triangolare inferiore la risoluzione del sistema $1$
+è molto semplice e si impiega il *metodo di sostituzione in avanti*. Per
+risolvere il secondo sistema si impiega il *metodo di sostituzione
+all'indietro*.
+
+* Condizionamento del problema
+  :PROPERTIES:
+  :CUSTOM_ID: condizionamento-del-problema
+  :END:
+Analisi numerica del problema.
+
+Perché il problema sia ben posto deve valere $det(A) \ne 0$.
+
+Per quanto riguarda il condizionamento bisogna considerare l'errore
+inerente e l'errore algoritmico.
+
+#+begin_quote
+  Quando l'errore inerente è grande?
+#+end_quote
+
+A partire dal sistema $Ax = b$ si gestisce nella macchina
+$\tilde{A} \tilde{x} = \tilde{b}$.
+
+Lo studio del condizionamento vuole mettere in relazione l'errore sui
+dati con l'errore sui risultati.
+
+Dove $delta$ indica il fattore di perturbazione.
+
+- $\tilde{A} = A + \delta A$,
+- $\tilde{b} = b + \delta b$,
+- $\tilde{x} = x + \delta x$.
+
+Quindi la soluzione sarà:
+
+$$ (A + \delta A)(x + \delta x) = b + \delta b $$
+
+L'errore relativo sul risultato sarà pari a:
+
+$$ \varepsilon_r = \frac{\|\tilde{x} - x\|}{\|x\|} = \frac{\|\delta 
+x\|}{\|x\|} $$
+
+Mentre l'errore relativo sui dati sarà pari a:
+
+$$ \frac{\|\delta b\|}{\|b\|},\quad \frac{\|\delta A\|}{\|A\|} $$
+
+- *Teorema 1*: la matrice $A$ ha rappresentazione esatta, si introduce
+  una perturbazione sul vettore dei termini noti $b$. Esiste un legame
+  tra errore sui dati ed errore sui risultati:
+  $$ K(A) = \|A\| \|A^{-1}\| $$ Dove $K(A)$ è detto /numero di
+  condizionamento della matrice/ $A$. Se questo numero è piccolo allora
+  il sistema lineare è ben condizionato.
+
+- *Teorema 2*: introduce perturbazione sia sulla matrice $A$ che sul
+  vettore dei termini noti $b$. Permette di definire una /maggiorazione
+  sull'errore relativo sui risultati/.
+  $$ \varepsilon_x \le K(A) \frac{\varepsilon_a + \varepsilon_b}{1 - K(A) 
+  \varepsilon_A} $$ Per $\varepsilon_A = 0$ ci si riconduce al teorema
+  $1$.
+
+#+begin_quote
+  *Nota*: il massimo valore ammesso è $10^3$, oltre questo valore
+  l'accuratezza delle soluzioni cala eccessivamente.
+#+end_quote
+
+#+begin_quote
+  *Nota*: vale $K(A) \ge 1$ dato che
+  $\|A A^{-1}\| \le \|A\| \|A^{-1}\| \Rightarrow 1 \le K(A)$)
+#+end_quote
+
+#+begin_quote
+  *Nota*: la risoluzione di un sistema $Ax = b$ con $A$ ortogonale è
+  sempre un problema ben condizionato. Infatti la norma $2$ di una
+  matrice $A$ ortogonale è pari a:
+  $\|A\|_{2} = \sqrt{\rho (A^T A)} = \sqrt{\rho (I)} = 1$ lo stesso vale
+  per: $\|A^{-1}\| = \|A^t\|_{2}$
+#+end_quote
+
+#+begin_quote
+  *Nota*: per il calcolo del numero di condizionamento si possono
+  impiegare diverse strategie, come il calcolo degli autovalori. La
+  built-in function =cond= calcola la norma senza impiegare l'inversa
+  della matrice $A$.
+#+end_quote
+
+* Metodi per la sostituzione in avanti e all'indietro
+  :PROPERTIES:
+  :CUSTOM_ID: metodi-per-la-sostituzione-in-avanti-e-allindietro
+  :END:
+Rappresentano gli algoritmi più efficienti per la risoluzione di sistemi
+lineari con matrici triangolari superiori o inferiore.
+
+In particolare:
+
+1. *Metodo di sostituzione in avanti*:
+
+2. *Metodo di sostituzione all'indietro*:
+
+#+begin_quote
+  *Nota*: la matrice $A$ deve non singolare ovvero $\det(A) \ne 0$, ciò
+  significa che tutti gli elementi della diagonale sono non nulli.
+#+end_quote
+
+** Metodo di sostituzione in avanti
+   :PROPERTIES:
+   :CUSTOM_ID: metodo-di-sostituzione-in-avanti
+   :END:
+Per risolvere $Ax = b$ con $A$ /triangolare inferiore/.
+
+*** Funzionamento
+    :PROPERTIES:
+    :CUSTOM_ID: funzionamento
+    :END:
+A partire da: $a_{11} x_{1} = b_{1}$ si ricava $x_1$.
+
+Si tratta di un'operazione sempre lecita dato che $a_{11} \ne 0$ dato
+che $A$ è non singolare.
+
+Il calcolo delle componenti del vettore $x$ avviene a partire dalla
+prima all'ultima componente (forward substitution).
+
+$$ a_{ii} x_{i} + \sum_{j = 1}^{i - 1} a_{ij} x_{j} = b_i,\ i = 2,...,n $$
+
+*** Osservazioni
+    :PROPERTIES:
+    :CUSTOM_ID: osservazioni
+    :END:
+
+1. Il *costo computazionale* si calcola a partire dal numero di
+   moltiplicazioni e divisioni si svolgono. In questo caso si svolge un
+   numero di moltiplicazioni pari a $k - 1$, ovvero al numero di volte
+   in cui si passa nella sommatoria più una divisione. Perciò servono
+   $k$ operazioni ad ogni passo. Sapendo che il numero di passi è pari a
+   $n$:
+   $$ \sum_{k = 1}^{n} = \frac{n(n + 1)}{2} \approx \frac{n^2}{2} $$
+
+#+begin_quote
+  *Nota*: nello stimare il costo si prendono direttamente le potenze più
+  grandi.
+#+end_quote
+
+#+begin_quote
+  *Nota*: è noto che la somma dei primi $n$ numeri naturali è pari a:
+  $\frac{n(n + 1)}{2}$.
+#+end_quote
+
+** Metodo di sostituzione all'indietro
+   :PROPERTIES:
+   :CUSTOM_ID: metodo-di-sostituzione-allindietro
+   :END:
+Per risolvere $Ax = b$ con $A$ /triangolare superiore/.
+
+*** Funzionamento
+    :PROPERTIES:
+    :CUSTOM_ID: funzionamento-1
+    :END:
+A partire da: $a_{nn} x_{n} = b_{n}$ si ricava $x_n$.
+
+Si tratta di un'operazione sempre lecita visto che $a_{nn} \ne 0$ poiché
+$A$ è non singolare.
+
+Il calcolo delle componenti del vettore $x$ avviene a partire
+dall'ultima componente fino alla prima (backward substitution).
+
+$$ a_{kk} x_{k} + \sum_{j = k + 1}^{n} a_{kj} x_{j} = b_k,\ k = n - 1,...,1 
+$$
+
+*** Osservazioni
+    :PROPERTIES:
+    :CUSTOM_ID: osservazioni-1
+    :END:
+
+1. Il *costo computazionale* si calcola impiegando le stesse
+   considerazioni viste per la sostituzione in avanti.
+
+* Teorema di esistenza della fattorizzazione $LU$
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-esistenza-della-fattorizzazione-lu
+  :END:
+** Quando è garantita l'esistenza della fattorizzazione $LU$?
+   :PROPERTIES:
+   :CUSTOM_ID: quando-è-garantita-lesistenza-della-fattorizzazione-lu
+   :END:
+*Teorema 1*
+
+Data $A \in \mathbb{R}^{n \times n}$, sia $A k$ la sua sottomatrice
+principale di testa di ordine $k$ costituita dalle prime $k$ righe e
+dalle prime $k$ colonne di $A$. Se $A_k$ è non singolare
+$\forall k = 1, 2, ..., n - 1$, allora esiste ed è unica la
+fattorizzazione LU di A.
+
+#+begin_quote
+  *Nota*: non è necessario che la matrice $A$ sia non singolare per
+  effettuare la fattorizzazione, questa condizione si impiega per
+  garantire l'esistenza di una soluzione del sistema lineare $Ax = b$.
+#+end_quote
+
+** Se la matrice $A$ è non singolare e non soddisfa le ipotesi del
+teorema $1$
+   :PROPERTIES:
+   :CUSTOM_ID: se-la-matrice-a-è-non-singolare-e-non-soddisfa-le-ipotesi-del-teorema-1
+   :END:
+** è comunque ammessa la fattorizzazione $LU$?
+   :PROPERTIES:
+   :CUSTOM_ID: è-comunque-ammessa-la-fattorizzazione-lu
+   :END:
+*Teorema 2*
+
+Se $A$ è non singolare è sempre possibile permutare le righe di $A$ per
+ottenere una matrice di permutazione $P$ che ammette fattorizzazione
+$LU$.
+
+In altri termini esiste una matrice $P$ non singolare per cui vale:
+$PA = LU$
+
+Si ottiene quindi un sistema lineare del tipo: $PA x = Pb$. Perciò si
+risolvono i sistemi:
+
+1. $Ly = Pb$
+2. $Ux = y$
+
+#+begin_quote
+  *Nota*: la matrice $P$ non è unica.
+#+end_quote
+
+** Condizionamento della fattorizzazione $LU$
+   :PROPERTIES:
+   :CUSTOM_ID: condizionamento-della-fattorizzazione-lu
+   :END:
+A partire da: $A = LU$ si ottiene in aritmetica macchina:
+
+$$ (L + \delta L) (U + \delta U) \approx  A + \delta A $$
+
+Tanto minore è il fattore di perturbazione $\delta$ tanto migliore è
+l'accuratezza del risultato.
+
+* Algoritmo di Gauss
+  :PROPERTIES:
+  :CUSTOM_ID: algoritmo-di-gauss
+  :END:
+In generale l'/algoritmo di eliminazione gaussiana/ trasforma il sistema
+lineare $A x = b$ in un sistema lineare equivalente più semplice da
+risolvere.
+
+Per poter eseguire la fattorizzazione $LU$ si può impiegare l'algoritmo
+di Gauss, ovvero si possono applicare $n - 1$ matrici elementari di
+Gauss alla matrice iniziale $A$ per ottenere la matrice triangolare
+superiore $U$ della forma $U x = y$.
+
+Per ottenere $[U|y]$ si applicano $n$ matrici elementari di Gauss su
+$[A|b]$.
+
+La k-esima matrice elementare di Gauss è costruita appositamente per
+annullare gli elementi sotto la diagonale della colonna k-esima con
+$i = 1,...,n - 1$.
+
+** Passo iniziale
+   :PROPERTIES:
+   :CUSTOM_ID: passo-iniziale
+   :END:
+La matrice iniziale $A^1$ è la matrice originale $A$. Si costruisce la
+/matrice triangolare inferiore/ $M^1$. (una sorta di maschera per questo
+c'è il segno meno per annullare gli elementi di $A$)
+
+Per la sua creazione si costruisce il vettore dei __moltiplicatori_. Se
+$a^1_{1,1} \ne 0$, dove $a^1_{1,1}$ è detto /elemento pivotale/, si
+costruisce il vettore:
+
+$$ m^1 = (0,m_{2,1},...,m^1_{n,1})^T $$
+
+Dove $m^1_{r, 1} = \frac{a^1_{r,1}}{a^1_{1,1}}$
+
+Si applica $M^1$ su $A^1$ per ottenere $A^2$, questa operazione è detta
+/premoltiplicazione/.
+
+Si ottiene una matrice ($A^2$) in cui gli elementi della prima colonna
+sotto la diagonale principale sono azzerati.
+
+$$ A = \begin{pmatrix}
+\bullet\ & \bullet\ & \bullet\ & \bullet\ \\ 
+\bullet\ & \bullet\ & \bullet\ & \bullet\ \\ 
+\bullet\ & \bullet\ & \bullet\ & \bullet\ \\ 
+\bullet\ & \bullet\ & \bullet\ & \bullet\ \\ 
+\end{pmatrix}
+\to_{M^1}
+\begin{pmatrix}
+\bullet\ & \bullet\ & \bullet\ & \bullet\ \\ 
+0\ & \bullet\ & \bullet\ & \bullet\ \\ 
+0\ & \bullet\ & \bullet\ & \bullet\ \\ 
+0\ & \bullet\ & \bullet\ & \bullet\ \\ 
+\end{pmatrix} $$
+
+** Passo k-esimo
+   :PROPERTIES:
+   :CUSTOM_ID: passo-k-esimo
+   :END:
+Al passo k-esimo si dispone della matrice $A^k$, che rappresenta una
+matrice parziale nel percorso che da $A$ porta a $U$. Si tratta della
+matrice ottenuta nel passo precedente.
+
+Se l'elemento pivotale è non nullo ($a^k_{k,k} \ne 0$) si costruisce il
+vettore dei moltiplicatori:
+
+$$ m^k = (\underbrace{0,...,0}_{k},m^k_{k + 1, k},..., m^k_{n, k})^T $$
+
+Dove $m^k_{r, k} = \frac{a^k_{r, k}{a^k_{k ,k}}},\ r = k + 1,...,n$
+
+La k-esima matrice elementare di Gauss si ottiene moltiplicando il
+vettore dei moltiplicatori per il passo k-esimo per il vettore $e^k$
+della base canononica di $\mathbb{R}$
+
+Si costruisce in questo modo la k-esima matrice elementare di Gauss
+$M^k$.
+
+Si premoltiplica $A^k$ per la matrice $M^k$ e si ottiene $A^{k + 1}$
+
+#+begin_quote
+  *Nota*: le matrici $M^k$ sono non singolari e
+  $(M^k)^{-1} = I + m^k e_{k}^{T}$. $e_{k}^{T}$ è il vettore della base
+  canonica che ha componente tutte nulle ad eccezione della k-esima, che
+  vale $1$. Questa espressione dell'inversa della matrice elementare di
+  Gauss k-esima. permette di ricavare $L$ come prodotto delle matrici
+  inverse di Gauss in ordine crescente.
+#+end_quote
+
+DIMOSTRAZIONE NON SVOLTA
+
+#+begin_quote
+  *Nota*: nel complesso delle iterazioni si ha che funge da elemento
+  pivotale ogni elemento della diagonale principale di
+  $A \in \mathbb{R}^{n \times n}$ eccetto $a_{n,n}$. Se uno degli
+  elementi pivotali è nullo, con l'algoritmo attuale si bloccherebbero
+  le iterazioni.
+#+end_quote
+
+Al passo $i = n - 1$ si ottiene la matrice triangolare superiore
+$A^{n}$:
+
+$$ A^{n} \begin{pmatrix}
+\bullet\ & \bullet\ & \bullet\ & \bullet\ \\ 
+0\ & \bullet\ & \bullet\ & \bullet\ \\ 
+0\ & 0\ & \bullet\ & \bullet\ \\ 
+0\ & 0\ & 0\ & \bullet\ \\ 
+\end{pmatrix} $$
+
+** Matrice $U$ e $L$
+   :PROPERTIES:
+   :CUSTOM_ID: matrice-u-e-l
+   :END:
+Perciò la matrice triangolare superiore $U$ si ottiene nel seguente
+modo:
+
+$$ U = A^{k} = M^{(n - 1)} M^{(n - 2)} \dotsc M^{1} A $$
+
+A partire dalla matrice $U$ si può ottenere la matrice $L$.
+
+Si può scrivere anche
+$A^k = (M^k)^{-1} A^{(k + 1)},\quad \forall k = 1,...,n - 1$.
+
+Ricordando che $U = BA \Rightarrow A = U B^{-1}$ e la relazione
+$(M^k)^{-1} = I + m^k e_{k}^{T}$ si può scrivere la matrice $A^{n}$
+come:
+
+$$ A = \underbrace{(M^1)^{-1} (M^2)^{-1} (M^{(n - 1)})^{-1}}_{L} 
+\underbrace{A^n}_{U} $$
+
+Si ottiene in questo modo la matrice triangolare inferiore $L$.
+
+** Costo computazionale
+   :PROPERTIES:
+   :CUSTOM_ID: costo-computazionale
+   :END:
+Ad ogni iterazione k-esima, con $k = 1,...,n - 1$ si deve calcolare:
+
+1. /creazione dei moltiplicatori/:
+   $$ m_{r, k}^{k} = \frac{}{a_{k,k}^{k}},\ r = k + 1,...,n $$
+
+2. /aggiornamento della matrice al passo k-esimo/:
+   $$ a^{(k + 1)}_{k, j} = a^{k}_{i, j} - m_{i, k}^{k} a_{k, j}^{k},\ i,j ? k + 
+   1,...,n $$
+
+- Si effettua una divisione per ogni moltiplicatore, quindi $n - k$ al
+  passo k-esimo (mano a mano che $k$ aumenta diminuiscono i
+  moltiplicatori).
+
+- Si effettua una moltiplicazione per ogni elemento della sottomatrice
+  di dimensioni $n - k \times n - k$ ad ogni iterazione. Ovvero una
+  moltiplicazione per ogni nuovo elemento della matrice $A^k$ da
+  costruire. Perciò si effettuano $(n - i)^2$ moltiplicazioni ad ogni
+  passo, una per ogni elemento della sottomatrice.
+
+- Il *costo computazionale* del metodo di eliminazione di Gauss, o in
+  altri termini della fattorizzazione LU, è quindi pari a:
+  $$ \sum_{k = 1}^{n = 1} (n - k)^2 = \sum_{j = 1}^{n - 1} j^2 = \frac{n(n - 
+  1)(2n - 1)}{6} \approx \frac{n^3}{3} $$
+
+#+begin_quote
+  *Nota*: si trascurano i termini di ordine inferiore ($(n - k)$
+  rispetto $(n - k)^2)$
+#+end_quote
+
+- Non si deve fare il prodotto di due matrici di dimensioni
+  $n \times n$, che sarebbe molto oneroso, in realtà bisogna considerare
+  ad ogni iterazione solo alcuni elementi. Si costruiscono solo gli
+  elementi di una sottomatrice di dimensioni $n-k \times n-k$ quindi non
+  è costante $n \times n$, mano a mano che si procede con le iterazioni
+  la porzione da costruire, ovvero la sottomatrice nel riquadro diventa
+  progressivamente più piccola. Gli elementi esterni al riquadro infatti
+  o sono zeri o sono le righe che rimangono inalterate.
+
+- Una volta determinata $U$, $L$ si può ottenere senza effettuare
+  ulteriori computazioni se si memorizzano i valori dei moltiplicatori
+  calcolati.
+
+#+begin_quote
+  *Nota*: se viene richiesto di risolvere più sistemi lineari in cui la
+  matrice dei coefficienti $A$ è fissa e cambiano solo i termini di noti
+  la fattorizzazione LU è necessario calcolarla /una sola volta/. Ciò
+  accade, ad esempio, se si vuole calcolare l'inversa di $A$ con il
+  metodo di eliminazione di Gauss.
+#+end_quote
+
+** Come calcolare la matrice inversa usando il metodo di eliminazione di
+   :PROPERTIES:
+   :CUSTOM_ID: come-calcolare-la-matrice-inversa-usando-il-metodo-di-eliminazione-di
+   :END:
+** Gauss?
+   :PROPERTIES:
+   :CUSTOM_ID: gauss
+   :END:
+La matrice inversa $A^{-1}$ è nella forma: $x_1, x_2,..., x_n$ Dove:
+$$ A x_1 = \begin{pmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{pmatrix},\quad A x_n = 
+\begin{pmatrix} \ 0\ \\ 0 \\ \vdots \\ 1 \end{pmatrix} $$
+
+** Il metodo di Gauss è stabile?
+   :PROPERTIES:
+   :CUSTOM_ID: il-metodo-di-gauss-è-stabile
+   :END:
+No, *è instabile* se i pivot sono piccoli il corrispondente
+moltiplicatore risulta grande e quindi se c'è un piccolo errore
+all'iterazione i-esima, questo errore si amplifica notevolmente al passo
+successivo e così via, fino ad arrivare al risultato finale con errori
+di arrotondamento molto grandi.
+
+In particolare si verifica la crescita degli elementi di $A^k$ e quindi
+delle matrici $L$ e $U$
+
+Per rendere stabile l'algoritmo è necessaria una *strategia pivotale*.
+
+In generale una strategia pivotale cerca l'elemento di $A^k$ che
+conviene utilizzare come pivot al posto di $a^k_{k, k}$.
+
+In quel caso si scambiano le righe e si introduce quindi una matrice di
+permutazione (che moltiplicata per $A^k$ permette di effettuare lo
+scambio).
+
+Adottando questa strategia, se $A$ è /non singolare/ il metodo di
+eliminazione di Gauss non si blocca se $a^k_{k, k}$ è nullo, infatti:
+
+$$ \exists j > k\ |\ a^k_{k, k} \ne 0 $$
+
+L'impiego di una strategia pivotale migliora il metodo di Gauss.
+
+** Di quali strategie pivotali si dispone?
+   :PROPERTIES:
+   :CUSTOM_ID: di-quali-strategie-pivotali-si-dispone
+   :END:
+Si dispone delle seguenti strategie:
+
+- *Pivoting parziale*:
+- *Pivoting totale*
+
+*** Pivoting parziale
+    :PROPERTIES:
+    :CUSTOM_ID: pivoting-parziale
+    :END:
+**** Funzionamento
+     :PROPERTIES:
+     :CUSTOM_ID: funzionamento-2
+     :END:
+A partire dalla matrice $A^k$ si confrontano in modulo tutti gli
+elementi nella k-esima colonna, se l'elemento massimo in valore assoluto
+della k-esima colonna di $A^k$ è nella riga $r$ allora si costruisce la
+matrice di permutazione $P^k$ che scambia le righe di indici $r$ e $k$ e
+la k-esima matrice elementare di Gauss a partire dalla matrice
+$P^k A^k$.
+
+**** Osservazioni
+     :PROPERTIES:
+     :CUSTOM_ID: osservazioni-2
+     :END:
+Ad ogni passo si ha l'elemento massimo in valore assoluto come pivot, si
+avrà perciò un elemento pivotale grande e un moltiplicatore piccolo,
+eliminando le fonti di instabilità dell'algoritmo.
+
+#+begin_quote
+  *Nota*: se tutti i valori in una stessa k-esima colonna sono piccoli
+  e/o sono uguali la strategia di pivoting parziale non è efficace e
+  perciò si ricorre al pivoting totale.
+#+end_quote
+
+#+begin_quote
+  L'equivalenza del sistema scambiando le righe è garantita?
+#+end_quote
+
+Sì, si dimostra che: $PA = LU$
+
+Dove:
+
+- $P = P^{n - 1}, P^{n - 2},...,P^{2}, P^{1}$ ovvero tutte le matrici di
+  permutazione delle righe costruite negli $n - 1$ passi del metodo.
+
+In termini di sistema lineare si ha:
+
+$$ PAx = Pb \Rightarrow PAy = Pb \Rightarrow = LUy = Pb $$
+
+La soluzione del primo sistema lineare $y$ si calcola con il metodo di
+sostituzione in avanti. La soluzione del secondo sistema $x$ si trova
+con il metodo di sostituzione all'indietro.
+
+Per trovare $y$ bisogna ricordarsi della matrice di permutazione $P$.
+
+1. $Ly = Pb$
+2. $Ux = y$
+
+**** Costo
+     :PROPERTIES:
+     :CUSTOM_ID: costo
+     :END:
+In generale si introduce un controllo per vedere se è necessario
+realmente uno scambio. Ad esempio si introduce una tolleranza per il
+valore minimo del pivot. Se l'elemento è più piccolo della tolleranza
+allora si applica il pivoting parziale.
+
+La complessità computazionale è data dal numero di confronti effettuati.
+
+$$ \sum_{k = 1}^{n - 1} (n - k) = \sum_{j = 1}^{n - 1} j = \Omicron 
+\biggl( \frac{n^2}{2} \biggr) $$
+
+#+begin_quote
+  *Nota*: si sfrutta l'espressione della somma dei primi $n - 1$ numeri
+  naturali per la formulazione del costo.
+#+end_quote
+
+#+begin_quote
+  *Nota*: il costo computazionale del metodo di eliminazione di Gauss è
+  pari a $\Omicron (n^3)$, perciò il pivoting parziale è /poco costoso/.
+#+end_quote
+
+**** Stabilità
+     :PROPERTIES:
+     :CUSTOM_ID: stabilità
+     :END:
+Per stimare la stabilità del metodo di Gauss con pivoting parziale si
+calcolano i limiti superiori sui valori assunti dalla matrice. Perché la
+stabilità sia garantita è necessario che gli elementi di $A^K$ siano di
+grandezza paragonabile a quella degli elementi di $A$.
+
+La scelta del massimo pivot parziale comporta che:
+
+$$ |m_{i, j}^{k} \le 1,\ \forall i \ge j$$
+
+Ovvero rispetto alla matrice $L$:
+
+$$ |l_{i, j} \le 1, \forall i \ge j $$
+
+Che si può riscrivere come:
+
+$$ max_{i,j = 1,...,n} |l_{i, j}| = 1 $$
+
+Per la matrice $U$ vale:
+
+$$\max_{i,j = 1,...,n} |u_{i, j}| \le \bm{2^{n - 1}} \max_{i,, = 1,...,n} 
+| a_{i, j} | $$
+
+L'espressione evidenziata determina un fattore di crescita che dipende
+dalla dimensione della matrice $n$ e determina la necessità del pivoting
+totale.
+
+--------------
+
+Il limite superiore sui valori assunti dalla matrice $L$ permette di
+garantire che non darà problemi di stabilità.
+
+Per la matrice $L$ è possibile definire un limite superiore grazie al
+fattore di crescita $2^{n -1}$.
+
+*** Pivoting totale
+    :PROPERTIES:
+    :CUSTOM_ID: pivoting-totale
+    :END:
+**** Funzionamento
+     :PROPERTIES:
+     :CUSTOM_ID: funzionamento-3
+     :END:
+Il pivoting totale permette di rimediare alla carenza di valori adeguati
+come pivot in una stessa colonna. Si risolve il problema attuando uno
+scambio, quando necessario, anche tra colonne cercando il pivot adatto
+in tutta la sottomatrice.
+
+Partendo dalla matrice $A^k$, si confrontano in modulo i valori
+$a^{k}_{i,j},\ i,j = k,...,n$ in tutta la sottomatrice per cercare
+l'elemento con valore massimo. Si effettua quindi uno scambio di righe e
+di colonne per portare l'elemento massimo $a^{k}_{r, s}$ in posizione
+$a^{k}_{k , k}$.
+
+Si costruisce:
+
+- una matrice di permutazione $P^k$ che scambia le righe $r$ e $k$,
+- una matrice di permutazione $Q^k$ che scambia le colonne $s$ e $k$
+- la matrice elementare di Gauss k-esima a partire da: $P^k A^k Q^k$.
+
+#+begin_quote
+  *Nota*: l'ordine con cui si costruisce la matrice elementare di Gauss
+  va rispettato!
+#+end_quote
+
+**** Osservazioni
+     :PROPERTIES:
+     :CUSTOM_ID: osservazioni-3
+     :END:
+Ad ogni passo si ha l'elemento massimo in valore assoluto come pivot, si
+avrà perciò un elemento pivotale grande e un moltiplicatore piccolo,
+eliminando le fonti di instabilità dell'algoritmo.
+
+#+begin_quote
+  L'equivalenza del sistema scambiando sia righe che colonne è
+  garantita?
+#+end_quote
+
+Sì, si dimostra che: $PAQ = LU$
+
+Dove:
+
+- $P = P^{n - 1}, P^{n - 2},...,P^{2}, P^{1}$ ovvero tutte le matrici di
+  permutazione delle righe costruite negli $n - 1$ passi del metodo.
+- $Q = q^{n - 1}, Q^{n - 2},...,Q^{2}, Q^{1}$, ovvero tutte le matrici
+  di permutazione delle colonne negli $n - 1$ passi del metodo.
+
+In termini di sistema lineare si ha:
+
+$$ PAx = Pb \Rightarrow PAQy = Pb \Rightarrow = LUy = Pb $$
+
+La soluzione del primo sistema lineare $z$ si calcola con il metodo di
+sostituzione in avanti. La soluzione del secondo sistema $y$ si trova
+con il metodo di sostituzione all'indietro.
+
+Per trovare $z$ bisogna ricordarsi della matrice di permutazione $P$.
+Per trovare $x$ bisogna ricordarsi della matrice di permutazione $Q$.
+
+1. $Lz = Pb$
+2. $Uy = z$
+3. $x = Qy$
+
+**** Costo
+     :PROPERTIES:
+     :CUSTOM_ID: costo-1
+     :END:
+La complessità computazionale è data dal numero di confronti effettuati.
+
+$$ \sum_{k = 1}^{n - 1} (n - k)^2 = \sum_{j = 1}^{n - 1} j^2 = \Omicron 
+\biggl(\frac{n^3}{3} \biggr) $$
+
+Dato che il costo è $\Omicron (n^3)$ perciò in generale si preferisce
+impiegare la strategia di pivoting parziale, che rappresenta un buon
+compromesso tra stabilità e costo. Quando necessario si impiega il
+pivoting totale per la massima stabilità associata al costo più elevato.
+
+#+begin_quote
+  *Nota*: il costo è dovuto all'effettuare $n - k$ confronti per
+  ciascuno degli $n - k$ elementi della sottomatrice di ordine
+  $n - k \times n - k$.
+#+end_quote
+
+**** Stabilità
+     :PROPERTIES:
+     :CUSTOM_ID: stabilità-1
+     :END:
+Per stimare la stabilità del metodo di Gauss con pivoting totale si
+calcola il fattore di crescita relativo alla matrice $U$. Perché la
+stabilità sia garantita è necessario che gli elementi di $A^K$ siano di
+grandezza paragonabile a quella degli elementi di $A$.
+
+Per la matrice $U$ vale:
+
+$$ max_{i,j = 1,...,n} |u_{i, j}| \le \sqrt{n}\sqrt{1 \cdot 2 \cdot ... \cdot 
+n^{\frac{1}{k - 1}}} $$
+
+La crescita degli elementi di $A^k$ è più lenta. Perciò il pivoting
+totale assicura maggior stabilità.
+
+* Algoritmi di fattorizzazione
+  :PROPERTIES:
+  :CUSTOM_ID: algoritmi-di-fattorizzazione
+  :END:
+Si studiano tre /algoritmi di fattorizzazione/:
+
+- *metodo di eliminazione di Gauss*
+- *metodo di Cholesky*
+- *metodo di Householder*
+
+** Metodo di Cholesky
+   :PROPERTIES:
+   :CUSTOM_ID: metodo-di-cholesky
+   :END:
+Si tratta di un algoritmo implementato in una built-in function di
+MATLAB, detta =chol=.
+
+Il comando restituisce la matrice triangolare superiore $L$ tale che:
+$L L^ = A$.
+
+#+begin_quote
+  Come risolvere un sistema lineare con il metodo di Cholesky?
+#+end_quote
+
+Nell'ambito della risoluzione di un sistema lineare $Ax = B$ si effettua
+la risoluzione in due passi:
+
+1. $y = lsolve(L, b)$
+2. $x = usolve(L^T, y)$
+
+#+begin_quote
+  Perché impiegare questo algoritmo?
+#+end_quote
+
+Per sfruttare alcune proprietà della matrice, ovvero l'essere /definita
+positiva/ e l'essere /simmetrica/, per ottenere lo stesso risultato di
+Gauss impiegando la metà delle operazioni.
+
+*** Applicabilità
+    :PROPERTIES:
+    :CUSTOM_ID: applicabilità
+    :END:
+La matrice $A \in \mathbb{R}^{n \times n}$ sulla quale si applica la
+fattorizzazione di Cholesky deve essere /definita positiva/ e
+/simmetrica/.
+
+Se queste ipotesi sono soddisfatte allora si può affermare che *esiste
+un'unica matrice triangolare inferiore* $L$ con elementi positivi sulla
+diagonale tale che $A = LL^T$.
+
+#+begin_quote
+  *Nota*: la fattorizzazione di Cholesky è unica.
+#+end_quote
+
+*** Costo computazionale
+    :PROPERTIES:
+    :CUSTOM_ID: costo-computazionale-1
+    :END:
+Tenendo conto del numero di moltiplicazioni e divisioni il costo
+computazionale è: $\Omicron(n^3)$.
+
+In particolare il costo computazionale è pari alla metà del costo
+dell'algoritmo di Gauss. (a livello intuitivio si vede che si
+determinano due metà di matrici con un metodo simile a quello impiegato
+nell'algoritmo di Gauss)
+
+*** Stabilità
+    :PROPERTIES:
+    :CUSTOM_ID: stabilità-2
+    :END:
+A partire da: $A = LU$ si ottiene in aritmetica macchina:
+
+$$ (L + \delta L) (U + \delta U) \approx  A + \delta A $$
+
+Tanto minore è il fattore di perturbazione $\delta$ tanto migliore è
+l'accuratezza del risultato.
+
+Se si può definire un limite superiore sugli elementi di $L$ allora si
+dimostrare la stabilità dell'algoritmo.
+
+A partire da
+$a_{j,j} = \sum_{k = 1}^{j} l^2_{j,k},\ \forall j = 1,...,n$ si dimostra
+che:
+
+$$ |l_{j, k}| \le \sqrt{a_{i, j}},\ \forall j, k $$
+
+Perciò gli elementi della matrice $L$ non possono crescere
+significativamente rispetto a quelli della matrice $A$.
+
+** Metodo di Householder
+   :PROPERTIES:
+   :CUSTOM_ID: metodo-di-householder
+   :END:
+Si tratta di un algoritmo implementato in una built-in function di
+MATLAB, che esegue la fattorizzazione QR, il comando è detto =qr=.
+
+#+begin_quote
+  Come risolvere un sistema lineare con la fattorizzazione $QR$?
+#+end_quote
+
+Nell'ambito della risoluzione di un sistema lineare $Ax = B$, con
+$A \in \mathbb{R}^{n \times n}$, ovvero $A$ *matrice quadrata* si
+effettua la risoluzione in due passi:
+
+1. $y = Q^T b$
+2. $x = usolve(R, y)$
+
+Se si vuole eseguire la fattorizzazione $QR$ (applicando il metodo QRLS)
+di una /matrice rettangolare/ $A$ per risolvere il /sistema lineare
+sovradeterminato/ $Ba = y$ si procede in tre passi:
+
+1. Si applica la fattorizzazione QR alla matrice dei coefficienti
+   rettangolare ottenendo la matrice trapezoidale superiore $R$ con
+   blocco di testa $R_1$ matrice triangolare superiore non singolare e
+   la matrice ortogonale $Q$.
+2. Si costruisce il vettore $\tilde{y}$ che si ottiene a partire dal
+   vettore dei termini noti del sistema sovradeterminato $y$ tramite la
+   relazione $\tilde{y} = Q^T y$. Si partiziona il vettore così ottenuto
+   in modo da ottenere il primo blocco con dimensioni uguali a quella
+   della matrice $R_1$. Perciò $\tilde{y}_{1} = \tilde{y}(1:n+1)$.
+3. Si risolve il sistema lineare quadrato $R_1 a = \tilde{y}_{1}$
+   rispetto ad $a$.
+
+#+begin_quote
+  Perché usare questo algoritmo?
+#+end_quote
+
+Permette di eseguire la fattorizzazione di una /matrice rettangolare/ e,
+come caso particolare, anche di matrici quadrate. (condizione $m \ge n$)
+
+Si sfruttano le proprietà di ortogonalità e simmetria delle matrici.
+
+*** Applicabilità
+    :PROPERTIES:
+    :CUSTOM_ID: applicabilità-1
+    :END:
+Data una matrice $A \in \mathbb{R}^{m \times n},\ m \ge n$ con
+$\rg(A) = n$, la fattorizzazione $QR$ è sempre ammessa. In particolare
+$\exists\ Q \in \mathbb{R}^{m \times n}$ ortogonale e $R$ /matrice
+trapezoidale superiore/ avente stesse dimensioni e stesso rango di $A$.
+Vale: $A = QR$.
+
+#+begin_quote
+  *Nota*: se vale la condizione $\rg(A) = n$ si dice che la matrice $A$
+  ha /rango massimo/, ovvero rango pari al numero di colonne.
+#+end_quote
+
+#+begin_quote
+  *Nota*: "matrice trapezoidale superiore" è un'espressione gergale. Si
+  tratta di un richiamo alla geometria che emerge dalla disposizione
+  degli zeri nella matrice, in modo simile a quanto accade con la
+  /matrice triangolare superiore/.
+#+end_quote
+
+*** Funzionamento
+    :PROPERTIES:
+    :CUSTOM_ID: funzionamento-4
+    :END:
+In modo analogo alle matrici elementari di Gauss nell'algoritmo di
+Gauss, si impiegano nella fattorizzazione $QR$ le *matrici elementari di
+Householder*.
+
+#+begin_quote
+  Quante trasformazioni tramite matrici elementari si effettuano?
+#+end_quote
+
+Nel caso di /matrici quadrate/ il numero di trasformazioni è pari a
+$n - 1$. Nel caso di /matrici rettangolari/ il numero di trasformazioni
+$r$ richieste è:
+
+$$ r = \min(m - 1, n) $$
+
+--------------
+
+Dopo l'applicazione di $r$ matrici di Householder tali che
+$H_{r}, H_{r - 1},...,H_{1} A = R$ si ottiene:
+
+$$ A = (H_{r}, H_{r - 1},.., H_{1})^{-1} R = H^{-1}_{1},..., H_{r - 1}^{-1} 
+H_{r}^{-1} R = \underbrace{H_{1},...,H_{r - 1} H_{r}}_{Q} R $$
+
+Dove $R$ è nella forma:
+
+$$ \begin{pmatrix} 
+\bullet\ & \bullet\ & \bullet\ & \bullet\ \\
+0\ & \bullet\ & \bullet\ & \bullet\ \\
+0\ & 0\ & \bullet\ & \bullet\ \\
+0\ & 0\ & 0\ & \bullet\ \\
+0\ & 0\ & 0\ & 0\ \\
+0\ & 0\ & 0\ & 0\ 
+\end{pmatrix} $$
+
+Si ottiene quindi la fattorizzazione:
+
+$$ \underbrace{A}_{m \times n} = \underbrace{Q}_{n \times n} \underbrace{R}_{m 
+\times n} $$
+
+#+begin_quote
+  *Nota*: la principale differenza dell'algoritmo di Householder
+  rispetto all'algoritmo di Gauss sta nelle matrici di trasformazione
+  impiegate, ovvero le matrici elementari di Householder sono ortogonali
+  e simmetriche.
+#+end_quote
+
+#+begin_quote
+  *Nota*: ha senso calcolare l'inversa del prodotto di matrici
+  ortogonali per una proprietà dell'algebra.
+#+end_quote
+
+#+begin_quote
+  *Nota*: $(AB)^{-1} = B^{-1} A^{-1}$ per una proprietà dell'algebra.
+#+end_quote
+
+*** Teorema della non unicità della fattorizzazione $QR$
+    :PROPERTIES:
+    :CUSTOM_ID: teorema-della-non-unicità-della-fattorizzazione-qr
+    :END:
+*La fattorizzazione $A = QR$ non è unica*.
+
+DIMOSTRAZIONE SVOLTA
+
+*** Costo computazionale
+    :PROPERTIES:
+    :CUSTOM_ID: costo-computazionale-2
+    :END:
+Il costo computazionale per determinare $R$ è dato da:
+
+$$ \sum_{k = 1}^{r} (n - k) (2(m - k + 1)) = \begin{cases}
+\Omicron(mn^2 - \frac{n^3}{3}) & m \ge n + 1 \\
+\Omicron(\frac{2}{3} n^3) & m = n
+\end{cases} $$
+
+Si deduce che per valori elevati di $m$ il costo computazionale sarà più
+elevato e che il costo computazionale nel caso di una matrice quadrata
+sarà simile a quello dell'algoritmo di Gauss con pivoting totale.
+
+*** Stabilità
+    :PROPERTIES:
+    :CUSTOM_ID: stabilità-3
+    :END:
+È più stabile dell'algoritmo di Gauss, non richiede strategie pivotali.
+La stabilità si dimostra mostrando che il valore degli elementi di $Q$ e
+$R$ crescono di poco rispetto ad $A$.
+
+Per gli elementi della matrice $Q$ vale il seguente limite superiore:
+
+$$ \max_{i,j} |q_{i, j}| = \max_{i} |x_i| = \|x||_{\infty} \le \|x\|_{2} = 1 $$
+
+#+begin_quote
+  *Nota*: è noto che tutte le colonne di una matrice ortogonale hanno
+  norma $2$ unitaria.
+#+end_quote
+
+Per gli elementi della matrice $R$ vale il seguente limite superiore:
+
+$$ \max_{i, j} |r_{i, j}| \le \sqrt{n} \max_{i, j} |a_{i, j}| $$
+
+Perciò si definisce una fattore di crescita sugli elementi della matrice
+$R$ più basso del fattore di crescita sugli elementi della matrice $U$
+nella fattorizzazione $LU$.
+
+$$ \sqrt{n} \ll 2^{n - 1} $$
+
+*La fattorizzazione $QR$ è più stabile della fattorizzazione $LU$ con
+pivoting parziale*.
+
+*La fattorizzazione $QR$ è stabile all'incirca quanto la fattorizzazione
+$LU$ con pivoting totale*.
+
+* Risoluzione di un sistema sovradeterminato lineare
+  :PROPERTIES:
+  :CUSTOM_ID: risoluzione-di-un-sistema-sovradeterminato-lineare
+  :END:
+Nella risoluzione di un sistema lineare sovradeterminato si distinguono
+due casi:
+
+- $\rg(A) \ne \rg(A|b)$ allora il il sistema è *incompatibile* e *non ha
+  soluzioni*.
+- $\rg(A) = \rg(A|b)$ allora il sistema è *compatibile* e si distinguono
+  due casi:
+
+  - $\rg(A) = n$ ha soluzione unica;
+  - $\rg(A) < n$ ha $\infty^{n - \rg(A)}$ soluzioni.
+
+Il problema della risoluzione di un sistema lineare sovradeterminato
+risulta un *problema mal posto* perché la soluzione potrebbe non
+esistere oppure potrebbe non essere unica.
+
+È quindi necessario riformulare il problema in modo che ammetta sempre
+una e una sola soluzione, /che dipende con continuità dai dati del
+problema/.
+
+* Come riformulare il problema della risoluzione di un sistema lineare
+sovradeterminato?
+  :PROPERTIES:
+  :CUSTOM_ID: come-riformulare-il-problema-della-risoluzione-di-un-sistema-lineare-sovradeterminato
+  :END:
+Si cerca la soluzione del sistema lineare sovradeterminato /nel senso
+dei minimi quadrati/, ovvero cercando il vettore
+$\bar{x} \in \mathbb{R}^n$ per cui vale:
+
+$$
+    \|b - A \bar{x}\|_{2}^{2} \le \|b - Ax\|_{2}^{2},\ \forall x \in 
+    \mathbb{R}^{n}
+$$
+
+Ponendo $r(x) := b - Ax$ si può scrivere la soluzione del sistema
+lineare sovradeterminato nel senso dei minimi quadrati come data dal
+vettore:
+
+$$
+    \bar{x} = argmin_{x \in \mathbb{R}^{n}} \|r(x)\|_{2}^{2}
+$$
+
+#+begin_quote
+  Perché questo vettore è la soluzione di un sistema lineare
+  sovradeterminato?
+#+end_quote
+
+Un apposito teorema afferma che dato $A \in \mathbb{R}^{m \times n}$,
+con $m > n$ e $b \in \mathbb{R}^{m}$, il vettore $\bar{x}$ è soluzione
+del sistema $A^T Ax = A^T b$ /se e solo se/
+$\bar{x} = argmin_{x \in \mathbb{R}^{n}} \|b - Ax\|_{2}^{2}$. La
+soluzione $\bar{x}$ *è unica* se $\rg(A) = n$.
+
+Si ottiene il sistema lineare quadrato: $Mx = d$, detto *sistema delle
+equazioni normali*
+
+#+begin_quote
+  *Nota*: basta moltiplicare entrambi i membri per $A^T$.
+#+end_quote
+
+Perciò si può ricondurre la risoluzione di un sistema lineare
+sovradeterminato alla risoluzione di un sistema lineare quadrato in cui
+la matrice dei coefficienti è /simmetrica/ e /definita positiva/.
+
+#+begin_quote
+  *Nota*: per il calcolo del minimo di una funzione
+  $f : \mathbb{R} \mapsto \mathbb{R}$ si calcola la derivata prima e si
+  cercano i punti che la annullano. Si calcola poi la derivata seconda e
+  se si ottiene un valore positivo sfruttando i valori di $x$ che
+  annullano la derivata prima allora si trova un punto di minimo.
+#+end_quote
+
+* Come risolvere un sistema lineare sovradeterminato sfruttando la
+fattorizzazione di Cholesky?
+  :PROPERTIES:
+  :CUSTOM_ID: come-risolvere-un-sistema-lineare-sovradeterminato-sfruttando-la-fattorizzazione-di-cholesky
+  :END:
+Si applica il *metodo delle equazioni normali*.
+
+** Funzionamento
+   :PROPERTIES:
+   :CUSTOM_ID: funzionamento-5
+   :END:
+Si riformula il problema iniziale della risoluzione di $Ax = b$, con
+$A \in \mathbb{R}^{m \times n}$ e $m > n$ nel sistema delle equazioni
+normali $Mx = d$.
+
+1. Si calcola $M = A^T A$ e $d = A^T b$
+2. Si applica la fattorizzazione di Cholesky $M = LL^T$
+3. Si risolvono i sistemi lineari $Lz = d$ e $L^Tx = z$ con i metodi
+   delle sostituzioni in avanti e all'indietro.
+
+** Costo computazionale
+   :PROPERTIES:
+   :CUSTOM_ID: costo-computazionale-3
+   :END:
+
+1. Al primo passo si effettuano $nm$ moltiplicazioni per calcolare
+   $A A^T$, queste $nm$ moltiplicazioni vanno svolte $n$ volte perciò si
+   ottiene $n^2m$
+2. Al secondo passo si tiene conto del costo della fattorizzazione di
+   Cholesky.
+3. Al terzo passo si tiene conto dei costi relativi ai metodi di
+   sostituzione in avanti e all'indietro.
+
+Perciò si ottiene:
+
+$$
+    \frac{mn^2}{2} + \frac{n^3}{6} + n^2 
+$$
+
+Ovvero:
+
+$$
+    \Omicron \bigl(\frac{mn^2}{2} + \frac{n^3}{6} \bigr)
+$$
+
+#+begin_quote
+  *Nota*: sfruttando la simmetria di $A$ si può dimezzare il costo
+  $mn^2$.
+#+end_quote
+
+#+begin_quote
+  *Nota*: i coefficienti dei termini di grado massimo nella stima dei
+  costi generalmente si mantengono per maggiore accuratezza,
+  specialmente per effettuare confronti.
+#+end_quote
+
+** Problematiche
+   :PROPERTIES:
+   :CUSTOM_ID: problematiche
+   :END:
+
+1. A causa degli errori di arrotondamento, nel calcolo di $A^T A$
+   possono andare perdute cifre significative con conseguente perdita
+   della definita positività o addirittura della non singolarità.
+
+2. Non è detto che un numero di condizionamento basso per $A$ implichi
+   un numero di condizionamento basso anche per $M$. Infatti vale:
+
+   $$
+       K_2(A^T A) = \bigl( K_2(A) \bigr)^2
+   $$
+
+   Perciò il sistema delle equazioni normali può risultare mal
+   condizionato anche quando il problema originale non lo è.
+
+In generale il sistema delle equazioni normali risulta *mal
+condizionato*.
+
+* Come sopperire alle problematiche del metodo delle equazioni normali?
+  :PROPERTIES:
+  :CUSTOM_ID: come-sopperire-alle-problematiche-del-metodo-delle-equazioni-normali
+  :END:
+Si impiega il *metodo QRLS* (QR Least Squared, Fattorizzazione QR ai
+minimi quadrati). Permette di ottenere un sistema lineare quadrato,
+$R_1 x = \tilde{b}_1$ in cui il numero di condizionamento della matrice
+$R_1$ è lo stesso della matrice $A$ a partire dal sistema lineare
+sovradeterminato $Ax = b$.
+
+** Costo computazionale
+   :PROPERTIES:
+   :CUSTOM_ID: costo-computazionale-4
+   :END:
+Il metodo QRLS è più costoso del metodo di Cholesky. Infatti bisogna
+tenere conto sia del costo della fattorizzazione QR che della
+risoluzione del sistema $R_1 x = \tilde{b}_1$ col metodo delle
+sostituzioni all'indietro.
+
+Si ottiene:
+
+$$
+    \Omicron(mn^2 - \frac{n^3}{3})
+$$
+
+#+begin_quote
+  *Nota*: se $m = n$ sia il metodo delle equazioni normali che il metodo
+  QRLS hanno lo stesso costo, pari a: $\Omicron(\frac{2}{3} n^3)$
+#+end_quote
+
+** Funzionamento
+   :PROPERTIES:
+   :CUSTOM_ID: funzionamento-6
+   :END:
+Per la risoluzione di un sistema lineare sovradeterminato $B a = y$ con
+il metodo QRLS si seguono questi passi:
+
+1. Si applica la fattorizzazione QR alla matrice dei coefficienti
+   rettangolare ottenendo la matrice trapezoidale superiore $R$ con
+   blocco di testa $R_1$ matrice triangolare superiore non singolare e
+   la matrice ortogonale $Q$.
+2. Si costruisce il vettore $\tilde{y}$ che si ottiene a partire dal
+   vettore dei termini noti del sistema sovradeterminato $y$ tramite la
+   relazione $\tilde{y} = Q^T y$. Si partiziona il vettore così ottenuto
+   in modo da ottenere il primo blocco con dimensioni uguali a quella
+   della matrice $R_1$. Perciò $\tilde{y}_{1} = \tilde{y}(1:n+1)$.
+3. Si risolve il sistema lineare quadrato $R_1 a = \tilde{y}_{1}$
+   rispetto ad $a$.

@@ -1,0 +1,585 @@
+#+TITLE: Requisiti di Analisi e Algebra per il corso di Metodi Numerici
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Funzione concava e convessa
+  :PROPERTIES:
+  :CUSTOM_ID: funzione-concava-e-convessa
+  :END:
+** Definizione di funzione convessa
+   :PROPERTIES:
+   :CUSTOM_ID: definizione-di-funzione-convessa
+   :END:
+Una funzione $f(x)$ definita su un intervallo $I$ si dice *funzione
+debolemente convessa* se comunque presi due punti $x_1, x_2$ in $I$, con
+$x_1 < x_2$, risulta che:
+
+$$ f(t x_1 + (1 - t) x_2) \le t f(x_1) + (1 - t) f(x_2)\quad \forall t \in [0, 
+1] $$
+
+Una funzione $f(x)$ definita su un intervallo $I$ si dice *funzione
+strettamente convessa* se comunque presi due punti $x_1, x_2$ in $I$,
+con $x_1 < x_2$, risulta che:
+
+$$ f(t x_1 + (1 - t) x_2) < t f(x_1) + (1 - t) f(x_2) \forall t \in (0,1) $$
+
+#+caption: Esempio di funzione convessa
+[[./attachments/funzione_convessa.png]]
+
+Dal punto di vista geometrico una funzione è convessa se e solo se ogni
+coppia di punti del grafico della funzione è congiunta mediante un
+segmento che sta al di sopra oppure coincide con una parte del grafico.
+
+** Definizione di funzione concava
+   :PROPERTIES:
+   :CUSTOM_ID: definizione-di-funzione-concava
+   :END:
+Una funzione $f(x)$ definita su un intervallo $I$ si dice *funzione
+debolemente concava* se comunque presi due punti $x_1, x_2$ in $I$
+risulta che:
+
+$$ f(t x_1 + (1 - t) x_2) \ge t f(x_1) + (1 - t) f(x_2)\quad \forall t \in [0, 
+1] $$
+
+Una funzione $f(x)$ definita su un intervallo $I$ si dice *funzione
+strettamente concava* se comunque presi due punti $x_1, x_2$ in $I$
+risulta che:
+
+$$ f(t x_1 + (1 - t) x_2) > t f(x_1) + (1 - t) f(x_2)\quad \forall t \in (0,1)
+$$
+
+Dal punto di vista geometrico una funzione è convessa se e solo se ogni
+coppia di punti del grafico della funzione è congiunta mediante un
+segmento che sta al di sotto oppure coincide con una parte del grafico.
+
+Per ulteriori informazioni:
+[[https://www.youmath.it/lezioni/analisi-matematica/le-funzioni-da-r-a-r%20-in-generale/3476-funzione-concava-funzione-convessa.html][Youmath:
+funzioni concave e onvesse]]
+
+* Funzioni di classe $C^k$
+  :PROPERTIES:
+  :CUSTOM_ID: funzioni-di-classe-ck
+  :END:
+Una funzione $f : A \to \mathbb{R}$ è di classe $C^k$ su un insieme
+aperto $A$ in $\mathbb{R}$ se è derivabile $k$ volte con continuità
+sull'insieme $A$.
+
+- Una funzione di classe $C^{\infty}$ è detta *funzione liscia*, ed è
+  una funzione derivabile infinite volte su $A$ con tutte le derivate
+  continune su $A$.
+
+- Una funzione di classe $C^{0}$ è detta *funzione continua su* $A$.
+
+#+begin_quote
+  *Nota*: se esistono dei punti del dominio di una funzione dove non è
+  derivabile allora la funzione è di classe $C^{0}$.
+#+end_quote
+
+* Successioni e convergenza
+  :PROPERTIES:
+  :CUSTOM_ID: successioni-e-convergenza
+  :END:
+* Serie geometrica
+  :PROPERTIES:
+  :CUSTOM_ID: serie-geometrica
+  :END:
+Questa è la somma di una serie geometrica convergente:
+
+$$\sum_{k = 0}^{\infty} a^k = \lim_{n \to \infty} (1 + a + ... + a^n) = \lim_{n \to \infty} \frac{1 - a^{n + 1}}{1 - a} = \frac{1}{1 - a}$$
+
+Si ha perciò: 1. $$(1 + a + a^2 + ...) = \frac{1}{1 - a}$$
+
+2. $$(a + a^2 + a^3 + ...) = \frac{a}{1 - a}$$
+
+Derivando la 2. si ottiene:
+
+$$(1 + 2a + 3a^2 + ...) = \sum_{k = 1}^{\infty} k \cdot a^{k -1} = \frac{1 - a - a(-1)}{(1 - a)^2} = \frac{1}{(1 - a)^2}$$
+
+#+begin_quote
+  *Nota:* la serie geometrica converge e ha valore $\frac{1}{1 - a}$
+  solo se $0 \le a < 1$.
+#+end_quote
+
+--------------
+
+**** Successione convergente
+     :PROPERTIES:
+     :CUSTOM_ID: successione-convergente
+     :END:
+Data una successione $\{x_i\}_{i \ge 0}$ convergente ad un limite
+$\alpha$, $e_i := x_i - \alpha$ e due numeri reali
+$p \ge 1 \wedge C > 0$ se vale:
+
+$$ \lim_{i \to +\infty} \frac{|e_i + 1|}{|e_i|^p} $$
+
+si dice che la successione ha *ordine di convergenza p* e *fattore di
+convergenza C*.
+
+--------------
+
+i numeri finiti si trovano equispaziait e lo spacing cresce a partire
+dalloo 0 verso l'infinito
+
+numeri equispaziati, segmenti di cinque numeri di cui quelli evidenziati
+sono $\beta^p$
+
+--------------
+
+* Teorema di Bolzano
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-bolzano
+  :END:
+Il teorema degli zeri, detto anche teorema di Bolzano, permette di
+stabilire l'esistenza di almeno uno zero di una funzione continua su un
+dato __intervallo reale chiuso e limitato_.
+
+In altri termini sotto certe ipotesi permette di garantire l'esistenza
+di almeno un punto in cui la funzione si annulla.
+
+Data una funzione $f : Dom(f) \subseteq \mathbb{R} \to \mathbb{R}$, e
+sia $[a, b] \subseteq Dom(f)$ un intervallo chiuso e limitato.
+Supponendo che la funzione sia continua su $[a, b]$ e che valga:
+
+$$ f(a) \cdot f(b) < 0 $$
+
+Allora $f$ ammette /almeno/ uno zero interno ad $[a, b]$, cioè:
+
+$$ \exists! x_0 \in (a,b) | f(x_0) = 0 $$
+
+* Teorema di Weierstrass
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-weierstrass
+  :END:
+Una funzione $f : Dom(f) \subseteq \mathbb{R} \to \mathbb{R}$ /definita/
+e /continua/ su un insieme /chiuso/ e /limitato/ ammette in esso un
+massimo e un minimo assoluti.
+
+In altri termini se il dominio della funzione è chiuso e limitato,
+allora: $$ \exists\ x_1, x_2 \in Dom(f)\ | 
+\begin{cases} 
+f(x_1) = M \ge f(x),\ & \forall x \in Dom(f) \\
+f(x_2) = m \le f(x),\ & \forall x \in Dom(f)
+\end{cases} $$
+
+* Estremi inferiori e superiori
+  :PROPERTIES:
+  :CUSTOM_ID: estremi-inferiori-e-superiori
+  :END:
+** Maggiorante e minorante di un insieme
+   :PROPERTIES:
+   :CUSTOM_ID: maggiorante-e-minorante-di-un-insieme
+   :END:
+*** Maggiorante
+    :PROPERTIES:
+    :CUSTOM_ID: maggiorante
+    :END:
+$$ y \in \mathbb{R}\ maggiorante\ di\ X \iff \forall x \in X\ y \ge x $$
+
+Un maggiorante di un insieme è un qualsiasi valore reale che /maggiora/
+tutti gli elementi dell'insieme.
+
+*** Minorante
+    :PROPERTIES:
+    :CUSTOM_ID: minorante
+    :END:
+$$ y \in \mathbb{R}\ minorante\ di\ X \iff \forall x \in X\ y \le x $$
+
+Un minorante di un insieme è un qualsiasi valore reale che /minora/
+tutti gli elementi dell'insieme.
+
+#+begin_quote
+  *Nota*: un maggiorante o un minorante non deve necessariamente
+  appartenere all'insieme, inoltre possono esistere più maggioranti e
+  minoranti.
+#+end_quote
+
+#+begin_quote
+  *Esempio*: Dato l'intervallo $(- \infty,10)$ si ha che: - non ci sono
+  minoranti - qualsiasi numero $y \ge 10$ è un maggiorante dell'insieme.
+#+end_quote
+
+** Limitatezza e illimitatezza di un insieme
+   :PROPERTIES:
+   :CUSTOM_ID: limitatezza-e-illimitatezza-di-un-insieme
+   :END:
+
+- un insieme è:
+
+  - /limitato inferiormente/ se ammette almeno un minorante;
+  - /illimitato inferiormente/ se non ammette alcun minorante;
+  - /limitato superiormente/ se ammette almeno un maggiorante;
+  - /illimitato superiormente/ se non ammette alcun maggiorante;
+  - /limitato/ se è limitato sia inferiormente che superiormente;
+  - /illimitato/ se è illimitato sia inferiormente che superiormente.
+
+** Estremo inferiore e superiore di un insieme
+   :PROPERTIES:
+   :CUSTOM_ID: estremo-inferiore-e-superiore-di-un-insieme
+   :END:
+*** Estremo inferiore
+    :PROPERTIES:
+    :CUSTOM_ID: estremo-inferiore
+    :END:
+Dato $X \subseteq \mathbb{R}$ /insieme limitato inferiormente/ l'estremo
+inferiore $y \in \mathbb{R}$ è:
+
+$$ \inf(X) = y $$
+
+Si ha che $y$ è un minorante di $X$;
+
+Inoltre comunque scelto $z > y$ si ha che $z$ non è un minorante di $X$,
+in altri termini $y$ è il più grande minorante di $X$.
+
+Se $X$ è un /insieme illimitato inferiormente/ allora:
+
+$$ \inf(X) = -\infty $$
+
+*** Estremo superiore
+    :PROPERTIES:
+    :CUSTOM_ID: estremo-superiore
+    :END:
+Dato $X \subseteq \mathbb{R}$ /insieme limitato superiormente/ l'estremo
+superiore $y \in \mathbb{R}$ è:
+
+$$ \sup(X) = y $$
+
+Si ha che $y$ è un maggiorante di $X$;
+
+Inoltre comunque scelto $z < y$ si ha che $z$ non è un maggiorante di
+$X$, in altri termini $y$ è il più piccolo maggiorante di $X$.
+
+Se $X$ è un /insieme illimitato superiormente/ allora:
+
+$$ \sup(X) = +\infty $$
+
+*** Esistenza e unicità di estremo inferiore e superiore
+    :PROPERTIES:
+    :CUSTOM_ID: esistenza-e-unicità-di-estremo-inferiore-e-superiore
+    :END:
+$$ \forall X \in \mathcal{P}(\mathbb{R})\ \exists!\ \inf(X),\ \exists!\ 
+\sup(X) $$
+
+*** Estremo inferiore e superiore nell'insieme vuoto
+    :PROPERTIES:
+    :CUSTOM_ID: estremo-inferiore-e-superiore-nellinsieme-vuoto
+    :END:
+$$ \inf(\emptyset) = + \infty, \quad \sup(\emptyset) = - \infty $$
+
+*** Proprietà di sup e inf
+    :PROPERTIES:
+    :CUSTOM_ID: proprietà-di-sup-e-inf
+    :END:
+TODO
+
+** Massimo e minimo di un insieme
+   :PROPERTIES:
+   :CUSTOM_ID: massimo-e-minimo-di-un-insieme
+   :END:
+TODO
+
+* Sviluppo in serie di Taylor
+  :PROPERTIES:
+  :CUSTOM_ID: sviluppo-in-serie-di-taylor
+  :END:
+Lo sviluppo in serie di Taylor di una funzione in un punto, se esiste,
+*permette di esprimere la funzione nell'intorno del punto come un
+polinomio con infiniti termini*. Arrestando lo sviluppo di Taylor ad un
+certo ordine è possibile esprimere i restanti termini sotto forma di
+resto.
+
+Sviluppare una funzione in serie di Taylor in un punto $x_0$ consiste,
+sotto opportune ipotesi, nel fornire una rappresentazione esatta della
+funzione nell'intorno del punto. Tale rappresentazione avviene per mezzo
+di un polinomio (lo sviluppo in serie di Taylor della funzione data).
+
+In altri termini lo sviluppo in serie di Taylor fornisce una
+/rappresentazione locale alternativa della funzione/, valida
+nell'intorno del centro dello sviluppo.
+
+Sia $f : [a,b] \to \mathbb{R}$ una funzione, sia $x_0 \in (a,b)$ e
+supponiamo che esistano le derivate
+$f^{(1)}(x_0), f^{(2)}(x_0),...,f^{(n-1)}(x_0)$. Preso $h$ tale che $f$
+sia definita in $[x_0 - h, x_0 + h]$ (intorno chiuso di centro $x_0$ e
+raggio $h$), vale la formula:
+
+$$ f(x_0 + h) = \sum_{i = 0}^{n - 1} \frac{f^{i}(x_0)}{i!} h^i + R_n(h) $$
+
+o, equivalentemente, prendendo $x = x_0 + h$
+
+$$ f(x) = \sum_{i = 0}^{n - 1} \frac{f^{i}(x_0)}{i!} (x - x_0)^i + R_n(x) $$
+
+dove $R_n$ è un'opportuna funzione, detta *resto di ordine n*, mentre
+$x_0$ è detto *centro dello sviluppo*.
+
+Ci sono due tipi di resto principali:
+
+- *resto di Peano*;
+- *resto di Langrange*.
+
+** Formula di Taylor con resto di Peano
+   :PROPERTIES:
+   :CUSTOM_ID: formula-di-taylor-con-resto-di-peano
+   :END:
+Nelle ipotesi della formula di Taylor, e con l'ipotesi aggiuntiva che
+esista $f^{n}(x_0)$ si ha:
+
+$$ f(x) = \sum_{i = 0}^{n - 1} \frac{f^{i}(x_0)}{i!} (x - x_0)^i + 
+\frac{f^{n}(x_0)}{n!} (x - x_0)^n + \omicron [(x - x_0)^n] $$
+
+Dove:
+
+$$ R_n(x) = \omicron [(x - x_0)^n] $$
+
+è detto *Resto di Peano*.
+
+#+begin_quote
+  *Nota*: il termine o-piccolo $\omicron (\cdot)$, è dato da una
+  qualsiasi funzione $g(x)$ tale che:
+
+  $$ \lim_{x \to x_0} \frac{g(x)}{(x - x_0)^n} = 0 $$
+#+end_quote
+
+*** Osservazioni sul resto di Peano
+    :PROPERTIES:
+    :CUSTOM_ID: osservazioni-sul-resto-di-peano
+    :END:
+Fornisce informazioni di tipo /qualitativo/. Non importa sapere quale
+sia la funzione precisa che porta all'uguaglianza, si vuole capire
+qual'è il comportamento qualitativo della funzione $R_n(x)$.
+
+** Formula di Taylor con resto di Lagrange
+   :PROPERTIES:
+   :CUSTOM_ID: formula-di-taylor-con-resto-di-lagrange
+   :END:
+Nelle ipotesi della formula di Taylor, e con l'ipotesi aggiuntiva che
+esista $f^{n}(x_0)$ si ha:
+
+$$ f(x) = \sum_{i = 0}^{n - 1} \frac{f^{i}(x_0)}{i!} (x - x_0)^i + 
+\frac{f^{n}(c)}{n!} (x - x_0)^n $$
+
+Dove:
+
+$$ R_n(x) = \frac{f^{n}(c)}{n!} (x - x_0)^n $$
+
+è detto *Resto di Lagrange*.
+
+*** Osservazioni sul resto di Lagrange
+    :PROPERTIES:
+    :CUSTOM_ID: osservazioni-sul-resto-di-lagrange
+    :END:
+Fornisce informazioni di tipo /quantitativo/. Non importa sapere quale
+sia il punto $c$ per cui vale l'asserto. È sufficiente sapere che c'è e
+che la valutazione della derivata n-esima in tale punto conduce ad una
+rappresentazione esatta.
+
+** Nomenclatura
+   :PROPERTIES:
+   :CUSTOM_ID: nomenclatura
+   :END:
+
+- *Sviluppo di Taylor con centro* $x_0$: è il polinomio infinito che
+  equivale alla funzione nell'intorno del centro di sviluppo.
+- *Sviluppo di Taylor all'ordine N con centro* $x_0$: il polinomio
+  finito di grado N cui viene sommato il resto dello sviluppo, che nel
+  complesso equivale alla funzione nell'introno del centro di sviluppo.
+- *Sviluppo in serie di Mc Laurin*: sviluppo in cui il centro è
+  $x_0 = 0$.
+- *Polinomio di Taylor all'ordine N con centro* $x_0$: è il polinomio
+  finito di grado N privo del resto dello sviluppo, che approssima la
+  funzione nell'intorno del centro di sviluppo.
+
+** Approssimazione di Taylor al primo ordine
+   :PROPERTIES:
+   :CUSTOM_ID: approssimazione-di-taylor-al-primo-ordine
+   :END:
+Data una funzione è possibile approssimarla con una funzione più
+semplice in un intorno di un punto assegnato. Ciò è possibile se la
+funzione è derivabile un certo numero di volte.
+
+** Scopo
+   :PROPERTIES:
+   :CUSTOM_ID: scopo
+   :END:
+Approssimare una funzione $f(x)$ con un polinomio $T_n(x)$ di grado $n$
+in un intorno di un punto assegnato:
+
+$$ x_0 \in Dom(f) | f(x) - T_n(x) = \omicron((x -x_0)^n)\ con\ x \to x_0 $$
+
+** Proprietà
+   :PROPERTIES:
+   :CUSTOM_ID: proprietà
+   :END:
+Data una funzione $f(x)$ derivabile in $x_0$ se esiste un intorno di
+$x_0$ in cui $f$ si può approssimare con un polinomio di primo grado,
+vale la seguente espressione:
+
+$$ f(x) = f(x_0) + f'(x_0)(x - x_0) + \omicron (x - x_0),\ con x \to x_0 $$
+
+A partire dallo sviluppo di Taylor si ottengono:
+
+- il *polinomio di Taylor di primo ordine*
+
+$$ T_1(x) = f(x_0) + f'(x_0) (x - x_0) $$
+
+- il *polinomio di Taylor di secondo ordine*
+
+$$ T_2(x) = f(x_0) + f'(x_0)(x - x_0) + \frac{1}{2} f''(x_0(x - x_0)^2 $$
+
+#+begin_quote
+  *Nota*: dal punto di vista geometrico il grafico del polinomio di
+  primo ordine è una retta tangente a $f(x)$ in $P(x_0,f(x_0))$ mentre
+  il polinomio di secondo ordine è una parabola che approssima anch'essa
+  il grafico di $f(x)$ in $x_0$.
+#+end_quote
+
+--------------
+
+* Matrici 101
+  :PROPERTIES:
+  :CUSTOM_ID: matrici-101
+  :END:
+** Matrice simmetrica
+   :PROPERTIES:
+   :CUSTOM_ID: matrice-simmetrica
+   :END:
+Una matrice $A \in \mathbb{R}^{m \times n}$ si dice *simmetrica* se
+$A^T = A$.
+
+** Proprietà relative agli autovalori di matrici
+   :PROPERTIES:
+   :CUSTOM_ID: proprietà-relative-agli-autovalori-di-matrici
+   :END:
+
+1. Calcolo autovalore $\lambda$ di matrice quadrata
+
+$$ A x = \lambda x \iff A^2 x = \lambda A_x \iff A^2 x = \lambda^2 x $$
+
+2. Calcolo autovalore $\lambda$ di matrice inversa
+
+$$ A x = \lambda x \iff A x = \lambda A A^{-1} x \iff x = \lambda A^{-1} x 
+  \iff \frac{1}{\lambda} x = A^{-1} x $$
+
+** Matrice ortogonale
+   :PROPERTIES:
+   :CUSTOM_ID: matrice-ortogonale
+   :END:
+Una matrice $A$ è *ortogonale* se $A^TA = AA^T = I$ ovvero se /la
+matrice inversa coincide con la trasposta/.
+
+** Matrice semidefinita positiva
+   :PROPERTIES:
+   :CUSTOM_ID: matrice-semidefinita-positiva
+   :END:
+Una matrice $A$ si dice *semidefinita positiva* se
+$\forall A \in \mathbb{R}^{n \times m}$ si ha che:
+
+$$\forall \underline{x} \in \mathbb{R}^n \setminus \{0\},\ x^{T} A x \ge 0 $$
+
+*** Proprietà
+    :PROPERTIES:
+    :CUSTOM_ID: proprietà-1
+    :END:
+
+1. Tutti gli autovalori di una matrice semidefinita positiva sono
+   $\ge 0$.
+
+** Sottomatrice e minori di una matrice
+   :PROPERTIES:
+   :CUSTOM_ID: sottomatrice-e-minori-di-una-matrice
+   :END:
+Tratto da:
+[[https://www.youmath.it/lezioni/algebra-lineare/matrici-e-vettori/3%20845-sottomatrici-e-minori-di-una-matrice.html][youmath]]
+
+Data una qualsiasi matrice, prendono il nome di *sottomatrici*** quelle
+matrici ottenute eliminando alcune righe e/o alcune colonne della
+matrice in esame, mentre si dicono *minori* associati a una matrice i
+determinanti delle sottomatrici quadrate da essa estratte.
+
+Sono alla base di alcuni argomenti cardine dell'Algebra Lineare, come il
+/calcolo del rango/, la /risoluzione dei sistemi lineari/, lo /studio
+della definitezza di una matrice/ e il /calcolo della matrice/.
+
+*** Definizione di sottomatrice
+    :PROPERTIES:
+    :CUSTOM_ID: definizione-di-sottomatrice
+    :END:
+Sia $A$ una matrice qualsiasi con $m \ge 1$ righe e $n \ge 1$ colonne.
+Si dicono *sottomatrici* di $A$ tutte quelle matrici estratte da $A$
+eliminando un numero arbitrario di righe e/o di colonne.
+
+In alternativa, possiamo definire sottomatrice di $A$ qualsiasi matrice
+costruita prendendo gli elementi dell'intersezione di $r$ righe e $s$
+colonne di $A$, con $0 \le r \le m, \wedge 0 \le s \le n$.
+
+*** Definizione di minore
+    :PROPERTIES:
+    :CUSTOM_ID: definizione-di-minore
+    :END:
+Si definisce *minore* della matrice $A$ il determinante di una
+sottomatrice quadrata di $A$; l'/ordine della sottomatrice/ è detto
+/ordine del minore/.
+
+#+begin_quote
+  *Nota*: in alcune situazioni con minore di una matrice si intende,
+  semplicemente, una sottomatrice quadrata di una data matrice.
+#+end_quote
+
+Si distinguono diverse tipologie di minore:
+
+- *minore complementare*;
+- *minore orlato*;
+- *minore principale*;
+- *minore di testa*.
+
+**** Minore complementare
+     :PROPERTIES:
+     :CUSTOM_ID: minore-complementare
+     :END:
+Sia $A$ una matrice quadrata di ordine $n \ge 2$. Si dice *minore
+complementare* il determinante di una sottomatrice estratta da $A$
+eliminando una sola riga e una sola colonna.
+
+In particolare, fissato un elemento $a_{ij} \in A$, è detto minore
+complementare relativo ad $a_{ij}$, e si indica con $C_{ij}$, il minore
+complementare calcolato sulla base della sottomatrice $A_{ij}$ ottenuta
+dall'eliminazione dell'i-esima riga e della j-esima colonna di $A$.
+
+**** Minore orlato
+     :PROPERTIES:
+     :CUSTOM_ID: minore-orlato
+     :END:
+Data una matrice $A$, quadrata o rettangolare, estraiamo una sua
+sottomatrice quadrata di ordine $p$ e chiamiamola $A'$. Si definisce
+*minore orlato* il determinante di ogni sottomatrice quadrata di $A$ di
+ordine $p + 1$, ottenuta dalla sottomatrice $A'$ aggiungendo una riga e
+una colonna di $A$.
+
+**** Minore principale
+     :PROPERTIES:
+     :CUSTOM_ID: minore-principale
+     :END:
+Si assegna il nome di *minore principale* a ciascun determinante di una
+sottomatrice estratta da una matrice quadrata $A$ eliminando righe e
+colonne con lo stesso indice.
+
+**** Minore di testa
+     :PROPERTIES:
+     :CUSTOM_ID: minore-di-testa
+     :END:
+Detto anche *minore di nord-ovest* o *minore guida*.
+
+Data una matrice quadrata $A$ di ordine $n \ge 1$, si dice *minore di
+testa* il determinante di ciascuna sottomatrice estratta da $A$
+eliminando le ultime $k$ righe e le ultime $k$ colonne, con
+$0 \le k \le n-1$.
+
+#+begin_quote
+  *Nota*: una matrice quadrata di ordine $n$ ha esattamente $n$ minori
+  di testa.
+#+end_quote
+
+#+begin_quote
+  *Nota*: un minore di testa è anche un minore principale, ma non vale
+  necessariamente il contrario, cioè un minore principale non è detto
+  che sia un minore di testa.
+#+end_quote

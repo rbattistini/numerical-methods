@@ -1,0 +1,292 @@
+#+TITLE: Condizionamento e stabilità di un algoritmo
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Concetti di base
+  :PROPERTIES:
+  :CUSTOM_ID: concetti-di-base
+  :END:
+
+- *Problema numerico*: descrizione chiara e non ambigua di una
+  connessione funzionale $f$ tra i dati in input del problema $x$ e i
+  corrispondenti dati in output $y$.
+
+#+begin_quote
+  *Nota*: per problemi ben posti esiste una applicazione risolvente $f$
+  tra l'insieme dei dati $x$ e quello delle soluzioni $y$ per cui
+  $f(x) = y$.
+#+end_quote
+
+- *Algoritmo*: sequenza di operazioni che devono essere eseguite per
+  ottenere, in un numero finito di passi, da un dato input x il
+  corrispondente output.
+
+#+begin_quote
+  *Nota*: ad ogni problema numerico si possono associare più algoritmi,
+  perciò il risultato di un algoritmo non è necessariamente $y$, ovvero
+  il risultato del problema.
+#+end_quote
+
+* Condizionamento di un problema
+  :PROPERTIES:
+  :CUSTOM_ID: condizionamento-di-un-problema
+  :END:
+Quando un problema è ben posto si cerca di dare una /misura quantitativa
+di come la sua soluzione venga influenzata da una perturbazione dei
+dati/.
+
+In altri termini, si cerca di stimare il grado di condizionamento del
+problema in base ai dati forniti in input.
+
+** Perturbazioni dei dati
+   :PROPERTIES:
+   :CUSTOM_ID: perturbazioni-dei-dati
+   :END:
+$$ \tilde{x} = x + \sigma x $$
+
+Come vengono propagati dal problema gli errori presenti nei dati in
+assenza di errori di calcolo e indipendentemente dal procedimento di
+calcolo?
+
+A partire dai dati perturbati $\tilde{x}$ si ottiene il risultato
+$f(\tilde{x}) = \tilde{y}$
+
+** Condizionamento di un problema
+   :PROPERTIES:
+   :CUSTOM_ID: condizionamento-di-un-problema-1
+   :END:
+Il confronto tra la risposta analitica $f(x)$ e la risposta ottenuta a
+partire da dati perturbati $f(\tilde{x})$.
+
+** Problema ben condizionato
+   :PROPERTIES:
+   :CUSTOM_ID: problema-ben-condizionato
+   :END:
+Un problema si dice *ben condizionato* se a piccole perturbazioni nei
+dati $x$
+
+$$ \frac{\|x - \tilde{x} \|}{\|x\|} $$
+
+corrispondono perturbazioni sul risultato $f(x)$
+
+$$ \frac{\|f(x) - \tilde{f(x)} \|}{\|f(x)\|} $$
+
+dello stesso ordine di grandezza. In caso contrario si dice *mal
+condizionato*.
+
+#+begin_quote
+  *Nota*: si tratta di perturbazioni relative, in quanto calcolate a
+  partire dagli errori relativi.
+#+end_quote
+
+#+begin_quote
+  *Nota*: uno stesso problema può essere mal condizionato per certi dati
+  ma non per altri (esempio approccio inverso, questo risultato quale
+  problema risolve?)
+#+end_quote
+
+Il condizionamento *è legato al problema numerico* e non ha alcun legame
+con gli errori di arrotondamento delle operazioni di macchina né con il
+particolare algoritmo utilizzato.
+
+Si tratta di una caratteristica del problema indipendente dal modo in
+cui la soluzione viene calcolata.
+
+** Indice di condizionamento
+   :PROPERTIES:
+   :CUSTOM_ID: indice-di-condizionamento
+   :END:
+Ovvero l'indice di condizionamento per $f : \mathbb{R} \to \mathbb{R}$.
+
+A partire dallo sviluppo di Taylor arrestato al primo ordine di
+$f(x + \sigma x)$ in un intorno di $x$ si ottiene:
+
+$$ f(x + \sigma x) - f(x) \approx f'(x) \sigma x + \omicron(\|\sigma\|),\ 
+\sigma_x \to 0 $$
+
+Dal polinomio di Taylor del primo ordine si ottiene:
+
+$$ \frac{\|f(x) - \tilde{f(x)} \|}{\|f(x)\|} \le 
+\frac{\|f'(x) \|x\|}{\|f(x)\|} \frac{\|\tilde{x} - x\|}{\|x\|} $$
+
+Dove il primo termine indica l'errore relativo sui risultati, il secondo
+il fattore di amplificazione dell'errore relativo sui dati e il terzo
+l'errore relativo sui dati.
+
+L'*indice di condizionamento*, o /numero di condizionamento/ $K$ è
+proprio il fattore di amplificazione. Perciò si ha:
+
+$$ K = \frac{\|f'(x) \|x\|}{\|f(x)\|} $$
+
+Se $K \gg 1$ allora il problema è mal condizionato dato che l'errore
+relativo sui risultati si discosta molto dall'errore relativo sui dati.
+
+** Condizionamento dei sistemi lineari
+   :PROPERTIES:
+   :CUSTOM_ID: condizionamento-dei-sistemi-lineari
+   :END:
+Nel caso il problema da risolvere sia la risoluzione del sistema lineare
+quadrato $Ax = b$ con $b$ unico termine perturbato, si avrà:
+
+$$ x = f(b) = A^{-1} b \Rightarrow f'(b) = A^{-1} $$
+
+Perciò l'indice di condizionamento è:
+
+$$ K(A) := \|A\| \|A^{-1}\| $$
+
+$K(A)$ è detto *numero o indice di condizionamento della matrice
+quadrata* $A$.
+
+Se $K(A)$ è piccolo $A$ è ben condizionata e il problema della
+risoluzione del sistema lineare con matrice $A$ è ben condizionato.
+
+** Indice di condizionamento generico
+   :PROPERTIES:
+   :CUSTOM_ID: indice-di-condizionamento-generico
+   :END:
+Ovvero l'indice di condizionamento per $f: \mathbb{R}^n \to \mathbb{R}$.
+
+Sia $f : \mathbb{R}^n \to \mathbb{R}$.
+
+I /dati esatti/ si rappresentano vettori di componenti:
+$x_i, \ i = 1,2,...,n$
+
+I /dati perturbati/ sono:
+$\tilde{x}_i = x_i + \sigma x_i,\ i = 1,2,...,n$
+
+Si ottiene:
+
+$$ K = \sum_{i = 1}^n \left| \frac{\partial f(x_1,...,x_n)}{\partial x_i} 
+\right| \frac{|x_i|}{|f(x_1,...,x_n)|} $$
+
+* Stabilità di un algoritmo
+  :PROPERTIES:
+  :CUSTOM_ID: stabilità-di-un-algoritmo
+  :END:
+Si denota con $\psi$ e permette di valutare la reazione dell'algoritmo
+all'introduzione di perturbazioni nei dati iniziali.
+
+Si confrontano $f(\tilde{x})$ e il risultato fornito dall'algoritmo
+$\psi(\tilde{x}$, il termine $\psi$ si introduce per tenere conto dei
+risultati parziali convertiti in aritmetica floating-point.
+
+Infatti le operazioni che compie l'algoritmo possono portare a risultati
+intermedi che /non/ sono numeri macchina, perciò si introducono delle
+approssimazioni.
+
+Si distinguono due tipologie di errori che determinano il valore
+effettivamente calcolato di $f$ a partire dai dati $x$:
+
+- *errore inerente*;
+- *errore algoritmico*.
+
+** Errore inerente
+   :PROPERTIES:
+   :CUSTOM_ID: errore-inerente
+   :END:
+Generato dalla *rappresentazione dei dati* come numeri finiti.
+
+$$ E_{IN} = \frac{f(\tilde{x}) - f(x)}{f(x)} $$
+
+L'/errore inerente/ è legato all'/indice di condizionamento del
+problema/.
+
+#+begin_quote
+  *Nota*: l'errore inerente non ha alcuna dipendenza dalla scelta
+  dell'algoritmo. Si tratta di una caratteristica del problema che non
+  dipende dal modo in cui la soluzione viene calcolata.
+#+end_quote
+
+** Errore algoritmico
+   :PROPERTIES:
+   :CUSTOM_ID: errore-algoritmico
+   :END:
+Generato dal calcolo di $\psi(\tilde{x})$ dovuto alle *operazioni svolte
+in aritmetica finita*.
+
+$$ E_{ALG} = \frac{\psi(\tilde{x} - f(\tilde{x})}{f(\tilde{x})} $$
+
+L'/errore algoritmico/ è legato all'/indice algoritmico/.
+
+*Dipende solo da come il risultato viene calcolato* ovvero da fattori
+come il /numero di operazioni eseguite/, l'/ordine di esecuzione/ e il
+/tipo di operazioni/.
+
+#+begin_quote
+  *Nota*: l'errore algoritmico si può calcolare anche per operazioni che
+  /non/ sono svolte su una macchina.
+#+end_quote
+
+#+begin_quote
+  *Nota*: la definizione di errore algoritmico, inerente e totale
+  richiede di impiegare le norme per rappresentare il caso più generale
+  possibile. Si omettono norme e valori assoluti per semplificare i
+  calcoli nel caso della dimostrazione della relazione che lega l'errore
+  totale a quello inerente e algoritmico.
+#+end_quote
+
+** Errore totale
+   :PROPERTIES:
+   :CUSTOM_ID: errore-totale
+   :END:
+Per poter valutare l'/accuratezza della soluzione/, ovvero il grado di
+discostamento della soluzione calcolata da quella esatta, si introduce
+l'*errore totale*.
+
+$$ E_{TOT} = \frac{\psi(\tilde{x}) - f(x)}{f(x)} $$
+
+Questo tipo di errore dipende sia dal condizionamento del problema che
+dalla stabilità algoritmica.
+
+$$ E_{TOT} \approx E_{ALG} + E{IN} $$
+
+DIMOSTRAZIONE DA SVOLGERE
+
+** Ruolo del condizionamento e della stabilità nella risoluzione di un
+   :PROPERTIES:
+   :CUSTOM_ID: ruolo-del-condizionamento-e-della-stabilità-nella-risoluzione-di-un
+   :END:
+** problema
+   :PROPERTIES:
+   :CUSTOM_ID: problema
+   :END:
+Perché un problema ben posto dia risultati accurati è necessario che il
+problema sia ben condizionato e che si impieghi un algoritmo stabile.
+
+Se si impiega un algoritmo instabile su un problema ben condizionato si
+possono ottenere risultati non buoni (domina errore algoritmico).
+
+Se si impiega un algoritmo stabile su un problema mal condizionato si
+possono ottenere risultati non buoni (domina errore inerente).
+
+** Quando un algoritmo è stabile?
+   :PROPERTIES:
+   :CUSTOM_ID: quando-un-algoritmo-è-stabile
+   :END:
+Un algoritmo numerico è considerato stabile se l'errore algoritmico è
+dell'ordine di grandezza della precisione di macchina, ovvero se:
+
+$$ |E_{ALG}| < g(n) \cdot eps $$
+
+Dove:
+
+- $n$ indica il numero di operazioni effettuate;
+- $g(n) = cn,\ c > 0$ è detta /crescita dell'errore lineare/.
+
+Un algoritmo si dice più /stabile/ rispetto ad un altro se ha un indice
+algoritmico inferiore.
+
+** Indice algoritmico
+   :PROPERTIES:
+   :CUSTOM_ID: indice-algoritmico
+   :END:
+L'*indice algoritmico* $I_{ALG}$ è la /somma dei fattori di
+amplificazione dei singoli errori introdotti da ciascuna operazione/
+eseguita dall'algoritmo.
+
+In generale *l'indice algoritmico dipende dai dati*, ci possono essere
+algoritmi /stabili per certi valori e instabili per altri/.
+
+Ad esempio $(a + b) - c \ne a + (b - c)$, in aritmetica finita non vale
+la proprietà associativa e in generale molte equivalenze algebriche,
+come $a^2 - b^2 = (a -b) (a + b)$ .

@@ -1,0 +1,367 @@
+#+TITLE: Integrazione numerica
+#+STARTUP: latexpreview
+
+* Il problema dell'integrazione numerica
+
+Sia $f : [a, b] \to \mathbb{R}$ continua. Si vuole calcolare l'*integrale definito*:
+
+$$ I(f; a, b) = \int_{a}^{b} f(x)\ dx $$
+
+> Si considera solo il caso di intervalli di integrazione limitati e funzioni
+integrande che risultano limitate sull'intervallo di integrazione.
+
+Per una funzione regolare $y = f(x), x \in [a, b]$ definita su un intervallo limitato
+e tale che $f(x) > 0$ l'integrale definito *dal punto di vista geometrico*
+rappresenta l'area $A$ compresa tra il grafico della funzione $f(x)$, l'asse $x$ e
+le due rette verticali $x = a$ e $x = b$.
+
+* Formule di quadratura
+
+Una formula di quadratura per l'approssimazione dell'integrale definito si
+ottiene fissando un intero $n \ge 0$ e costruendo una combinazione lineare:
+
+$$ I_{n}(f) = \sum_{i = 0}^{n} c_{i} f(x_{i}) $$
+
+degli $n + 1$ valori assunti dalla funzione integranda $f$ nei punti
+$x_0,x_1,...,x_n \in [a, b]$ detti *nodi* con coefficienti fissati $c_{0}, c_{1},..., c_{n}$ detti
+*pesi*.
+
+Al variare dei pesi e dei nodi si ottengono diverse formule di quadratura.
+
+** Quando si utilizza l'integrazione numerica
+
+Quando:
+
+- l'integrale non è valutabile in forma chiusa poiché la primitiva non può essere espressa in forma chiusa.
+
+- l'espressione analitica dell'integrale è complicata o troppo costosa da calcolare
+
+- di $f(x)$ sono noti solo i valori di un insieme finito di punti, ad esempio perché ottenuti da misure sperimentali.
+
+  
+** Metodo dei coefficienti indeterminati
+
+Assegnati gli $n + 1$ nodi $x_{i}, i = 0,1,...,n,\ x_{i} \in [a, b]$. Si considera la seguente relazione:
+
+$$ \int_{a}^{b} f(x)\ dx = \sum_{i = 0}^{n} c_{i} f(x_{i}) $$
+
+I *coefficienti incogniti* $c_{i}, i = 0,1,...,n$ si determinano richiedendo
+che la formula abbia grado di precisione almeno $n$.
+
+Questa condizione porta al sistema lineare di $n + 1$ equazioni nell $n + 1$ incognite $c_{i}, i = 0,...,n$.
+
+Si ottiene una matrice di Vandermonde trasposta. Se i nodi $x_{i}$ sono distinti la soluzione esiste ed è unica.
+
+*** Considerazioni
+
+Il metodo dei coefficienti indeterminati consente, in generale, di ottenere i pesi che conducono a grado di precisione n per ogni scelta arbitraria degli n + 1 nodi $x_0, x 1 , ..., x n .
+
+Poco conveniente dato che è molto *costoso* dal punto di vista computazionale e molto *instabile*.
+
+
+** Formule di quadratura interpolatorie
+
+Questa la procedura da seguire:
+
+1. Si scelgono $n + 1$ nodi $x_i, i = 0,1,...,n, x \in [a, b]$
+   e si costruisce una tabella di valutazioni della funzione integranda
+   $f(x): (x_{i}, f(x_{i})), i = 0,1,...,n$.
+
+2. Si costruisce il polinomio di Lagrange:
+
+   $$ p_{n}(x) = \sum_{i = 0}^{n} L_{i}(x) f(x_{i})$$
+
+   interpolante le $n + 1$ coppie $f(x): (x_{i}, f(x_{i})), i = 0,1,...,n$.
+
+3. Si integra il polinomio interpolante $p_{n}$, che approssima la funzione
+   integranda $f$, tramite la ~formula di quadratura interpolatoria~:
+
+   $$ I(p_{n}) = \int_{a}^{b} p_{n} (x)\ dx = \sum_{i = 0}^{n} \underbrace{\left( \int_{a}^{b} L_{i} (x)\ dx \right)}_{=: w_{i}} f(x_{i}) $$
+
+   dove $w_{i}$ indica i *pesi* o *coefficienti* mentre gli $x_{i}, i = 0,1,...,n$ indicano i *nodi*.
+
+4. Il valore trovato $I(p_{n})$ rappresenta un'approssimazione dell'integrale
+   $I(f)$ e per valutare l'errore commesso si calcola il *resto* della formula di quadratura.
+
+   $$ R_{n}(f) := I(f) - I(p_{n}) = \int_{a}^{b} \bigl( f(x) - p_{n}(x) \bigr)\ dx = \int_{a}^{b} r_{n + 1}(x)\ dx $$
+
+   dove $r_{n + 1}(x) = f(x) - p_{n}(x)$ denota l'~errore di interpolazione~.
+
+*** Grado di precisione della formula di quadratura interpolatoria
+
+La formula di quadratura interpolatoria ha grado di precisione $v$ se integra esattamente tutti i polinomi di grado minore o oguale a $v$ ossia se:
+
+$$ R_{n}(f) = 0, \forall f \in \mathcal{P}_{v} $$
+
+Una formula di quadratura interpolatoria a $n + 1$ nodi ha grado di precisione $v$ che verifica $n \le v \le 2n + 1$.
+
+*** Scelta dei nodi nelle formule interpolatorie
+
+Differenti distribuzioni di nodi danno origine a differenti formule
+di quadratura con diverso grado di precisione.
+
+*Nodi equispaziati* -> Formule di Newton-Cotes
+
+Con i nodi $x_i = a + ih, i = 0,1,...,n$ e $h =\frac{b - a}{n}$.
+
+Grado di precisione: $\begin{cases} v = n & n + 1\ \mbox{pari} \\ v = n + 1 & n + 1\ \mbox{dispari} \end{cases}$
+
+*Nodi di Chebyshev* -> Formule Gaussiane
+
+Massimo grado di precisione: $v = 2n + 1$
+
+*** Stima dell'errore delle formule delle formule di quadratura interpolatorie
+
+TODO
+
+
+** Formule di Newton-Cotes (NC)
+
+Sono formule di quadratura interpolatorie caratterizzate da
+nodi equispaziati della forma $x_i = x_ 0 + ih, i = 0,...,n$ dove $h$
+denota la distanza tra due nodi consecutivi.
+
+*** Formule aperte e chiuse
+
+Esistono due tipologie di formule:
+
+1. *Formule di NC aperte*
+
+   Si tratta di formule che usano solo i punti interni ad $[a, b]$.
+
+   $$ x_{0} = a + h, x_{n} = b - h\ (n \ge 0) $$
+
+   $$x_{i} = x_{0} + ih, i = 1,...,n - 1$$
+
+   con $h = \frac{b - a}{n + 2}$
+   
+2. *Formule di NC chiuse* 
+
+   Si tratta di formula che usano entrambi gli estremi di
+   integrazione:
+
+   $$ x_{0} = a, x_{n} = b\ (n \ge 1) $$
+
+   $$ x_{i} = x_{0} + ih, i = 1,...,n - 1 $$
+
+   con $h = \frac{b - a}{n}$
+
+*** Pesi delle formule di Newton-Cotes
+
+Sia per le formule aperte che per quella chiuse si ha che i pesi  dipendono solo da $n$ (e non da $[a, b]$ o da $f$), quindi *possono essere calcolati a priori*. Si hanno le seguenti formule di calcolo
+dei pesi nei due casi:
+
+1. *Formule di NC aperte*
+
+   $$ \alpha_{i} = \alpha_{n - i}, i = 0,...,n,\qquad \sum_{i = 0}^{n} \alpha_{i} = n + 2$$
+   
+2. *Formule di NC chiuse*
+
+   $$ \alpha_{i} = \alpha_{n - i}, i = 0,...,n - 1, \qquad \sum_{i = 0}^{n} \alpha_{i} = n $$
+
+   I pesi assumono valori positivi fino a $n = 7$.
+
+*** Casi particolari delle formule di Newton-Cotes
+
+**** Formula del punto medio o del rettangolo
+
+Si tratta di una formula di Newton-Cotes *aperta* con $n = 0$.
+
+$$ h = \frac{b - a}{2},\quad x_{0} = a + h = \frac{a + b}{2} $$
+
+$$ \varphi_{0} (t) = 1 $$
+
+$$ \alpha_{0} = \int_{-1}^{1} \varphi_{0}(t)\ dt = \int_{-1}^{1} 1\ dt = 2 $$
+
+$$ I_{0}(f) = h \alpha_{0} f(x_0) \Rightarrow \boxed{I_{0}(f) = (b - a) f \left(\frac{a + b}{2} \right)} $$
+
+**** Formula del trapezio
+
+Si tratta di una formula di Newton-Cotes *chiusa* con $n = 1$.
+
+$$ h = b - a,\quad x_{0} = a,\quad x_1 = b $$
+
+$$ \varphi_{0}(t) = 1 - t,\quad \varphi_{1}(t) = t $$
+
+$$ \alpha_{0} = \int_{0}^{1} \varphi_{0}(t)\ dt = \int_{0}^{1} (1 - t)\ dt = \frac{1}{2} $$
+
+$$ \alpha_{1} = \int_{0}^{1} \varphi_{1}(t)\ dt = \int_{0}^{1} t\ dt = \frac{1}{2} $$
+
+$$ I_{1}(f) = h \bigl( \alpha_{0} f(x_{0}) + \alpha_{1} f(x_{1}) \bigr) \Rightarrow \boxed{ I_{1}(f) = \frac{b - a}{2} \bigr( f(a) + f(b) \bigr) $$
+
+**** Formula di Simpson
+
+Si tratta di una formula di Newton-Cotes *chiusa* con $n = 2$.
+
+$$ h = \frac{b - a}{2},\quad x_{0} = a,\quad x_1 = a + h = \frac{a + b}{2},\quad x_{2} = b $$
+
+$$ \varphi_{0}(t) = \frac{1}{2} (t - 1)(t - 2),\quad \varphi_{1}(t) = -t (t - 2),\quad \varphi_{2}(t) = \frac{1}{2} t (t - 1) $$
+
+$$ \alpha_{0} = \int_{0}^{2} \varphi_{0}(t)\ dt = \frac{1}{3}, \quad \alpha_{1} = \int_{0}^{2} \varphi_{1}(t)\ dt = \frac{4}{3},\quad \alpha_{2} = \int_{0}^{2} \varphi_{2}(t)\ dt = \frac{1}{3} $$
+
+$$ I_{2}(f) = h \bigl( \alpha_{0} f(x_{0}) + \alpha_{1} f(x_{1}) + \alpha_{2} f(x_{2}) \bigr) $$
+
+$$\Rightarrow \boxed{ I_{2}(f) = \frac{b - a}{6} \bigr( f(a) + 4 f \left(\frac{a + b}{2} \right) + f(b) \bigr) $$
+
+*** Stima dell'errore delle formule di quadratura di Newton-Cotes
+
+Sia per le formule di Newton-Cotes aperte che chiuse vale che il
+grado di precisione è dato da:
+
+Grado di precisione: $\begin{cases} v = n & n + 1\ \mbox{pari} \\ v = n + 1 & n + 1\ \mbox{dispari} \end{cases}$
+
+- I pesi delle formule di quadratura di Newton-Cotes sono
+  simmetrici rispetto al centro ($\alpha_{i} = \alpha_{n - i}$). Questo è dovuto
+  alla *simmetria della base di Lagrange su nodi simmetrici*.
+
+- Poichè si hanno *pesi simmetrici*, ~ogni formula di Newton-Cotes è esatta su ogni funzione dispari integrata su un dominio simmetrico~, ossia $[-a, a]$.
+
+  Quindi ogni formula di Newton-Cotes è esatta su ogni polinomio di grado dispari. Ne consegue che le formule di NC ottenute da un polinomio interpolante di grado $n$ pari hanno grado di esattezza $n + 1$ (il primo dispari successivo all’$n$ pari).
+   
+  > Se una funzione dispari si integra su un dominio simmetrico l’integrale definito è sempre uguale a $0$.
+
+- Sono quindi da preferirsi le formule di NC con il grado $n$ del
+  polinomio interpolante pari (come quella di Simpson), avendo
+  un grado di precisione in più rispetto a quelle con $n$ dispari
+  (come quella del trapezio).
+
+*** Formule di Newton-Cotes composite
+
+**** Perché si impiegano le formule di Newton-Cotes composite?
+
+Le formule di NC chiuse per $n \ge 8$ hanno dei pesi negativi.
+
+Ciò può dar luogo ad *instabilità numerica* delle formule,
+dovuta al verificarsi di elevati *errori di cancellazione*.
+
+Inoltre esistono delle funzioni $f$ per cui la ~successione dei
+resti~ $\{R_n (f)\}_{n}$ non converge a zero per $n \to \infty$.
+
+Le formule di quadratura interpolatorie convergono infatti solo
+nel caso in cui il polinomio interpolatore con nodi equispaziati
+converge uniformemente alla funzione.
+
+Per poter ottenere delle formule di quadratura molto precise e
+numericamente stabili non è necessario aumentare $n$.
+
+Piuttosto si ricorre a formule di Newton-Cotes composite che
+utilizzano l'interpolazione a tratti di Lagrange con polinomi di
+grado basso ($n = 1$ o $n = 2$). Ciò è possibile perché l'ampiezza del
+dominio di integrazione di ogni integrale può essere resa
+sufficientemente piccola in modo da poter applicare una formula di
+Newton-Cotes ottenendo un grado di accuratezza adeguato.
+
+**** Introduzione
+
+Si suddivide l’intervallo di integrazione (chiuso e limitato)
+$[a, b]$ in $N$ sottointervalli $[z_k, z_{k+1}],\ k = 0,...,N - 1$ di uguale
+ampiezza, determinati dalla scelta:
+
+$$ z_{k} = a + k \frac{b - a}{N},\ k = 0,...,N $$
+
+Per la proprietà di additività dell'integrale si può scrivere:
+
+$$ \int_{a}^{b} f(x)\ dx = \sum_{k = 0}^{N - 1} \int_{z_{k}}^{z_{k + 1}} f(x)\ dx $$
+
+In ciascuno dei sottointervalli $[z_k , z_{k+1}],\ k = 0,...,N - 1$ si
+applica una formula di Newton-Cotes chiusa a $n + 1$ nodi
+con $n$ basso ($n = 1$ o $n = 2$).
+
+Indicando con $I_{n}^{k} (f)$ il valore dell’integrale approssimato di
+$f$ sul k-esimo sottointervallo $[z_{k}, z_{k+1}]$, si può scrivere:
+
+$$ I(f) \approx \sum_{k = 0}^{N - 1} I_{n}^{k} (f),\quad I_{n}^{k} (f) \approx \int_{z_{k}}^{z_{k + 1}} f(x)\ dx $$
+
+**** Formula dei trapezi composita
+
+Su ogni sottointervallo $[z_{k}, z_{k + 1}]$ si usa la formula del trapezio:
+
+$$ I_{1}^{k} (f) = \frac{h}{2} \bigl( f(z_{k}) + f(z_{k + 1}) \bigr) $$
+
+dove $h = z_{k + 1} - z_{k} = \frac{b - a}{N}$.
+
+Mettendo insieme i contributi di $I_{1}^{k}(f), \forall k = 0,...,N - 1$ si ottiene:
+
+$$ \boxed{ I(f) := \frac{b - a}{2N} \left( f(a) + 2 \sum_{k = 1}^{N - 1} f(z_{k}) + f(b) \right)} $$
+
+Il calcolo approssimato di $I(f)$ richiede $N + 1$ valutazioni di $f$.
+
+**** Formula di Simpson composita
+
+Su ogni sottointervallo $[z_{k}, z_{k + 1}]$ si usa la formula di Simpson:
+
+$$ I_{2}^{k}(f) = \frac{h}{3} \left ( f(z_{k}) + 4 f \left( \frac{z_{k} + z_{k + 1}}{2} \right) + f(z_{k + 1}) \right) $$
+
+dove $h = \frac{z_{k + 1} - z_{k}}{2} = \frac{b - a}{2N}$
+
+Mettendo insieme i contributi di $I_{2}^{k}(f), \forall k = 0,...,N - 1$ si ottiene:
+
+$$ \boxed{ I(f) := \frac{b - a}{6N} \left( f(a) + 2 \sum_{k = 1}^{N - 1} f(z_{k}) + 4 \sum_{k = 0}^{N - 1} f \left(\frac{z_{k} + z_{k + 1}}{2} \right) + f(b) \right)} $$
+
+Il calcolo approssimato di $I(f)$ richiede $2N + 1$ valutazioni di $f$.
+
+**** Errore di quadratura composita
+
+$$ r^{N}_{n} (f) = \gamma_{n} \frac{(b - a)^{s + 1}}{n^{s + 1} N^{s}} \frac{f^{s}(\xi)}{s!},\ \xi \in (a, b) $$
+
+Per la formula dei trapezi:
+
+$$ r_{1}^{N}(f) = -\frac{(b - a)^{3}}{12 N^{2}} f^{2} (\xi) $$
+
+Per la formula di Simpson:
+
+$$ r_{2}^{N}(f) = - \frac{(b - a)^{5}}{2880 N^{4}} f^{4} (\xi) $$
+
+**** Convergenza delle formule di quadratura composite
+
+La successione dei resti delle formule di NC composite converge a zero
+per $N \to \infty$. Infatti, per l’ipotesi che $f \in C^{s} [a, b]$, risulta che
+$|f^{s}(x)|$ è limitata in $[a, b]$.
+
+In generale è sempre possibile determinare, fissato un $\varepsilon > 0$, un $N$
+tale che $|r_{n}^{N}(f)| \le \varepsilon$.
+
+In altri termini, fissata una tolleranza $\varepsilon > 0$, piccola a piacere, è
+sempre possibile costruire una procedura di quadratura automatica che
+determina il numero di $N$ sottointervalli in cui dividere il dominio
+di integrazione $[a, b]$ affinché l'approssimazione ottenuta con la
+formula di Newton-Cotes composita fornisca un resto $|r_{n}^{N}|$ non
+superiore alla tolleranza.
+
+*** Algoritmo di quadratura automatica
+
+Sia $\varepsilon$ una tolleranza data in input. Partendo da $N = 1$, si
+procede con successivi raddoppi del numero di sottointervalli
+(dimezzamento del passo h) fino a quando:
+
+$$ \frac{1}{2^{s} - 1} |I^{2N}(f) - I^ {N}(f)| \le \varepsilon $$
+
+L’approssimazione dell’integrale desiderata sarà data da:
+
+$I^{2N} (f)$ oppure $I^{2N}(f) + \frac{I^{2N}(f) - I^{N}(f)}{2^{s} - 1}$
+
+Per la *formula dei trapezi*:
+
+$$ \frac{1}{3} |I^{2N}(f) - I^ {N}(f)| \le \varepsilon $$
+
+Per la *formula di Simpson*:
+
+$$ \frac{1}{15} |I^{2N}(f) - I^ {N}(f)| \le \varepsilon $$
+
+L'accuratezza della soluzione dipende da quanto poco vari nel suo
+dominio la funzione $f^{s}$.
+
+**** Considerazioni
+
+Nella strategia descritta si usa una suddivisione uniforme
+dell’intervallo $[a, b]$, in cui si procede a raddoppiare il numero
+dei sottointervalli fino a che non si è raggiunta la precisione
+desiderata.
+
+*Pro*: nel calcolo di $I^{2N}(f)$ si possono sfruttare le valutazioni
+della $f$ usate per calcolare $I^{N}(f)$.
+
+*Contro*: Il numero di sottointervalli usato dalla formula di
+quadratura può diventare molto elevato per funzioni che
+presentano forti variazioni in una regione del dominio e basse
+variazioni nelle restanti regioni.

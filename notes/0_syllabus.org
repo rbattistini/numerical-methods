@@ -1,0 +1,46 @@
+#+TITLE: Syllabus del corso di Metodi Numerici
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Syllabus del corso di Metodi Numerici
+  :PROPERTIES:
+  :CUSTOM_ID: syllabus-del-corso-di-metodi-numerici
+  :END:
+
+** Metodi numerici
+   :PROPERTIES:
+   :CUSTOM_ID: metodi-numerici
+   :END:
+
+- [ ] Numeri finiti e aritmetica di macchina.
+- [ ] Norme vettoriali e matriciali.
+- [ ] Condizionamento di un problema e stabilità dell'algoritmo risolutivo.
+- [ ] Metodi numerici per l'approssimazione di zeri di equazioni non lineari.
+- [ ] Metodi numerici per la risoluzione di sistemi lineari.
+- [ ] Metodi numerici per l'approssimazione di dati e funzioni.
+- [ ] Interpolazione.
+- [ ] Calcolo di integrali definiti.
+- [ ] Accenni alla trasformata di Fourier.
+
+** Analisi
+   :PROPERTIES:
+   :CUSTOM_ID: analisi
+   :END:
+
+- [ ] Funzioni di una variabile reale: funzioni di classe $C^k$.
+- [ ] Teorema di Lagrange o del valor medio.
+- [ ] Teorema degli zeri.
+- [ ] Sviluppo in serie di Taylor e di Mc Laurin.
+- [ ] Funzioni convesse.
+- [ ] Funzioni di più variabili reali: derivate parziali, gradiente e matrice Hessiana.
+- [ ] Integrali definiti per funzioni reali di una sola variabile reale.
+- [ ] Successioni numeriche e serie.
+
+** Algebra
+   :PROPERTIES:
+   :CUSTOM_ID: algebra
+   :END:
+
+- [ ] Matrici: concetti di base (es. rango, determinante, minori,...) e operazioni tra matrici.
+- [ ] Matrici diagonalizzabili, autovalori.
+- [ ] Sistemi lineari quadrati, sovradeterminati, sottodeterminati

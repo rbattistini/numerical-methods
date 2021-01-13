@@ -1,0 +1,455 @@
+#+TITLE: Norme
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Calcolo dell'errore relativo con vettori e matrici
+  :PROPERTIES:
+  :CUSTOM_ID: calcolo-dellerrore-relativo-con-vettori-e-matrici
+  :END:
+Si impiega il concetto di /norma/, a complemento del concetto di /valore
+assoluto/ impiegato per i numeri.
+
+*Vettori*
+
+Dato il vettore
+$\underline{x} \in \mathbb{R}^n \setminus \{\underline{0}\}$
+
+Si memorizza sul calcolatore il vettore
+$\underline{\tilde{x}} = fl(\underline{x})$.
+
+L'espressione dell'errore relativo è:
+
+$$ \varepsilon_r = \frac{\| \underline{\tilde{x}} - \underline{x} 
+\|}{\|\underline{x}\|} $$
+
+*Matrici*
+
+Data la matrice $A \in \mathbb{R}^{m \times n} \setminus \{0\}$.
+
+Si memorizza sul calcolatore la matrice $\tilde{A} = fl(A)$.
+
+L'espressione dell'errore relativo è:
+
+$$ \varepsilon_r = \frac{\| \tilde{A} - A \|}{\|A\|} $$
+
+DIMOSTRAZIONE DELLE PROPRIETÀ NON RICHIESTA
+
+* Norme vettoriali
+  :PROPERTIES:
+  :CUSTOM_ID: norme-vettoriali
+  :END:
+** Definizione
+   :PROPERTIES:
+   :CUSTOM_ID: definizione
+   :END:
+Una norma vettoriale su $\mathbb{R}^n$ è una funzione:
+
+$$ \|\cdot\| : \mathbb{R}^n \to \mathbb{R}_{+} \cup \{0\} $$
+
+che associa ad ogni vettore $x \in \mathbb{R}^n$ di componenti
+$x_i,i = 1,...,n$, uno scalare in modo che valgano alcune proprietà.
+
+** Proprietà
+   :PROPERTIES:
+   :CUSTOM_ID: proprietà
+   :END:
+
+1. $\|x\| \ge 0,\ \forall x \in \mathbb{R}^n$
+2. $\|x\| = 0 \iff x = 0$
+3. $\| \alpha x \| = |\alpha| \|x\|,\ \forall \alpha \in \mathbb{R},\ \forall x \in \mathbb{R}^n$
+4. $\| x + y \| \le \|x\| + \|y\|$
+
+#+begin_quote
+  *Nota*: se non vale la proprietà $2$ si parla di /seminorma/. *Nota*:
+  la proprietà $4$ è detta /disuguaglianza triangolare/. *Nota*: dalla
+  $4$ si dimostra: $\| x - y \| \ge |\|x\| - \|y\||$.
+#+end_quote
+
+** Tipologie di norme vettoriali
+   :PROPERTIES:
+   :CUSTOM_ID: tipologie-di-norme-vettoriali
+   :END:
+Se ne impiegano solo tre:
+
+- norma $2$, /norma euclidea/
+
+$$ \|x\|_2 = \sqrt{\sum_{i = 1}^{n} x^{2}_{i}} = \sqrt{x^T x} $$
+
+- /norma infinito/, /norma del massimo/
+
+$$ \|x\|_{\infty} = \max_{i = 1,...,n} |x_i| $$
+
+- norma $1$
+
+$$ \|x\|_1 = \sum_{i = 1}^{n} x_i| $$
+
+#+begin_quote
+  *Nota*: la norma euclidea gode di un'importante proprietà:
+  $$ \|A x\|_2 = \|x\|_2,\ \forall x \in \mathbb{R}^n $$ Ovvero se si
+  moltiplica una norma $2$ per una matrice ortogonale, la norma $2$
+  rimane invariata.
+#+end_quote
+
+** Equivalenza di norme vettoriali
+   :PROPERTIES:
+   :CUSTOM_ID: equivalenza-di-norme-vettoriali
+   :END:
+Due norme vettoriali $\|\cdot\|_{+}$ e $\|\cdot\|_{*}$ si dicono
+equivalenti se esistono due costanti positive
+$A, B \in \mathbb{R}, 0 < A \le B | \forall x \in \mathbb{R}^n$:
+
+$$ A \|x\|_{+} \le \|x\|_{*} \le B \|x\|_{+} $$
+
+*In uno spazio di dimensione finita*, come $\mathbb{R}^n$ che ha
+dimensione $n$, *tutte le norme sono equivalenti*.
+
+* Teorema di equivalenza
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-equivalenza
+  :END:
+Dal concetto di equivalenza delle norme vettoriali.
+
+Permette di calcolare l'errore relativo di un dato espresso come vettore
+con una qualsiasi delle tre norme viste.
+
+Si che il calcolo di due diverse norme differisce per una costante
+moltiplicativa $c$ con $a < c < b$ della quale si ha quindi lower e
+upper bound.
+
+In generale si ha:
+
+$$ \|x\|_{\infty} \le \|x\|_2 \le \|x\|_1 $$
+
+* Norme matriciali
+  :PROPERTIES:
+  :CUSTOM_ID: norme-matriciali
+  :END:
+** Norme matriciali generalizzate
+   :PROPERTIES:
+   :CUSTOM_ID: norme-matriciali-generalizzate
+   :END:
+*** Definizione
+    :PROPERTIES:
+    :CUSTOM_ID: definizione-1
+    :END:
+Una norma matriciale generalizzata è una funzione:
+
+$$ \|\cdot\| : \mathbb{R}^{m \times n} \to \mathbb{R}_{+} \cup \{0\} $$
+
+che associa ad ogni matrice $A \in \mathbb{R}^{m \times n}$ di
+componenti $a_{i,j}, i = 1,...,m, j = 1,...,n$ uno scalare in modo che
+valgano alcune proprietà.
+
+*** Proprietà
+    :PROPERTIES:
+    :CUSTOM_ID: proprietà-1
+    :END:
+
+1. $\|A\| \ge 0,\ \forall A \in \mathbb{R}^{m \times n}$
+2. $\|A\| = 0 \iff A = 0$
+3. $\| \alpha A \| = |\alpha| \|A\|,\ \forall \alpha \in \mathbb{R},\ \forall A \in \mathbb{R}^{m \times n}$
+4. $\| A + B \| \le \|A\| + \|B\|$
+
+#+begin_quote
+  *Nota*: dalla $4$ si dimostra: $\| A - B \| \ge |\|A\| - \|B\||$.
+#+end_quote
+
+** Norme matriciali
+   :PROPERTIES:
+   :CUSTOM_ID: norme-matriciali-1
+   :END:
+*** Definizione
+    :PROPERTIES:
+    :CUSTOM_ID: definizione-2
+    :END:
+Sono norme matriciali generalizzate per le quali vale la *proprietà di
+consistenza*.
+
+Detta anche /proprietà submoltiplicativa/ vale se la seguente relazione
+è soddisfatta:
+
+$$ \|AB\| \le \|A\| \|B\| $$
+
+Vale se $A$ e $B$ sono /matrici moltiplicabili/.
+
+*** Proprietà
+    :PROPERTIES:
+    :CUSTOM_ID: proprietà-2
+    :END:
+
+1. Moltiplicando una norma matriciale generalizzata per una opportuna
+   costante, si ottiene una norma matriciale.
+
+   Per esempio, per matrici $A \in \mathbb{R}^{m \times n}$, la seguente
+   definizione fornisce una norma matriciale, detta *norma di Turing*:
+
+   $$ \|A\|_{T} = \sqrt{mn} \max_{i, j} |a_{i, j}| $$
+
+2. $\|A^r\| = \|A\|^r$
+
+3. $\|I\| \ge 1$
+
+4. $\|A^{-1}\| \ge \frac{1}{\|A\|}$
+
+*** Una norma matriciale generalizzata è sempre una norma matriciale?
+    :PROPERTIES:
+    :CUSTOM_ID: una-norma-matriciale-generalizzata-è-sempre-una-norma-matriciale
+    :END:
+No, ecco un controesempio:
+
+Definita la norma $\|A\| = \max_{i,j}\ |a_{i,j}|$ si ha che si tratta di
+una norma matriciale generalizzata.
+
+Tuttavia date:
+
+$$ A = \begin{pmatrix}
+1 & 1 \\
+0 & 1
+\end{pmatrix}, \quad
+B = \begin{pmatrix}
+1 & 1 \\
+1 & 0
+\end{pmatrix} $$
+
+Si ottiene:
+
+$$ AB = \begin{pmatrix}
+2 & 1 \\
+1 & 0
+\end{pmatrix} $$
+
+Perciò $2 = \|AB\| \ne \|A\| \|B\| = 1$, ovvero la proprietà di
+consistenza non vale e non si tratta perciò di una norma matriciale.
+
+** Norme matriciali indotte
+   :PROPERTIES:
+   :CUSTOM_ID: norme-matriciali-indotte
+   :END:
+È la norma che si impiega nel calcolo delle norme matriciali.
+
+Si tratta di norme matriciali indotte dalla norma vettoriale di tipo
+$1$, $2$ o $\infty$.
+
+*** Compatibilità di una norma matriciale
+    :PROPERTIES:
+    :CUSTOM_ID: compatibilità-di-una-norma-matriciale
+    :END:
+Una norma matriciale $\|\cdot\|_{M}$ si dice *compatibile* con una norma
+vettoriale $\|\cdot\|_{V}$ se:
+
+$$ \|A_x\| \le \|A\|_{M} \|x\|_v, \quad \forall x \in \mathbb{R}^n \wedge A 
+\in \mathbb{R}^{m \times n} $$
+
+*** Norma matriciale indotta da una generica norma vettoriale
+    :PROPERTIES:
+    :CUSTOM_ID: norma-matriciale-indotta-da-una-generica-norma-vettoriale
+    :END:
+**** Definizione con $sup$
+     :PROPERTIES:
+     :CUSTOM_ID: definizione-con-sup
+     :END:
+Si chiama norma matriciale $\|\cdot\|_{N}$ naturale o indotta da una
+norma vettoriale $\|\cdot\|_{v}$ la più piccola norma matriciale
+compatibile con $\|\cdot\|_{v}$, ossia la più piccola costante positiva
+$C$ per cui vale $\|Ax\|_{v} \le C \|x\|_{v}$.
+
+Si ha la seguente definizione formale di $\|\cdot\|_{N}$:
+
+$$ \|A\|_{N} = \sup_{\|x\|_v \ne 0} \frac{\|Ax\|_v}{\|x\|_v} = 
+\max_{\|y\|_v = 1} \|Ay\|_v $$
+
+**** Definizione con Weierstrass
+     :PROPERTIES:
+     :CUSTOM_ID: definizione-con-weierstrass
+     :END:
+Si tratta di un'ulteriore approccio al concetto di norma matriciale
+indotta da una norma vettoriale sfruttando il concetto di /palla
+unitaria/ e il /teorema di Weierstrass/.
+
+Sia $\|\cdot\|_{v}$ una norma vettoriale su $\mathbb{R}^n$ e
+$A \in \mathbb{R}^{m \times n}$.
+
+Se si considera la palla unitaria $S$, ovvero l'insieme di tutti i
+vettori formati da $n$ numeri reali la cui norma è unitaria, si ha un
+insieme /chiuso/ e /limitato/.
+
+$$ S = \{ x \in \mathbb{R}^{n} : \|x\|_{v} = 1 \} $$
+
+Inoltre dato che la norma è una funzione /continua/, sono soddisfatte le
+ipotesi del teorema di Weierstrass. Perciò esiste:
+
+$$ \max_{x \in S} \|A\|_{v} $$
+
+L'applicazione che associa $A$ a questo massimo è una norma, ed è
+proprio la norma matriciale indotta dalla norma vettoriale:
+
+$$ \|A\|_{N} = \max_{\|x\|_v = 1} \|Ax\|_v $$
+
+#+begin_quote
+  *Nota*: la definizione di palla unitaria fornita è generica, ad
+  esempio la palla unitaria relativa alla norma $2$ è definita come:
+  $$ S = \{ x \in \mathbb{R}^2 : \sqrt{x_{1}^{2} + x_{1}^{2}} = 1 \} $$
+  Dal punto di vista grafico-geometrico si tratta di una circonferenza
+  centrata nell'origine di raggio unitario se ci si trova in
+  $\mathbb{R}^2$. Se si definisce la norma $2$ su $\mathbb{R}^3$ si
+  ottiene una sfera centrata nell'origine di raggio unitario. Da qui la
+  definizione di "palla unitaria".
+#+end_quote
+
+**** Proprietà & Teoremi
+     :PROPERTIES:
+     :CUSTOM_ID: proprietà-teoremi
+     :END:
+P: Se $\|\cdot\|$ è una norma indotta, allora $\|I\| = 1$.
+
+T: Per ogni norma matriciale indotta vale: $\rho(A) \le \|A|\|$
+
+T: Sia $\|\cdot\|$ una norma matriciale indotta tale che $\|A\| < 1$.
+Allora $I + A$ è /non singolare/ e:
+
+$$ \| (I + A)^{-1} \| \le \frac{1}{1 - \|A\|} $$
+
+#+begin_quote
+  *Nota*: i due teoremi /non/ sono stati svolti.
+#+end_quote
+
+**** Raggio spettrale
+     :PROPERTIES:
+     :CUSTOM_ID: raggio-spettrale
+     :END:
+Si dice raggio spettrale di una matrice $A \in \mathbb{R}^{n \times n}$,
+il massimo dei moduli degli autovalori di $A$, denotato con:
+
+$$ \rho(A) = \max_{i = 1,...,n} | \lambda_i (A) | $$
+
+#+begin_quote
+  *Nota*: gli autovalori di $A$ possono anche essere complessi
+  nonostante $A$ sia reale.
+#+end_quote
+
+*** Norme matriciali di tipo $1$, $2$ e infinito
+    :PROPERTIES:
+    :CUSTOM_ID: norme-matriciali-di-tipo-1-2-e-infinito
+    :END:
+
+- norma $2$, /norma spettrale/
+
+$$ \|A\|_2 = \sqrt{\rho (A^T A)} $$
+
+- /norma infinito/ o /norma del massimo/
+
+$$ \|A\|_{\infty} = \max_{i = 1,...,m} \sum_{j = 1}^{n} \ a_{i,j}| $$
+
+- norma $1$
+
+$$ \|A\|_1 = \max_{j = 1,...,n} \sum_{i = 1}^{m} |a_{i,j}| $$
+
+#+begin_quote
+  *Nota*: $\rho(A^T A)$ denota il raggio spettrale, ovvero l'autovalore
+  massimo in modulo, della matrice $A^T A$.
+#+end_quote
+
+#+begin_quote
+  *Nota*: la norma infinito di una matrice si ottiene calcolando il
+  massimo tra le $m$ quantità che si ottengono sommando tutti gli
+  elementi della matrice in valore assoluto riga per riga. (dove $m$ è
+  il numero di righe).
+#+end_quote
+
+#+begin_quote
+  *Nota*: la norma $1$ di una matrice si ottiene calcolando il massimo
+  tra le $n$ quantità che si ottengono sommando tutti gli elementi della
+  matrice in valore assoluto colonna per colonna. (dove $n$ è il numero
+  di colonne).
+#+end_quote
+
+**** Proprietà
+     :PROPERTIES:
+     :CUSTOM_ID: proprietà-3
+     :END:
+
+1. Poiché $A^T A$ è /simmetrica/ e /semidefinita positiva/,
+   $\rho(A^T A)$ non è altro che il suo autovalore massimo.
+
+2. Se $A \in \mathbb{R}^{n \times n}$ è *simmetrica*, allora
+   $\|A\|_{1} = \|A\|_{\infty}$.
+
+#+begin_quote
+  *Nota*: simmetrica significa che tutti i suoi autovalori sono reali,
+  semidefinita positiva significa che tutti i suoi autovalori sono non
+  negativi.
+#+end_quote
+
+#+begin_quote
+  *Nota*: grazie alla $1$, non è necessaria calcolare modulo e valore
+  assoluto per trovare il raggio spettrale.
+#+end_quote
+
+* Teorema di equivalenza
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-equivalenza-1
+  :END:
+Sia $A \in \mathbb{R}^{n \times n}$. Per le norme matriciali indotte
+dalla norma $2$, $1$ e infinito vale la seguente relazione:
+
+$$ \|A\|_{2} \le \sqrt{\|A\|_{1} \|A\|_{\infty}} $$
+
+#+begin_quote
+  *Nota*: il calcolo di $\|A\|_{2}$ è più costoso in termini
+  computazionali di $\|A\|_{\infty}$ o $\|A\|_{1}$, perciò si possono
+  sfruttare i risultati del teorema di equivalenza per disporre solo di
+  una stima di $\|A\|_{2}$. La norma $2$ si calcola direttamente solo
+  quando è utile sfruttare alcune sue proprietà.
+#+end_quote
+
+#+begin_quote
+  *Nota*: il teorema si può estendere anche a matrici rettangolari.
+#+end_quote
+
+* Numero di condizionamento in norma $2$ di una matrice
+  :PROPERTIES:
+  :CUSTOM_ID: numero-di-condizionamento-in-norma-2-di-una-matrice
+  :END:
+** Definizione
+   :PROPERTIES:
+   :CUSTOM_ID: definizione-3
+   :END:
+Sia $A \in \mathbb{R}^{m \times n}$ non singolare, il *numero di
+condizionamento in norma $2$* di una matrice è un numero reale pari a:
+
+$$ K_2(A) := \frac{\sigma_{1}(A)}{\sigma_{n}(A)} $$
+
+Dove per $\sigma_{1}(A)$ e $\sigma_{n}(A)$ si deve far riferimento al
+seguente ragionamento:
+
+1. Si definisce $\sigma_i(A) = \sqrt{\lambda_i(A^T A)},\ i = 1,...,n$.
+2. Se si ordinano gli $n$ termini $\sigma$ in ordine decrescente si
+   ottengono:
+
+$$ \sigma_1(A) = \underbrace{\sqrt{\max_{i = 1,...,m} \lambda_i(A^T 
+A)}}_{\lambda_{max}(A^T A)}, \quad \sigma_n(A) = \underbrace{\sqrt{\min_{i 
+= 1,...,m} \lambda_i(A^T A)}}_{\lambda_{min}(A^T A)} $$
+
+** Proprietà
+   :PROPERTIES:
+   :CUSTOM_ID: proprietà-4
+   :END:
+
+1. $K_2 (A^T A) = (K_{2}(A))^2$
+2. Se $A \in \mathbb{R}^{n \times n}$ (quadrata) è /non singolare/,
+   allora: $$ K_2(A) = \|A\|_{2} \|A^{-1}\|_{2} $$
+3. Se $A \in \mathbb{R}^{n \times n}$ è /simmetrica/, allora:
+   $$ K_2(A) = \frac{\max_{i = 1,...,n} |\lambda_i(A)|}{\min_{i = 1,...,n} |\lambda_i(A)|} $$
+
+DIMOSTRAZIONI DA VEDERE SU INTEGRAZIONI /NON/ SU SLIDE (manca proprietà
+di decomposizione per valori singolari)
+
+* Riepilogo
+  :PROPERTIES:
+  :CUSTOM_ID: riepilogo
+  :END:
+|                | Norma vettoriale                              | Norma matriciale                                                    |
+|----------------+-----------------------------------------------+---------------------------------------------------------------------|
+| Norma $1$      | $\|x\|_1 = \sum_{i = 1}^{n} \| x_i\|$         | $\|x\|_2 = \sqrt{\sum_{i = 1}^{n} x^{2}_{i}} = \sqrt{x^T x}$        |
+| Norma $2$      | $\|x\|_2 = \sqrt{x^T x}$                      | $\|A\|_2 = \sqrt{\rho (A^T A)}$                                     |
+| Norma $\infty$ | $\|x\|_{\infty} = \max_{i = 1,...,n} \|x_i\|$ | $\|A\|_{\infty} = \max_{i = 1,...,m} \sum_{j = 1}^{n} \| a_{i,j}\|$ |

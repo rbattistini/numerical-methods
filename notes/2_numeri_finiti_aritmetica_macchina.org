@@ -1,0 +1,931 @@
+#+TITLE: I numeri finiti e l'aritmetica macchina
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Cosa sono i numeri finiti o numeri macchina?
+  :PROPERTIES:
+  :CUSTOM_ID: cosa-sono-i-numeri-finiti-o-numeri-macchina
+  :END:
+Scelto il sistema di rappresentazione dei numeri reali, bisogna tenere
+conto che si ha a disposizione solo un *numero finito di bit*.
+
+Perciò /solo un sottoinsieme finito dei numeri reali è rappresentabile
+in un calcolatore/. Tale sottoinsieme è detto *insieme dei numeri di
+macchina* e si denota con:
+
+$$F(\beta,t,L,U) := \{ x \in \mathbb{R} \setminus \{0\} : x = \pm (\sum_{i=1}^t 
+d_i\beta^{-i}) \beta^p \} \cup \{0\}$$
+
+Dove:
+
+- $\beta$ è la *base*;
+- $t$ è il numero di cifre della *mantissa*;
+- $p$ è l'*esponente*.
+- $L$ e $U$ sono limiti inferiori e superiori definiti sull'esponente;
+
+*Vincoli imposti dalla memoria a disposizione* Si ha che:
+$L \le p \le U$. Si ha un numero finito di cifre alla mantissa pari a
+$t$. Non si possono rappresentare numeri con mantissa superiore a $t$.
+
+** Qual'è l'insieme dei numeri di macchina impiegati da MATLAB?
+   :PROPERTIES:
+   :CUSTOM_ID: qualè-linsieme-dei-numeri-di-macchina-impiegati-da-matlab
+   :END:
+#+caption: Rappresentazione floating-point singola precisione standard
+IEEE 754
+[[./attachments/ieee754-single-precision.jpg]]
+
+Si ha $F(2, 53, -1021, +1024)$. Quindi:
+
+- Matlab lavora in base $2$ e visualizza i risultati in base $10$;
+- Matlab lavora /in doppia precisione/ ($64$ bit), in particolare:
+
+  - la mantissa occupa $52$ bit (la prima è sempre $1$, non memorizzata)
+  - il segno occupa $1$ bit
+  - l'esponente occupa $11$ bit
+
+- $L = -1021, \quad U = +1024$, ci sono $2048$ configurazioni
+  rappresentabili dell'esponente, una metà è impiegata per i numeri
+  negativi, l'altra per i numeri positivi.
+- $realmax = 2^{1024}, \quad realmin = 2^{-1022}$
+- $eps = 2^{-52}$
+
+--------------
+
+* Come possono essere rappresentati i numeri reali in un calcolatore?
+  :PROPERTIES:
+  :CUSTOM_ID: come-possono-essere-rappresentati-i-numeri-reali-in-un-calcolatore
+  :END:
+In generale un numero reale rappresentato in un sistema posizionale in
+base $\beta$ è identificato dalla seguente formula:
+
+$$\pm(a_n...a_0.b_1b_2...)_\beta = \pm \left( \sum_{k=0}^n a_k\beta^k + 
+\sum_{k=1}^{+\infty} b_k\beta^-k\right)$$
+
+Esempio di rappresentazione di un numero reale in base $10$:
+
+$$ 523.437 = 3 \times 10^{0} + 2 \times 10^{1} + 5 \times 10^{2} + 4 \times 
+10^{-1} + 3 \times 10^{-2} + 7 \times 10^{-3} $$
+
+Si può ricorrere a due tipi di rappresentazione:
+
+- *Rappresentazione in virgola fissa*
+
+  - Si sceglie un numero di bit (32 o 64) per memorizzare il numero
+    reale;
+  - si usa un bit per rappresentare il segno del numero;
+  - i rimanenti bit sono suddivisi in due parti:
+
+    - una per memorizzare la parte intera
+    - una per la parte frazionaria, separate dalla virgola che assume
+      una posizione fissa;
+
+#+begin_quote
+  *Nota*: generalmente questa rappresentazione è poco adatta a
+  rappresentare numeri molto grandi o molto piccoli.
+#+end_quote
+
+- *Rappresentazione in virgola mobile (IEEE-745 floating point)*
+
+  - il valore di un numero è rappresentato nel seguente modo:
+    =sign2^{exponent}  mantissa=
+  - a singola precisione (32 bit) o a doppia precisione (64), nel primo
+    caso:
+
+    - si usa un bit per rappresentare il segno del numero;
+    - si usano $8$ bit per rappresentare l'esponente;
+    - si usano i restanti $23$ bit per rappresentare la mantissa;
+
+#+begin_quote
+  *Nota*: La IEEE-745, a differenza della rappresentazione in virgola
+  fissa, permette di rappresentare in modo compatto sia numeri molto
+  grandi che molto piccoli, positivi o negativi.
+#+end_quote
+
+--------------
+
+* Come sono rappresentati i numeri reali nel calcolatore?
+  :PROPERTIES:
+  :CUSTOM_ID: come-sono-rappresentati-i-numeri-reali-nel-calcolatore
+  :END:
+Si impiega il *sistema posizionale a virgola mobile normalizzata*.
+
+La seguente formula è la /rappresentazione normalizzata/ in base $\beta$
+di un numero x:
+
+$$ x = (\pm 0.d_1d_2d_3...)_{\beta} \beta^p = \pm \beta^p \sum_{i\ge1} 
+(d_i)_{\beta} \beta^{-i} $$
+
+dove:
+
+- $x \in \mathcal{R} \setminus \{0\}$,
+- $\beta \ge 2$ rappresenta la /base/
+- $p \in \Z$ è detto /esponente/,
+- $\{d_i \}_{i = 1,2,...}$ con $0 \le d_i \le \beta -1, d_1 \ne 0$,
+  successione che forma le cifre della mantissa (o cifre della
+  rappresentazione)
+- $m := \sum_{i \ge 1} d_i \beta^{-i}$ è detta /mantissa/, si ha che
+  $\beta^{-1} \le m < 1$
+
+Dato il numero reale $x = \pm 0.(d_1 d_2 d_3...)\beta^p$ il numero
+macchina corrispondente si denota con:
+
+$$ \tilde{x} = fl(x) = \pm 0.(d_1 d_2 d_3 ...d_t)\beta^p, \quad L \le p \le U $$
+
+#+begin_quote
+  *Esempio*: $0.100...0 = 1 \cdot \beta^{-1}$ si costruisce il numero
+  moltiplicando per potenze descrescenti. La sommatoria è una serie
+  numerica, in particolare si tratta di una /serie geometrica/ con
+  ragione $a < 1$ e perciò convergente.
+#+end_quote
+
+#+begin_quote
+  *Esempio*: dato $0.9999...9$ con $\beta = 10$ si ha che:
+  $$ 0.999...9 = 9 \beta^{-1} + ... + 9 \beta^{-i} = 9 \sum^{+ \infty}_{i = 1} 
+  10^{-i}$$ Da questa relazione si ottiene, considerando che si tratta
+  di una serie geometrica convergente, che:
+  $$ 9 \sum^{+ \infty}_{i = 1} 10^{-i} = \frac{\frac{1}{10}}{1 - \frac{1}{10}} =
+  9 \frac{\frac{1}{10}}{\frac{9}{10}} = 1 $$ Si ha perciò che il numero
+  $1$ può essere rappresentato in più modi.
+#+end_quote
+
+#+begin_quote
+  *Nota*: in generale si ha che, fissata una base $\beta$ ad un numero
+  reale $x$ possono corrispondere più rappresentazioni normalizzate in
+  base $\beta$. Ovvero /non si può rappresentare un numero reale in modo
+  univoco tramite rappresentazione normalizzata/.
+#+end_quote
+
+#+begin_quote
+  *Nota:* non tutti i numeri reali sono rappresentabili in
+  $\mathcal{F}$. Esistono tre possibili ragioni: - p < L (esponente
+  troppo piccolo) - underflow - p > U (esponente troppo grande) -
+  overflow - un numero di cifre di mantissa superiore a $t$ -
+  approssimazione
+#+end_quote
+
+--------------
+
+* Quali sono le conseguenze della rappresentazione di numeri reali in
+numeri
+  :PROPERTIES:
+  :CUSTOM_ID: quali-sono-le-conseguenze-della-rappresentazione-di-numeri-reali-in-numeri
+  :END:
+* macchina?
+  :PROPERTIES:
+  :CUSTOM_ID: macchina
+  :END:
+Dato che non tutti i numeri reali sono rappresentabili in $F$, si hanno
+/errori di rappresentazione/ di diversa tipologia:
+
+- *errori di underflow*
+
+  - si ha quando $|x|$ è minore del più piccolo numero rappresentabile
+    in $F$
+  - positivi più piccoli del più piccolo positivo;
+  - negativi più grandi del più grande negativo;
+  - a seconda del contesto il numero denormalizzato viene approssimato
+    con il più piccolo positivo, il più grande negativo o con zero.
+
+- *errori di overflow*
+
+  - si ha quando $|x|$ è maggiore del più grande numero rappresentabile
+    in $F$;
+  - positivi più grandi del più grande positivo;
+  - negativi più piccoli del più piccolo negativo;
+  - a seconda del contesto il numero viene approssimato con il più
+    grande positivo, il più piccolo negativo o con infinito.
+
+- *errori di approssimazione*
+
+  - arrotondamento e troncamento per approssimare numeri non
+    rappresentabili
+
+- *fenomeno della cancellazione numerica*
+
+  - si ha ad esempio con la sottrazione di numeri molto vicini tra loro
+    (i.e. $1.234-1.264 = -3.000000000000003e-02$)
+
+- *operazioni impossibili*
+
+  - divisione per zero o radice quadrata di un numero negativo danno
+    $NaN$ (Not a Number) ad esempio,
+
+- *fenomeno dell'assorbimento*
+
+  - si ha con la somma algebrica di numeri con ordine di grandezza molto
+    diversi (i.e. $10^{15} + 1 = 10^{15}$)
+
+** Come sono rappresentati NaN, zero e l'infinito?
+   :PROPERTIES:
+   :CUSTOM_ID: come-sono-rappresentati-nan-zero-e-linfinito
+   :END:
+Si impiegano delle configurazioni speciali.
+
+- Mantissa con tutte cifre zero ed esponente $L$ -> $0$
+- Mantissa con tutte cifre zero ed esponente $U$ -> $\infty$
+- Mantissa con tutte cifre diverse da zero ed esponente $L$ -> $NaN$
+- Mantissa con tutte cifre diverse da zero ed esponente $U$ -> numeri
+  denormalizzati
+
+#+begin_quote
+  *Nota:* /NaN/e $\infty$ nel calcolo in virgola mobile non sono la
+  stessa cosa, anche se rappresentano entrambi un caso particolare nella
+  rappresentazione dei numeri reali e nelle operazioni.
+#+end_quote
+
+#+begin_quote
+  Nello standard per il calcolo in virgola mobile IEEE 754 i NaN sono
+  rappresentati con il campo dell'esponenziale riempito di "1" e un
+  numero diverso da zero nel campo della mantissa. Esempio:
+  x11111111axxxxxxxxxxxxxxxxxxxxxx - Per il primo bit (che rappresenta
+  il segno) non è previsto il valore. - Ogni NaN ha un valore diverso da
+  qualunque altro numero, anche da un NaN la cui rappresentazione è
+  identica. - Si può verificare se il contenuto di una variabile è un
+  NaN confrontandola con se stessa (se $x\ne x$ allora si ha un $NaN$)
+#+end_quote
+
+#+begin_quote
+  *Nota:* Un /numero denormalizzato/ o /subnormalizzato/ è un numero che
+  si trova nell'intervallo tra lo zero e il più piccolo numero
+  normalizzato rappresentabile, si tratta dell'intervallo
+  $[\beta^{L - 1}, \beta^{L} (1 - \beta^{-t})]$ al quale corrisponde il
+  range di mantisse $[\beta^{-1},(1 - \beta^{-t}]$, ovvero
+  $[0.1,0(\beta - 1)...]$. Ottenere come risultato un numero
+  denormalizzato è detto /gradual underflow/ poiché porta ad una
+  graduale perdita di precisione.
+#+end_quote
+
+#+caption: I numeri denormalizzati attorno all'intorno positivo di 0
+sono in blu, quelli normalizzati in rosso.
+[[./attachments/denormalized.png]]
+
+--------------
+
+#+caption: rappresentazione dell'underflow e dell'overflow in relazione
+ai numeri macchina
+[[./attachments/under-over-flow.png]]
+
+Inoltre fissati un minimo e un massimo per l'insieme dei positivi e per
+i negativi si ha che tra un minimo e il rispettivo massimo si hanno solo
+i numeri macchina (insieme finito) compresi tra il minimo e il massimo,
+non tutti i numeri reali compresi tra il minimo e il massimo (insieme
+infinito).
+
+Ciò determina gli errori di approssimazione, /di cui overflow e
+underflow sono casi particolari/.
+
+--------------
+
+* In che modo si mitigano gli errori di approssimazione?
+  :PROPERTIES:
+  :CUSTOM_ID: in-che-modo-si-mitigano-gli-errori-di-approssimazione
+  :END:
+Ricorrendo all'approssimazione della mantissa in modo da sostituire $x$
+con il numero reale di macchina più vicino $fl(x)$.
+
+Ce ne sono di due tipi:
+
+- *approssimazione per troncamento*, $fl_T(x)$ Dato:
+  $$ x = \pm 0.(d_1 d_2 ... d_t ...) \beta^p = \pm \right( \sum_{i \ge 1} d_i 
+  \beta^{-i} \left) \beta^p $$ Si definisce:
+  $$ fl_T(x) = \pm 0.(d_1 d_2 ... d_t ...) \beta^p = \pm \right( \sum_{i = 
+  1}^{t} d_i \beta^{-i} \left) \beta^p $$ In altri termini si definisce
+  il massimo numero di cifre di mantissa $t$ da impiegare per
+  rappresentare il numero (più gradne è $t$ maggiore è l'accuratezza)
+
+- *approssimazione per arrotondamento*, $fl_A(x)$, solo se $\beta$ è
+  pari Dato:
+  $$ x = \pm 0.(d_1 d_2 ... d_t ...) \beta^p = \pm \right( \sum_{i \ge 1} d_i 
+  \beta^{-i} \left) \beta^p $$ Si definisce:
+  $$ fl_A(x) = \pm fl_T \left( \left( \sum_{i = 1}^{t + 1} d_i \beta^{-i} + 
+  \frac{1}{2} \beta^{-t} \right) \beta^p \right) $$ Ci sono due casi
+  possibili:
+
+  - se la cifra $t+1 < \frac{\beta}{2}$ allora: $$ fl_T(x) = fl_A(x) $$
+  - se la cifra $t+1 > \frac{\beta}{2}$ allora:
+    $$ fl_A(x) = fl_T(x) + \beta^{p - t} $$
+
+#+begin_quote
+  *Nota:* generalmente conviene arrotondare piuttosto che troncare, in
+  quanto si ha un risultato piò accurato (manca dimostrazione formale)
+#+end_quote
+
+#+begin_quote
+  *Nota:* se un numero reale è esattamente equidistante da due numeri
+  finiti consecutivi si applica una regola speciale d'approssimazione
+  per arrotondamento detta *rounding to even*. Il numero reale in questo
+  caso si approssima al numero macchina pari (che ha come ultima cifra
+  di mantissa un numero pari) Esempio: tra 0.18 e 0.19 si ha 0.185, in
+  questo caso si applica /rounding to even/ e si ottiene 0.18.
+#+end_quote
+
+--------------
+
+* Che cos'è lo spacing?
+  :PROPERTIES:
+  :CUSTOM_ID: che-cosè-lo-spacing
+  :END:
+Lo spacing è la distanza tra due numeri consecutivi di $$\mathcal{F}$$
+appartenenti a $[\beta^p, \beta^{p + 1}]$.
+
+** Formula dello spacing
+   :PROPERTIES:
+   :CUSTOM_ID: formula-dello-spacing
+   :END:
+Sapendo che $\beta^p = 0.1 \beta^{p + 1}$ si ottiene la distanza tra due
+numeri macchina scelti arbitrariamente. La *formula dello spacing* tra
+$\beta^p$ e $\beta^{p + 1}$ è:
+
+$$ s := \beta^{p + 1 -t} $$
+
+** Precisione di macchina
+   :PROPERTIES:
+   :CUSTOM_ID: precisione-di-macchina
+   :END:
+L'*epsilon di macchina* è *il più piccolo numero diverso da zero che
+sommato all'unità dà un risultato diverso da 1* , appartenente ad un
+insieme $F$ di numeri in virgola mobile.
+
+In altri termini $eps$ è lo spacing tra $\beta^0$ e $\beta^1$, con
+$p = 0$, ovvero la distanza tra due numeri consecutivi di
+$$\mathcal{F}$$ appartenenti a $[\beta^p, \beta^{p + 1}]$, con $p = 0$.
+
+Quindi:
+
+$$ eps = \beta^{1 - t} $$
+
+Si ha che la *roundoff unit* è pari a metà dell'epsilon di macchina,
+ovvero:
+
+$$ u := \frac{1}{2} \beta^1 - t} $$
+
+L'epsilon di macchina permette di definire un /limite superiore
+all'errore relativo dovuto al troncamento/ nell'aritmetica
+floating-point. Permette quindi di effettuare una stima dell'errore
+relativo di troncamento.
+
+L'unità di arrotondamento (roundoff unit) permette di definire un
+/limite superiore all'errore relativo dovuto all'arrotondamento/
+nell'aritmetica floating point. Permette quindi di effettuare una stima
+dell'errore relativo di arrotondamento.
+
+*** Da dove viene il nome unità di arrotondamento?
+    :PROPERTIES:
+    :CUSTOM_ID: da-dove-viene-il-nome-unità-di-arrotondamento
+    :END:
+Il nome /unità di arrotondamento/ deriva dall'indicare l'errore relativo
+massimo che si può verificare quando si arrotonda ad $1$.
+
+Preso $x = 1 + a,\ con\ 0 < a < \frac{1}{2} \beta^{1 - t} = u$
+
+Se si arrotonda $x$ si ottiene l'unità dato che $a < u$.
+
+Perciò si ha:
+
+$$ \frac{|x - fl_A(x)|}{|x|} = \frac{a}{1 + a} < \frac{u}{1 + a} < u $$
+
+Perciò la roundoff unit ha questo nome perché indica l'errore relativo
+massimo che può verificarsi quando si arrotonda al valore dell'unità
+(ossia a 1).
+
+** Distribuzione dei numeri macchina
+   :PROPERTIES:
+   :CUSTOM_ID: distribuzione-dei-numeri-macchina
+   :END:
+
+- i numeri di $\mathbb{F}$ non sono distribuiti uniformemente sull'asse
+  reale.
+- la distribuzione è uniforme tra due successive potenze di $\beta$, c'è
+  la stessa quantità di numeri macchina tra due potenze, in un segmento,
+  ma questa spaziatura non è costante tra un segmento e quelli
+  adiacenti.
+- la densità dei numeri macchina descresce con l'aumentare del valore
+  assoluto del numero, ovvero procedendo per segmenti di potenze
+  crescenti si ha che i numeri macchina sono più sparsi, ovvero lo
+  spacing aumenta.
+- tutti i numeri reali compresi tra due numeri consecutivi finiti sono
+  approssimati da uno dei due
+- nel caso di $\beta = 2$ i numeri rappresentabili esattamente in
+  $\mathbb{F}$ appartengono all'insieme dei numeri razionali della forma
+  $\frac{q}{2^n}$. Ciò proviene dal seguente:
+
+*Teorema*: Un numero razionale scritto come frazione ridotta ai minimi
+termini ha una rappresentazione finita in base $\beta$ se e solo se i
+fattori primi del denominatore dividono $\beta$.
+
+DIMOSTRAZIONE NON RICHIESTA
+
+#+begin_quote
+  *Nota*: significa che convertendo un numero dalla base $10$ alla base
+  $2$ non è detto che si ottenga un numero che mantenga un numero
+  limitato di cifre di mantissa.
+#+end_quote
+
+** Spacing e tolleranza
+   :PROPERTIES:
+   :CUSTOM_ID: spacing-e-tolleranza
+   :END:
+Poiché l'errore relativo massimo che può verificarsi è pari a $eps$ (se
+$fl = fl_T$) o $u$ (se $fl = fl_A$), su un calcolatore che utilizza una
+particolare rappresentazione floating point non ha senso cercare di
+determinare approssimazioni di numeri reali con precisione relativa
+inferiore a $eps$ se si impiega $fl_T$ o $u$ se si impiega $fl_A$.
+
+Perciò deve valere:
+
+$$ tol \ge \frac{|\bar{x} - x}{|x|} $$
+
+Dove $\bar{x} in \mathbb{F}$ è l'approssimazione di $x$ da cercare.
+
+* Come si possono definire gli errori di approssimazione?
+  :PROPERTIES:
+  :CUSTOM_ID: come-si-possono-definire-gli-errori-di-approssimazione
+  :END:
+** Errore assoluto
+   :PROPERTIES:
+   :CUSTOM_ID: errore-assoluto
+   :END:
+$$ E_{ass} := |fl(x) - x| $$
+
+** Errore relativo
+   :PROPERTIES:
+   :CUSTOM_ID: errore-relativo
+   :END:
+$$ E_{rel} := \left| \frac{fl(x) - x}{x} \right| $$
+
+#+begin_quote
+  *Nota*: l'errore assoluto è influenzato dall'ordine di grandezza di
+  $x$ mentre l'errore relativo no.
+#+end_quote
+
+#+begin_quote
+  *Nota*: l'errore relativo non dipende dall'esponente di $x$ ma dalla
+  sua mantissa, dà indicazioni sull'approssimazione operata sulla
+  mantissa.
+#+end_quote
+
+** Errore assoluto di rappresentazione
+   :PROPERTIES:
+   :CUSTOM_ID: errore-assoluto-di-rappresentazione
+   :END:
+Daro che la mantissa è sempre minore di $1$, si ha che:
+
+$$ E_{ass} < \beta^{p - t} $$
+
+** Errore relativo di rappresentazione
+   :PROPERTIES:
+   :CUSTOM_ID: errore-relativo-di-rappresentazione
+   :END:
+Dato che la mantissa è sempre maggiore o uguale a $\beta^{-1}$ allora
+$|x| \ge \beta^{p - 1}$
+
+$$ E_{rel} := \left| \frac{fl_T(x) - x}{x} \right| $$
+
+#+begin_quote
+  *Nota*: se
+  $|x| \ge \beta^{p - 1} \Rightarrow \frac{1}{|x|} \le \frac{1}{\beta^{p - 1}}$.
+#+end_quote
+
+** Errore assoluto di arrotondamento
+   :PROPERTIES:
+   :CUSTOM_ID: errore-assoluto-di-arrotondamento
+   :END:
+$$ E_{ass} := | fl_A(x) - x| \le \frac{1}{2} \beta^{p - t} $$
+
+** Errore relativo di arrotondamento
+   :PROPERTIES:
+   :CUSTOM_ID: errore-relativo-di-arrotondamento
+   :END:
+Dato che la mantissa è sempre maggiore o uguale a $\beta^{-1}$ allora
+$|x| \ge \beta^{p - 1}$
+
+$$ E_{rel} := \left| \frac{fl_A(x) - x}{x} \right| \le \frac{1}{2} \frac{\beta{p 
+- t}{\beta^{p - 1}}} = u $$
+
+#+begin_quote
+  *Nota*: da queste stime si dimostra che l'approssimazione per
+  arrotondamento è migliore di quella per troncamento
+#+end_quote
+
+** Espressione esplicita di $fl_a(x)$
+   :PROPERTIES:
+   :CUSTOM_ID: espressione-esplicita-di-fl_ax
+   :END:
+$$ fl_A(x) = x(1 + \varpesilon_x), \quad |\varepsilon_x| \le u $$
+
+Permette di scrivere gli errori commessi nello svolgimento delle
+operazioni, esprimendo il numero macchina in termini del numero reale e
+dell'errore relativo.
+
+* Proprietà dell'insieme dei numeri finiti.
+  :PROPERTIES:
+  :CUSTOM_ID: proprietà-dellinsieme-dei-numeri-finiti.
+  :END:
+** Come trovare il più piccolo e il più grande numero positivo
+rappresentabile
+   :PROPERTIES:
+   :CUSTOM_ID: come-trovare-il-più-piccolo-e-il-più-grande-numero-positivo-rappresentabile
+   :END:
+** nell'insieme dei numeri macchina $F$?
+   :PROPERTIES:
+   :CUSTOM_ID: nellinsieme-dei-numeri-macchina-f
+   :END:
+Il numero più piccolo rappresentabile nell'insieme dei numeri macchina
+si ottiene prendendo:
+
+- la mantissa più piccola (1.000);
+- l'esponente più piccolo possibile ($L$ lower bound).
+
+Si ha che il più piccolo numero macchina positivo è dato da:
+
+$$ \beta^{-1} \beta{L} = \beta^{L-1} $$
+
+Il numero più grande rappresentabile nell'insieme dei numeri macchina si
+ottiene prendendo:
+
+- la mantissa più grande
+  ($0.\beta^{-1} \beta^{-1} \beta^{-1} ... \Rightarrow 0.999$);
+- l'esponente più grande ($U$ upper bound).
+
+Si ha che il più grande numero macchina positivo è dato da:
+
+$$ (1-\beta^{-t}) \beta^U $$
+
+#+begin_quote
+  *Nota*: la dimostrazione si trova su un foglio a parte.
+#+end_quote
+
+#+begin_quote
+  *Nota*: $(1-\beta^{-t}) \beta^U < \beta^U \notin \mathbb{F}$ mentre
+  vale che $\beta^{L -1} < \beta^L \in \mathbb{F}$.
+#+end_quote
+
+** Cosa sono i segmenti, come contarli, quanti elementi contengono?
+   :PROPERTIES:
+   :CUSTOM_ID: cosa-sono-i-segmenti-come-contarli-quanti-elementi-contengono
+   :END:
+I *segmenti* sono intervalli tra due potenze successive dela base, della
+forma:
+
+$$ [\beta^{p}, \beta^{p + 1}] $$
+
+Dato che $p \in [L, U]$, il numero di segmenti positivi di $F$ è
+$U - L + 1$.
+
+In ogni segmento i numeri sono equispaziati. Ogni segmento contiene la
+stessa quantità di numeri:
+
+$$ \frac{\beta^{p + 1} - \beta{p}}{s} = (\beta - 1) \beta^{t - 1} $$
+
+Dove $s$ è lo spacing, pari a $s = \beta^{p + 1 - t}$.
+
+Perciò complessivamente $F(\beta, t, L , U)$ contiene complessivamente:
+
+$$ (2(\beta - 1) \beta^{t - 1}(U - L + 1)) + 1 $$
+
+elementi.
+
+#+begin_quote
+  *Nota*: il $+1$ è dovuto all'ggiunta dello zero, la moltiplicazione
+  per $2$ al voler considerare sia i segmenti positivi che negativi.
+#+end_quote
+
+Quando l'esponente raggiunge $U$ si va in /overflow/, quando raggiunge
+$L$ si va in /underflow/.
+
+* Cifre decimali corrette e cifre significative
+  :PROPERTIES:
+  :CUSTOM_ID: cifre-decimali-corrette-e-cifre-significative
+  :END:
+**** Cifre decimali corrette
+     :PROPERTIES:
+     :CUSTOM_ID: cifre-decimali-corrette
+     :END:
+Quando l'errore assoluto tra $x$ e la sua approssimazione
+$\bar{x} = fl_A(x)$ soddisfa:
+
+$$ |\bar{x} - x| \le \frac{1}{2} \beta^{-k}, \quad k \ge 1 $$
+
+Si dice che il valore approssimato $\bar{x}$ ha /almeno/ $k$ cifre
+decimali corrette nella base $\beta$.
+
+Nel caso di $\bar{x} = fl_T(x)$ deve valere:
+
+$$ |\bar{x} - x| \le \beta^{-k}, \quad k \ge 1 $$
+
+**** Cifre significative
+     :PROPERTIES:
+     :CUSTOM_ID: cifre-significative
+     :END:
+Quando l'errore relativo tra x e la sua approssimazione
+$\bar{x} = fl_A(x)$ soddisfa:
+
+$$ \frac{|\bar{x} - x|}{|x|} \le \frac{1}{2} \beta^{-k}, \quad k \ge 1 $$
+
+si dice che il valore approssimato $\bar{x}$ ha /almeno/ $k$ cifre
+significative, ovvero la mantissa $\bar{m}$ di
+$\bar{x} = \pm \bar{m} \beta^p$ ha /almeno/ $k$ cifre decimali corrette
+nella base $\beta$.
+
+Nel caso di $\bar{x} = fl_T(x)$ deve valere:
+
+$$ |\bar{x} - x| \le \beta^{-k}, \quad k \ge 1 $$
+
+#+begin_quote
+  *Nota*: si ottiene $|\bar{m} - m| < \frac{1}{2} \beta^{-k}$Perciò so
+  afferma che $\bar{m}$ ha almeno $k$ cifre decimali corrette.
+#+end_quote
+
+#+begin_quote
+  *Nota*. si ha perciò che per indicare le cifre corrette si guarda
+  l'errore assoluto, mentre per indicare le cifre significative si
+  guarda l'errore relativo.
+#+end_quote
+
+* Operazioni di macchina
+  :PROPERTIES:
+  :CUSTOM_ID: operazioni-di-macchina
+  :END:
+Siano $x, y \in \mathbb{F}$. L'insieme dei $\mathbb{F}$ non è chiuso
+rispetto alle operazioni algebriche di moltiplicazione, divisione,
+somma; è chiuso solo rispetto al cambiamento di segno, cioè:
+
+$$ x \in \mathbb{F} \iff -x \in \mathbb{F} $$
+
+Perciò si deve prima calcolare il risultato esatto dell'operazione e poi
+arrotondarlo in modo che risulti un numero di $\mathbb{F}$.
+
+Riutilizzando l'espressione esplicita del $fl_A(x)$ vista nel calcolo
+dell'errore relativo di approssimazione, si possono esprimere le
+operazioni algebriche di somma, moltiplicazione e divisione nel seguente
+modo:
+
+- $ x \oplus y := fl(x + y) = (x + y)(1 + \varepsilon_s)$
+- $ x \otimes y := fl(xy) = (xy)(1 + \varepsilon_p)$
+- $ x \oslash y := fl(\frac{x}{y}) = \left( \frac{x}{y} \right) (1 +
+  \varepsilon_d)$
+
+Non valgono le proprietà dell'aritmetica (associativa, distributiva,
+ecc.)
+
+#+begin_quote
+  *Nota*: in ogni caso vale $\varepsilon \le u$.
+#+end_quote
+
+#+begin_quote
+  *Nota*: un'aritmetica basata sull'arrotondamento, piuttosto che sul
+  troncamento, è più precisa ma richiede registri più lunghi (per
+  esaminare la $t+1$-esima cifra).
+#+end_quote
+
+** Come si effettuano le operazioni algebriche di somma, moltiplicazione
+e
+   :PROPERTIES:
+   :CUSTOM_ID: come-si-effettuano-le-operazioni-algebriche-di-somma-moltiplicazione-e
+   :END:
+** divisione?
+   :PROPERTIES:
+   :CUSTOM_ID: divisione
+   :END:
+*Somma algebrica di 2 numeri reali*
+
+1. Si trasforma il numero con esponente minore in modo che i due numeri
+   abbiano lo stesso esponente, ciò implica che uno dei due perda la
+   forma in virgola mobile normalizzata.
+2. Si sommano le mantisse, lasciando invariati gli esponenti.
+3. Si ricava il floating del risultato e si rinormalizza il numero
+   troncando o arrotondando se necessario.
+
+*Moltiplicazione/divisione di 2 numeri reali* 1. Si esegue il
+prodotto/divisione delle mantisse e si sommano/sottraggono gli
+esponenti. 2. Si ricava il floating del risultato e si rinormalizza il
+numero troncando o arrotondando se necessario.
+
+** Quali sono gli errori relativi commessi in ciascun tipo di
+operazione?
+   :PROPERTIES:
+   :CUSTOM_ID: quali-sono-gli-errori-relativi-commessi-in-ciascun-tipo-di-operazione
+   :END:
+In ogni caso bisogna considerare gli errori che si commettono nel
+memorizzare $x$ e $y$ come numeri macchina:
+
+$$ x \to fl(x) = x(1 + \varepsilon_x) \in \mathbb{F}, \quad y \to fl(y) = y(1 + 
+\varepsilon_y) \i \mathbb{F} $$
+
+Inoltre si suppone che l'unità di arrotondamento $u$ sia molto più
+piccola di $1$, in modo da poter trascurare $u^n$ e di trascurare i
+termini $\varepsilon^n$. Si considerano solo $u$ e $\varepsilon$.
+
+Per quanto detto in precedenza e ipotizzato ora si ha:
+
+$$ |\varepsilon| \le u \ll 1 $$
+
+*** Errore relativo nella somma algebrica
+    :PROPERTIES:
+    :CUSTOM_ID: errore-relativo-nella-somma-algebrica
+    :END:
+$$ fl(x) + fl(y) = [x(\1 + \varepsilon_x) + y(1 + \varepsilon_y)] (1 + 
+\varepsilon_s) $$
+
+Sapendo che la somma vera è pari a: $x + y$, si può scrivere l'errore
+relativo come:
+
+$$ \varepsilon_s = \frac{|(x + y) - [x(\1 + \varepsilon_x) + y(1 + 
+\varepsilon_y)] (1 + \varepsilon_s)|}{|x + y|} = |\frac{x}{x + y}| u + 
+|\frac{y}{x + y}| u + u $$
+
+Si distinguono due casi in base al segno di $x$ e $y$:
+
+- /segno concorde/: $\varepsilon_s \le 3u$
+
+- /segno discorde/: le quantità $|\frac{x}{x + y}|$ e
+  $|\frac{y}{x + y}|$, detti *fattori di amplificazione*, possono
+  assumere qualunque grandezza perciò /l'errore non si può controllare a
+  priori/.
+
+  In generale non devono essere nè troppo lontane nè troppo vicine in
+  modulo per evitare la *cancellazione numerica* e l'*assorbimento*.
+
+#+begin_quote
+  *Nota*: i fattori di amplificazione $|\frac{x}{x + y}|$ e
+  $|\frac{x}{x + y}|$ moltiplicano rispettivamente $\varepsilon_x$ e
+  $\varepsilon_y$, che sono gli errori di arrotondamento di $x$ e $y$.
+
+  Quindi se si moltiplicano due numeri che stanno già in $\mathbb{F}$
+  per i quali $\varepsilon_x = 0$ e $\varepsilon_y = 0$, allora questo
+  problema non si pone.
+#+end_quote
+
+*** Errore relativo nella moltiplicazione
+    :PROPERTIES:
+    :CUSTOM_ID: errore-relativo-nella-moltiplicazione
+    :END:
+$$ fl(x) \otimes fl(y) = [x(1 + \varepsilon_x) y(1 + \varepsilon_y)](1 + 
+\varepsilon_p $$
+
+Sapendo che il prodotto vero è $xy$, si può scrivere l'errore relativo
+come:
+
+$$ \varepsilon_p = |1 - (1 + \varepsilon_x)(1 + \varepsilon_y)(1 + 
+\varepsilon_p)| = |\varepsilon_x + \varepsilon_y + \varepsilon_p| \le 3u $$
+
+*** Errore relativo nella divisione
+    :PROPERTIES:
+    :CUSTOM_ID: errore-relativo-nella-divisione
+    :END:
+$$ fl(x) \oslice fl(y) = \frac{x (1 + \varepsilon_x)}{y (1 + \varepsilon_y)} 
+(1 + \varepsilon_d) 1 $$
+
+Sapendo che la divisione vera è $\left| \frac{x}{y} \right|$, si può
+scrivere l'errore relativo come:
+
+$$ \varpesilon_d = \left| \right| = | 1 - \frac{(1 + \varepsilon_x)}{(1 + 
+\varepsilon_y)} (1 + \varepsilon_d) \approx | 1 - (1 + \varepsilon_x)(1 - 
+\varepsilon_y)(1 + \varepsilon_d)| = |\varepsilon_x - \varepsilon_y + 
+\varepsilon_p| \le |\varepsilon_x| + |\varepsilon_y| + |\varepsilon_d| \le 3u 
+$$
+
+** Come si calcolano gli errori relativi commessi nell'approssimare le
+funzioni
+   :PROPERTIES:
+   :CUSTOM_ID: come-si-calcolano-gli-errori-relativi-commessi-nellapprossimare-le-funzioni
+   :END:
+** elementari?
+   :PROPERTIES:
+   :CUSTOM_ID: elementari
+   :END:
+*Radice quadrata*
+
+Se
+$x \in \mathbb{F} \Rightarrow \sqrt{x}(1 + \varepsilon_r) \in \mathbb{F}$.
+
+Se
+$x \in \mathbb{R} \Rightarrow \sqrt{fl(x)} = \sqrt{x (1 + \varepsilon_x)} (1 + \varepsilon_r) \in \mathbb{F}$
+
+Si ha che l'errore relativo commesso nel caso di una radice quadrata è
+pari a:
+
+$$ \varepsilon_{sqrt} = \frac{|\sqrt{x} - \sqrt{x (1 + \varepsilon_x)} (1 + 
+\varepsilon_r)|}{|\sqrt{x}|} $$
+
+Dato che $|\varepsilon_x| < u \ll 1$ si ha
+$\sqrt{1 + \varepsilon_x} \approx 1 + \frac{\varepsilon_x}{2}$ si può
+riscrivere l'errore relativo della radice quadrata come:
+
+$$ \varepsilon_{sqrt} = \left| 1 - \left( 1 + \frac{\varepsilon_x}{2} \right) (1 + \varepsilon_r ) \right| \le \frac{3}{2} u $$
+
+*** Confronto fra stabilità dell'estrazione di radice e l'instabilità
+della
+    :PROPERTIES:
+    :CUSTOM_ID: confronto-fra-stabilità-dellestrazione-di-radice-e-linstabilità-della
+    :END:
+*** funzione seno
+    :PROPERTIES:
+    :CUSTOM_ID: funzione-seno
+    :END:
+#+begin_src octave
+  format long e 
+
+  x_1 = pi/40; % $\notin \mathbb{F}$
+  x_2 = pi;    % $\notin \mathbb{F}$
+
+  fl_x_1 = single(x1);
+  fl_x_2 = single(x2);
+
+  disp("errore relativo sul calcolo di sqrt(x)")
+  abs(sqrt(x_1) − single(sqrt(fl_x_1))) / abs(sqrt(x_1)) % err. rel. sqrt(x1)
+  %% => 1.7912146e − 08 < u
+  abs(sqrt(x_2) − single(sqrt(fl_x_2))) / abs(sqrt(x_2)) % err. rel. sqrt(x2)
+  %% => 3.0041065e − 08 < u
+
+  disp("errore relativo sul calcolo di sin(x)")
+  abs(sin(x_1) − single(sin(fl_x_1))) / abs(sin(x_1)) % err. rel. sin(x1)
+  %% => 4.0878398e − 08 < u
+  abs(sin(x_2) − single(sin(fl_x_2))) / abs(sin(x_2)) % err. rel. sin(x2)
+  %% => 713861120 >> u
+#+end_src
+
+** Che cosa si può dire riguardo alla stabilità delle operazioni
+algebriche e
+   :PROPERTIES:
+   :CUSTOM_ID: che-cosa-si-può-dire-riguardo-alla-stabilità-delle-operazioni-algebriche-e
+   :END:
+** delle funzioni elementari?
+   :PROPERTIES:
+   :CUSTOM_ID: delle-funzioni-elementari
+   :END:
+*Operazioni algebriche*:
+
+- La /somma/ è un'operazione *non sempre stabile*, in particolare si
+  verifica il fenomeno di *cancellazione numerica*, dando luogo a
+  risultati totalmente inaccurati, se si sommano due quantità, di segno
+  diverso, molto vicine in modulo. In quel caso il denominatore
+  $|x + y|$ è piccolo e i fattori di amplificazione $|\frac{x}{x + y}|$
+  e $|\frac{y}{x + y}|$ possono essere molto grandi.
+- La /moltiplicazione/ è *sempre stabile*.
+- La /divisione/ è *sempre stabile*
+
+*Funzioni elementari*:
+
+- L'/estrazione della radice quadrata/ è *sempre stabile*.
+- Il /seno/ è *sensibile* all'errore assoluto $x \varepsilon_x$
+
+* Operazioni macchina e propagazione degli errori
+  :PROPERTIES:
+  :CUSTOM_ID: operazioni-macchina-e-propagazione-degli-errori
+  :END:
+
+- Poiché si commettono errori nel rappresentare i numeri reali e
+  nell'eseguire le operazioni aritmetiche, *formule o algoritmi
+  matematicamente equivalenti (che porterebbero allo stesso risultato se
+  applicati in precisione infinita) possono produrre risultati diversi
+  in aritmetica finita*.
+
+- Lo studio degli errori di arrotondamento e della loro propagazione
+  attraverso gli algoritmi è di fondamentale importanza per poter
+  interpretare e valutare i risultati di un qualunque algoritmo che
+  operi con numeri reali.
+
+- L'analisi della *propagazione degli errori in un algoritmo* è
+  estremamente complessa. Dato un problema $P$, si può svolgere:
+
+  - /Analisi in avanti/: si valuta la differenza tra la soluzione esatta
+    $y$ e quella calcolata $\bar{y}$;
+  - /Analisi all'indietro/: si interpreta la soluzione calcolata
+    $\bar{y}$ come soluzione esatta di un problema perturbato $Q$ e si
+    valuta $P − Q$.
+
+#+begin_quote
+  *Nota*: si possono inquadrare le due tipologie di analisi della
+  propagazione degli errori con i seguenti quesiti: 1. Quale risultato
+  avrei dovuto ottenere? 2. Quale problema risolve questo risultato?
+  Quanto è distante quel problema da quello che avrei dovuto risolvere
+  originariamente?
+#+end_quote
+
+* Elenco delle funzioni elementari.
+  :PROPERTIES:
+  :CUSTOM_ID: elenco-delle-funzioni-elementari.
+  :END:
+Funzione costante Funzione identità Funzione lineare Funzione
+polinomiale Funzione iperbolica Funzione razionale Funzione segno
+
+Funzione potenza con esponente pari Funzione potenza con esponente
+dispari Radice con indice pari Radice con indice dispari
+
+Funzione esponenziale Funzione esponenziale con base tra 0 e 1 Funzione
+logaritmica Funzione logaritmica con base minore di 1
+
+Funzione seno e coseno Funzione tangente e cotangente Funzione secante e
+cosecante
+
+Funzione arcoseno e arcocoseno Funzione arcotangente e arcocotangente
+Funzione arcosecante e arcocosecante
+
+Funzione seno iperbolica e coseno iperbolica Funzione tangente
+iperbolica e cotangente iperbolica Funzione secante iperbolica e
+cosecante iperbolica
+
+Per ulteriori informazioni
+[[https://www.youmath.it/lezioni/analisi-matematica/le-funzioni-elementari-e%20-le-loro-proprieta.html][qui]].

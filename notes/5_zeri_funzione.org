@@ -1,0 +1,1094 @@
+#+TITLE: Zeri di funzione
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Introduzione al problema degli zeri
+  :PROPERTIES:
+  :CUSTOM_ID: introduzione-al-problema-degli-zeri
+  :END:
+
+Si considera una funzione del tipo: $f: \mathbb{R} \to \mathbb{R}$.
+
+Si vuole determinare $f(x) = 0$.
+
+#+BEGIN_QUOTE
+  *Nota*: è noto che non si possono calcolare con un numero finito di
+  passi gli zeri di un generico polinomio di grado maggiore di $4$.
+#+END_QUOTE
+
+Si studiano algoritmi per approssimare gli zeri di $f$.
+
+Si sviluppano /metodi iterativi/, a partire da uno o più dati iniziali,
+detti /valori di innesco/, si genera una successione di valori $x^k$ che
+dovrà convergere ad uno zero $\alpha$ della funzione $f$ studiata.
+
+Si vuole approssimare la soluzione di $\alpha$ con un prestabilito grado
+di precisione, secondo una certa /tolleranza/.
+
+** Zeri semplici e multipli
+   :PROPERTIES:
+   :CUSTOM_ID: zeri-semplici-e-multipli
+   :END:
+
+*Radice semplice*: $$ \alpha | f(\alpha) = 0 \wedge f'(\alpha) \ne 0 $$
+
+*Radice multipla*: $\alpha$ multipla di molteplicità $m$
+$$ \alpha | f^k (\alpha) = 0,\ k = 0,1,...,m-1 \wedge f^m (\alpha) \ne 0 $$
+
+* Impostazione del problema degli zeri
+  :PROPERTIES:
+  :CUSTOM_ID: impostazione-del-problema-degli-zeri
+  :END:
+
+#+BEGIN_QUOTE
+  Quando il problema degli zeri è ben posto?
+#+END_QUOTE
+
+Quando esiste una soluzione, è unica e dipende con continuità dai dati.
+Bisogna analizzare singoli intervalli dell'asse reale in /cui esiste un
+solo zero della funzione/. (zero semplice)
+
+Altrimenti non si può determinare a quale zero convergerà l'algoritmo.
+
+--------------
+
+Per poter individuare un intervallo di questo tipo si ricorre alla
+/separazione delle radici/.
+
+La *separazione delle radici* è il processo che permette di individuare
+un intervallo $I = [a,b]$, detto /intervallo di separazione/, che
+contiene una sola radice di $f$.
+
+Alcuni possibili approcci:
+
+- /studio sommario del grafico/ di $f$
+- /tabulazione della funzione/ $f$ (meno accurata, per scouting
+  iniziale)
+- /decomposizione della funzione/ $f = g -h$
+
+Questi approcci sono possibili sfruttando il *Teorema degli zeri*.
+
+#+BEGIN_QUOTE
+  *Nota*: il grado di sensibilità va tarato con attenzione, si
+  potrebbero non vedere degli zeri, il campionamento deve essere
+  abbastanza fine.
+#+END_QUOTE
+
+--------------
+
+Per poter avere un problema ben posto bisogna combinare le strategie per
+dimostrare che una funzione ha un unico zero in un certo intervallo.
+
+* Condizionamento del problema
+  :PROPERTIES:
+  :CUSTOM_ID: condizionamento-del-problema
+  :END:
+
+#+BEGIN_QUOTE
+  Quando il problema degli zeri è ben condizionato?
+#+END_QUOTE
+
+Se il /numero di condizionamento del problema/ non è troppo grande.
+Ovvero in questo caso se $|f'(\alpha)|$ non è troppo piccolo.
+
+In particolare il problema risulta ben condizionato se per
+$\tilde f(x) = 0$ si ha una radice $\tilde \alpha$ che non differisce
+troppo da $\alpha$.
+
+--------------
+
+*L'indice di condizionamento di un problema* è una quantità che lega
+/l'errore sui dati all'errore sui risultati/.
+
+- *L'errore sui dati* è dato dalla differenza
+  $|\tilde f - f| = |\epsilon g$. (detto anche /perturbazione sui dati/)
+
+- *L'errore sui risultati* è dato dalla differenza
+  $|\tilde \alpha - \alpha|  = |\delta|$ (detto anche /perturbazione sui
+  risultati/)
+
+Si ha che il fattore di amplificazione $K$ è dato da:
+
+$$ K := \frac{1}{|f'(\alpha)|} $$
+
+#+BEGIN_QUOTE
+  *Nota*: se $|f'(\alpha)|$ è molto piccolo allora il problema è /mal
+  condizionato/ e $\tilde{f}(x) = 0$ ha un radice $\tilde{\alpha}$ che
+  non si discosta troppo da $\alpha$.
+#+END_QUOTE
+
+DIMOSTRAZIONE SVOLTA
+
+* Metodi iterativi
+  :PROPERTIES:
+  :CUSTOM_ID: metodi-iterativi
+  :END:
+
+*** Scelta del valore di innesco e convergenza
+    :PROPERTIES:
+    :CUSTOM_ID: scelta-del-valore-di-innesco-e-convergenza
+    :END:
+
+*Convergenza locale*: se la convergenza del metodo dipende dalla
+vicinanza di $x_0$ al valore $\alpha$ in modo critico.
+
+*Convergenza globale*: se per ogni scelta del valore di input ($x_0$) si
+ha che il metodo iterativo risulta convergente.
+
+#+BEGIN_QUOTE
+  *Nota*: in questo contesto i metodi più veloci (ordine 2) sono a
+  convergenza locale.
+#+END_QUOTE
+
+*** Velocità di convergenza
+    :PROPERTIES:
+    :CUSTOM_ID: velocità-di-convergenza
+    :END:
+
+#+BEGIN_QUOTE
+  Quando un metodo iterativo è convergente?
+#+END_QUOTE
+
+Un metodo iterativo è detto convergente di ordine $p$ se genera una
+[[ordine-di-convergenza][Link all'ordine di convergenza]]successione convergente.
+
+--------------
+
+La velocità di convergenza indica quanto velocemente si arriva ad una
+soluzione. Per valori di $i$ grandi, ovvero se vale:
+
+$$ \lim_{i \to +\infty} \frac{|e_i + 1|}{|e_i|^p} $$
+
+si ottiene:
+
+$$ |e_{i+1}| \approx C|e_i|^p $$
+
+Si distinguono:
+
+- $p = 1$ *convergenza lineare*,
+- $1 < p < 2$ *convergenza superlineare*,
+- $p = 2$ *convergenza quadratica*.
+
+#+BEGIN_QUOTE
+  *Nota*: per $p = 1$ deve necessariamente valere $0 < C < 1$.
+  Altrimenti non si ha una riduzione dell'errore a $0$ per
+  $i \to +\infty$.
+#+END_QUOTE
+
+**** Ordine di convergenza
+     :PROPERTIES:
+     :CUSTOM_ID: ordine-di-convergenza
+     :END:
+
+Dato $e_i = x_i - \alpha$ se vale $|e_i| \le \frac{1}{2} 10^{-k}$ si
+dice che *$x_i$ ha $k$ decimali corretti*.
+
+Per $i$ sufficientemente grande, dato
+$|e_{i + 1}| \approx C|e_i|^p| \le \frac{C}{2^p} 10^{-pk}$ si dice che
+*$x_{i + 1}$ ha $pk$ decimali corretti*.
+
+*** Criteri di arresto
+    :PROPERTIES:
+    :CUSTOM_ID: criteri-di-arresto
+    :END:
+
+Si vuole interrompere il ciclo ad un'opportuna iterata. In particolare
+il procedimento si deve arrestare quando:
+
+$$ |e_i| = |x_i - \alpha| < toll $$
+
+Ci sono tre possibili approcci:
+
+- Criterio di arresto assoluto
+- Criterio di arresto relativo
+- Criterio di controllo del residuo
+
+**** Criterio di arresto assoluto
+     :PROPERTIES:
+     :CUSTOM_ID: criterio-di-arresto-assoluto
+     :END:
+
+Dato che $\alpha$ non è noto si cerca di stimare $e_i$. Si ha:
+
+$$e_i \approx |x_{i + 1} - x_i| $$
+
+Si ottiene perciò:
+
+$$ |x_{i + 1} - x_i| < toll_A $$
+
+Questo criterio fallisce con facilità se non si imposta una tolleranza
+adeguata. (andrebbe scelta né troppo grande né troppo piccola)
+
+**** Criterio di arresto relativo
+     :PROPERTIES:
+     :CUSTOM_ID: criterio-di-arresto-relativo
+     :END:
+
+Per sopperire alla debolezza del criterio di arresto assoluto si impiega
+la seguente approssimazione dell'errore commesso all'iterata i-esima:
+
+$$ \frac{|x_{i + 1} - x_i|}{|x_{i + 1}|} < toll_R $$
+
+#+BEGIN_QUOTE
+  *Nota*: la tolleranza va scelta in modo che $toll_r > eps$, ovvero
+  maggiore della precisione di macchina. (per evitare errori di
+  arrotondamento) Su MATLAB si lavora con il floating di arrotondamento
+  perciò si può scegliere la tolleranza come maggiore della round-off
+  unit.
+#+END_QUOTE
+
+**** Criterio di controllo del residuo
+     :PROPERTIES:
+     :CUSTOM_ID: criterio-di-controllo-del-residuo
+     :END:
+
+*Solo per equazioni non lineari*.
+
+Ci si ferma quando è soddisfatta la seguente condizione:
+
+$$ |f(x_i)| < toll $$
+
+*Risulta troppo restrittivo o troppo "ottimista"* a seconda del
+comportamento della funzione $f$.
+
+In particolare se $|f'(\alpha)| \ll 1$ si ha che $|e_i|$ potrebbe essere
+molto grande rispetto a $toll$. (ottimista)
+
+Se $|f'(\alpha)| \gg 1$ si ha che $|e_i|$ potrebbe essere molto piccolo
+rispetto a $toll$. (restrittivo)
+
+Se $|f'(\alpha)| \approx 1$ il residuo produce un'indicazione
+soddisfacente.
+
+--------------
+
+Generalmente conviene combinare i criteri di arresto relativo e il
+criterio di controllo del residuo per poter ottenere l'approssimazione
+migliore. La vicinanza allo zero è garantita sull'asse $x$ dal criterio
+di arresto relativo e la vicinanza sull'asse $y$ è garantita dal
+criterio di controllo del residuo. Impiegare uno solo dei due criteri
+può portare a risultati non soddisfacenti. (situazioni critiche)
+
+#+BEGIN_QUOTE
+  *Nota*: se $|f'(\alpha)| \approx 0$ il controllo sul residuo non è
+  efficace perché per quel valore della derivata si ha un indice di
+  condizionamento molto elevato perciò /il residuo non è significativo
+  ai fini della stima dell'errore/.
+#+END_QUOTE
+
+* Metodo di bisezione
+  :PROPERTIES:
+  :CUSTOM_ID: metodo-di-bisezione
+  :END:
+
+Il metodo di bisezione è il metodo iterativo più semplice per
+approssimare gli zeri reali di una funzione.
+
+** Ipotesi
+   :PROPERTIES:
+   :CUSTOM_ID: ipotesi
+   :END:
+
+1) $f(x)$ continua nell'intervallo $[a,b]$
+2) $f(a)f(b) < 0$
+
+Per il Teorema degli Zeri
+$\exists!\ \alpha\ |\ f(\alpha) = 0 \in [a,b]$.
+
+Si procede impiegando un /algoritmo di bisezione/, ovvero suddividendo
+ad ogni passo l'intervallo $[a,b]$ a metà e, dopo aver determinato in
+quale dei due sottointervalli si trova la soluzione, si dimezza
+l'ampiezza dell'intervallo che contiene $\alpha$.
+
+** Osservazioni computazionali
+   :PROPERTIES:
+   :CUSTOM_ID: osservazioni-computazionali
+   :END:
+
+1. Per determinare il punto medio di $[a,b]$ si impiega una formula
+   *stabile dal punto di vista numerico*.
+
+$$ \frac{a + (b - a)}{2} $$
+
+#+BEGIN_QUOTE
+  *Nota*: non si impiega $\frac{(a + b)}{2}$ perché non è abbastanza
+  stabile. In aritmetica finita può produrre valori esterni
+  all'intervallo $[a,b]$.
+#+END_QUOTE
+
+--------------
+
+2. Per evitare eventuali overflow nel controllo del segno di $f$ agli
+   estremi dell'intervallo corrente mediante il prodotto $f(a)*f(b)$, si
+   può usare la condizione:
+
+   =sign(f(a)) == sign(f(b))=
+
+   dove la funzione $\sign(y)$ ritorna:
+
+   - $1$ se $y > 0$,
+   - $0$ se $y = 0$,
+   - $-1$ se $y < 0$.
+
+--------------
+
+3. Per controllare la fine dell'iterazione quando la tolleranza $toll$
+   fornita è troppo piccola o comunque inferiore alla precisione di
+   macchina eps, anziché proseguire fintanto che $|b - a| \ge toll$, si
+   controlla se:
+
+   $$ |b - a| \ge tol + eps \cdot \max(|a|, |b|)$$
+
+   Ciò previene l'eventualità che la successione degli iterati stalli in
+   corrispondenza di uno degli estremi della successione degli
+   intervalli senza verificare il test di arresto.
+
+   Ciò accade ad esempio se il calcolo del punto medio coincide con uno
+   dei due estremi dell'intervallo precedente, ciò vuol dire che si è
+   arrivati ad un intervallo molto piccolo e l'errore che si commette
+   nello stimare lo zero è molto minore della tolleranza. Arrivati a
+   quel punto non c'è più nulla tra $a$ e $b$ e bisogna fermarsi.
+
+#+BEGIN_QUOTE
+  *Alternativa*: si potrebbe controllare se lo spacing è minore o uguale
+  allo spacing. (controllare quando $b$ è il numero di macchina
+  successivo ad $a$, ovvero $b - a$ è proprio lo spacing.
+#+END_QUOTE
+
+--------------
+
+** Funzionamento
+   :PROPERTIES:
+   :CUSTOM_ID: funzionamento
+   :END:
+
+#+CAPTION: Alcune iterazioni dell'algoritmo di bisezione
+[[./attachments/bisection.png]]
+
+- Ad ogni passo l'ampiezza dell'intervallo è dimezzata, è necessario
+  calcolare il punto medio del segmento individuato dall'intervallo di
+  partenza *in modo stabile*.
+
+*** Estremi, errore assoluto e stima dello zero al passo n-esimo
+    :PROPERTIES:
+    :CUSTOM_ID: estremi-errore-assoluto-e-stima-dello-zero-al-passo-n-esimo
+    :END:
+
+- Dopo $n$ passi si arriva all'*intervallo n-esimo* $[a_n,b_n]$ di
+  ampiezza:
+
+  $$ b_n - a_n = \frac{b_0 - a_0}{2^n} $$
+
+- Se si stima $\alpha$ con $x_n := \frac{a_{n - 1} + b_{n - 1}}{2}$ si
+  ha che *l'errore assoluto al passo n-esimo* è pari a:
+
+  $$ |e_n| := |x_n - \alpha| \le b_n - a_n = \frac{b_0 - a_0}{2^n} $$
+
+- sapendo che:
+
+  $$ |e_{n}| \approx \frac{b_0 - a_0}{2^{n}}, \quad |e_{n - 1}| \approx 
+  \frac{b_0 - a_0}{2^{n - 1}} $$
+
+  se si confrontano l'errore all'iterazione n-esima e (n-1)-esima si può
+  /calcolare la velocità di convergenza/ e si ottiene che
+  $p = 1 \wedge C = \frac{1}{2}$, infatti si ha:
+
+  $$ \frac{|e_n|}{|e_{n - 1}|} \approx \frac{1}{2},\quad n \to \infty $$
+
+- a partire dal calcolo dell'errore assoluto al passo n-esimo si vuole
+  risolvere l'equazione rispetto $x_n$ per ottenere il numero di
+  iterazioni $n$ necessarie per approssimare $\alpha$ con un errore
+  assoluto non superiore a $\varepsilon$. Dato che si ottiene un numero
+  reale si considera la parte intera superiore $n_{\varepsilon}$ e si
+  ottiene che il suo valore è pari a:
+
+  $$ n_{\varepsilon} \ge \left \lceil 3.3 \log_{10} \left( \frac{b_0 - 
+  a_0}{\varepsilon} \right) \right \rceil $$
+
+#+BEGIN_QUOTE
+  *Nota*: questa relazione permette anche di stimare il numero di
+  iterazioni richieste per guadagnare una cifra decimale
+  sull'approssimazione $x_n$ di $\alpha$. Per ottenere una cifra
+  decimale corretta di $\alpha$ servono circa $3.3$ iterazioni del
+  metodo di bisezione.
+#+END_QUOTE
+
+** Considerazioni
+   :PROPERTIES:
+   :CUSTOM_ID: considerazioni
+   :END:
+
+1. *Il metodo di bisezione converge globalmente* alla soluzione se le
+   [[#ipotesi][ipotesi]] sono rispettate.
+
+2. *La convergenza è garantita* qualunque sia l'ampiezza dell'intervallo
+   iniziale $[a,b]$.
+
+3. *La convergenza è lenta*. Questo è il principale limite del metodo.
+   Ad ogni iterazione l'errore si riduce di $\frac{1}{2}$ perciò si
+   tratta di una /convergenza lineare/. Inoltre perché l'errore si
+   riduca di $\frac{1}{10}$, ovvero perché si verifichi un guadagno di
+   una cifra decimale corretta occorrono $3.3$ iterazioni.
+
+--------------
+
+#+BEGIN_QUOTE
+  Perché si ha una convergenza lenta?
+#+END_QUOTE
+
+Perché questo metodo non sfrutta le caratteristiche peculiari della
+funzione, come la sua derivabilità e la sua forma. Il metodo inoltre non
+tiene conto nemmeno dei valori della funzione ma solo dei segni.
+
+--------------
+
+4. Dal punto di vista geometrico il metodo costruisce ad ogni passo
+   l'approssimazione della radice calcolando l'intersezione con l'asse
+   delle ascisse, della retta passante per i punti:
+
+   $$ (a, \sign(f(a)),\quad (b, \sign(f(b)) $$
+
+5. Il *costo computazionale* è pari a: $n + 2$, dove $n$ indica il
+   numero di iterazioni del metodo effettuate. L'operazione più costosa
+   è la valutazione della funzione $f$ nel punto di ascissa $x_{i + 1}$.
+   Si esegue una valutazione di questo tipo ad ogni iterazione. Inoltre
+   si eseguono due valutazioni aggiuntive durante il primo passo della
+   funzione nei punti $a$ e $b$.
+
+6. *Il metodo di bisezione non garantisce una riduzione progressiva
+   dell'errore*, ma solo il dimezzamento dell'ampiezza dell'intervallo
+   all'interno del quale si cerca lo zero. Perciò /possono essere
+   inavvertitamente scartate approssimazioni di $\alpha$ accurate/ se si
+   usa come unico criterio d'arresto quello sulla lunghezza
+   dell'intervallo $I(k)$. (meglio usare anche il criterio del residuo
+   quando possibile)
+
+* Metodo di falsa posizione
+  :PROPERTIES:
+  :CUSTOM_ID: metodo-di-falsa-posizione
+  :END:
+
+Detto anche *regula falsi*. Ha velocità di convergenza maggiore del
+metodo di bisezione. Questo miglioramento si ottiene considerando anche
+i valori, e non solo il segno, che la funzione assume negli estremi
+dell'intervallo.
+
+Si tratta di un antico metodo per la risoluzione di equazioni con una
+sola incognita che, in forma modificata, è ancora oggi in uso.
+
+Si chiama regula falsi perché è un metodo che va per /tentativi ed
+errori/. Ad ogni iterazione si formula un possibile risultato ipotetico
+("falsa posizione") e si aggiusta la stima dopo ogni iterazione in base
+all'esito ottenuto.
+
+** Spunti
+   :PROPERTIES:
+   :CUSTOM_ID: spunti
+   :END:
+
+#+BEGIN_QUOTE
+  Gesse at this woorke as happe doth leade. By chaunce to truthe you may
+  procede. And firste woorke by the question, Although no truthe therein
+  be don. Suche falsehode is so good a grounde, That truth by it will
+  soone be founde. From many bate to many mo, From to fewe take to fewe
+  also. With to much ioyne to fewe againe, To to fewe adde to manye
+  plaine. In crossewaies multiplye contrary kinde, All truthe by
+  falsehode for to fynde.
+#+END_QUOTE
+
+#+BEGIN_VERSE
+  Gaze at this work as happens to (?),
+  ~By chance to truth you may procede,
+  And first work by the question,
+  Although no truth therein be done.
+  Such falsehood is a so good ground,
+  That truth by it will soon be found~.
+  From many (?) to many (?),
+  From the fewer take to fewer also.
+  (?), To to fewer add to (?).
+  In crossways multiple contrary kind,
+  All truth and falsehood for to find.
+#+END_VERSE
+
+
+** Funzionamento
+   :PROPERTIES:
+   :CUSTOM_ID: funzionamento-1
+   :END:
+
+#+CAPTION: Alcune iterazioni del metodo di falsa posizione
+[[./attachments/regula_falsi.png]]
+
+Si prende come nuova approssimazione della soluzione l'intersezione
+dell'asse delle ascisse con la retta passante per il punto:
+
+$$ (a, f(a)),\quad (b, f(b)) $$
+
+ovvero:
+
+$$ x = a - f(a) \frac{b - a}{f(b) - f(a))} $$
+
+#+BEGIN_QUOTE
+  *Nota*: il criterio di arresto basato sull'ampiezza dell'intervallo
+  non è applicabile dato che $\lim_{i \to +\infty} [a_i,b_i] \ne 0$,
+  ovvero non è detto che l'ampiezza degli intervalli vada
+  progressivamente a diminuire.
+#+END_QUOTE
+
+** Considerazioni
+   :PROPERTIES:
+   :CUSTOM_ID: considerazioni-1
+   :END:
+
+1. Il metodo di regula falsi ha *convergenza globale*, dato che la
+   scelta dell'intervallo avviene in base al segno dalla funzione, come
+   nel metodo di bisezione.
+
+2. *La convergenza è garantita* qualunque sia l'ampiezza dell'intervallo
+   iniziale $[a,b]$.
+
+3. Ha *velocità di convergenza* lineare, generalmente ha velocità
+   /superlineare/.
+
+4. Il *costo computazionale* è pari a $n + 2$, per le stesse
+   considerazione viste nel metodo di bisezione.
+
+* Metodi delle corde, delle secanti e di Newton
+  :PROPERTIES:
+  :CUSTOM_ID: metodi-delle-corde-delle-secanti-e-di-newton
+  :END:
+
+Funzionano impiegando un /valore di innesco/, che rappresenta una prima
+approssimazione della radice, e il valore assunto dalla funzione in
+$f(x_0)$.
+
+Ad ogni iterazione si costruisce un'/approssimazione locale/ della
+funzione $f$ con una retta avente pendenza $m_0$ e passante per il punto
+$\left (x_0, f(x_0) \right )$ di equazione:
+
+$$ y = f(x_0) + m_0(x - x_0) $$
+
+In questo modo si ottiene una versione /linearizzata/ del problema
+$f(x) = 0$ e si prende come nuova approssimazione $x_1$ della radice lo
+zero dell'equazione lineare:
+
+$$ x_1 = x_0 - \frac{f(x_0)}{m_0} $$
+
+In generale si ha:
+
+$$ x_{i + 1} = x_i - \frac{f(x_i){m_i},\ i = 0,1,2,... $$
+
+Dove $m_i$ individua la /pendenza/. A seconda della scelta di $m_i$
+all'iterazione i-esima si individuano metodi diversi:
+
+- *metodo delle corde*: pendenza costante
+- *metodo delle secanti*: pendenza variabile
+- *metodo di Newton*: pendenza variabile calcolata tramite la derivata
+  prima.
+
+* Metodo delle corde
+  :PROPERTIES:
+  :CUSTOM_ID: metodo-delle-corde
+  :END:
+
+#+CAPTION: Alcune iterazioni del metodo della corde, la retta rossa è la tangente alla funzione nel punto di coordinate $(x_0, f(x_0))$. Dato che la pendenza è costante si ottiene una successione di rette parallele
+
+[[./attachments/corde.png]]
+
+Il metodo delle corde ad ogni iterazione i-esima costruisce
+un'approssimazione del grafico della funzione tramite la retta passante
+per $(x_i, f(x_i))$ e avente pendenza pari a $m$.
+
+Per il calcolo iniziale della pendenza si ricorre alla seguente formula:
+
+$$ m = f'(x_0) $$
+
+** Considerazioni
+   :PROPERTIES:
+   :CUSTOM_ID: considerazioni-2
+   :END:
+
+1. Il metodo delle corde è *poco costoso*. Il calcolo della pendenza va
+   effettuato solo all'inizio. Ad ogni iterazione si effettua una
+   valutazione di funzione. (costo iniziale della valutazione di $m$)
+
+2. Richiede *un valore di innesco*.
+
+3. Ha *convergenza lineare*. Principale debolezza.
+
+4. *La convergenza è garantita*.
+
+* Metodo delle secanti
+  :PROPERTIES:
+  :CUSTOM_ID: metodo-delle-secanti
+  :END:
+
+#+CAPTION: Alcune iterazioni del metodo delle secanti
+[[./attachments/secanti.png]]
+
+Si può vedere come una variante della regula falsi in cui sono richieste
+due approssimazioni iniziali senza altre condizioni e senza la necessità
+di controllare il segno di $f(x)$. Ogni volta si procede con gli ultimi
+punti trovati in successione senza tener conto del valore positivo o
+negativo della funzione.
+
+Tuttavia ci sono alcuni casi in cui questo metodo può dare risultati
+catastrofici.
+
+** Funzionamento
+   :PROPERTIES:
+   :CUSTOM_ID: funzionamento-2
+   :END:
+
+Per il calcolo della pendenza si impiega una sorta di "rapporto
+incrementale":
+
+$$ m_i = \frac{f(x_i) - f(x_{i - 1}}{x_i - x_{i - 1}} $$
+
+#+BEGIN_QUOTE
+  *Nota*: se in un'iterazione $f(x_i) = f(x_{i-1})$ il metodo si blocca.
+#+END_QUOTE
+
+** Considerazioni
+   :PROPERTIES:
+   :CUSTOM_ID: considerazioni-3
+   :END:
+
+1. Il metodo delle secanti è potenzialmente *poco costoso*. Se si
+   memorizza la valutazione $f(x_{i - 1})$ ad ogni iterazione è
+   necessario effettuare un'unica valutazione di funzione ad ogni
+   iterazione. Sono necessarie due valutazioni di partenza in $x_{0}$ e
+   $x_{-1}$. (costo iniziale come nella bisezione e nelle corde)
+
+2. Richiede *due valori di innesco*, che corrispondono all'intervallo
+   $[a,b]$ preso in input dai metodi di bisezione e di falsa posizione.
+
+3. Ha velocità di convergenza *superlineare*. Rappresenta un buon
+   compromesso tra la velocità offerta dal metodo di Newton e il costo
+   contenuto del metodo delle corde. È più veloce del metodo di falsa
+   posizione.
+
+4. Il metodo delle secanti ha *convergenza locale*. La convergenza è
+   garantita solo se le approssimazioni iniziali sono abbastanza vicine
+   alla radice $\alpha$.
+
+#+CAPTION: Rischi associati all'uso del metodo delle secanti
+[[./attachments/secanti_catastrofe.png]]
+
+5. Il metodo delle secanti può essere catastrofico se le due
+   approssimazioni $x_{i-1}$, $x_i$ sono vicine ad un punto in cui la
+   derivata prima della funzione $f$ è zero. In questo caso si nota che
+   il punto di intersezione dall'asse $x$ cade lontanissimo
+   dall'intervallo di partenza e i valori delle valutazioni delle due
+   funzioni sono molto vicini.
+
+* Metodo di Newton
+  :PROPERTIES:
+  :CUSTOM_ID: metodo-di-newton
+  :END:
+
+Detto anche *metodo delle tangenti*, simile al metodo delle corde, ma il
+valore della pendenza si ricalcola ad ogni iterazione i-esima. Si ha:
+
+$$ m_i = f'(x_i) $$
+
+Geometricamente si prende come nuova approssimazione l'intersezione
+dell'asse delle ascisse con la retta tangente a $f$ in $(x_i, f(x_i))$
+
+** Considerazioni
+   :PROPERTIES:
+   :CUSTOM_ID: considerazioni-4
+   :END:
+
+1. Il metodo di Newton ha un *costo elevato* rispetto al metodo delle
+   corde, ad ogni iterazione si effettuano due valutazioni funzionali:
+   $f(x_i)$ e $f'(x_i)$.
+
+2. Richiede *un valore di innesco*.
+
+3. Ha una velocità di *convergenza quadratica*, nel caso $\alpha$ sia
+   una radice semplice e $f \in C^{3}[a,b]$.
+
+4. *La convergenza è garantita*.
+
+5. Ha *convergenza locale*.
+
+** Teoremi di convergenza del metodo di Newton
+   :PROPERTIES:
+   :CUSTOM_ID: teoremi-di-convergenza-del-metodo-di-newton
+   :END:
+
+Se $f$ ha concavità fissa in $[a, b]$, è possibile stabilire un criterio
+di scelta dell'approssimazione iniziale $x_0$ che garantisce la
+convergenza del metodo di Newton.
+
+Anche nel caso in cui $f$ non abbia concavità fissa se l'approssimazione
+inziale $x_0$ è scelta abbastanza vicina alla radice semplice da
+cercare, allora la convergenza del metodo di Newton può essere
+garantita.
+
+*** Estremo di Fourier
+    :PROPERTIES:
+    :CUSTOM_ID: estremo-di-fourier
+    :END:
+
+Data una funzione $f$ /continua/ e /convessa/ in $[a, b]$ con
+$f(a) f(b) < 0$, si dice *estremo di Fourier* di $[a, b]$ l'estremo
+verso cui $f$ rivolge la convessità.
+
+L'estremo di Fourier permette di scegliere il valore di innesco del
+metodo di Newton *con garanzia di convergenza*.
+
+*** Teorema sulla convergenza con funzioni a concavità fissa
+    :PROPERTIES:
+    :CUSTOM_ID: teorema-sulla-convergenza-con-funzioni-a-concavità-fissa
+    :END:
+
+Se $ f : [a,b] to \mathbb{R}$ soddisfa le seguenti ipotesi:
+
+1. $f(a)f(b) < 0$,
+2. $f \in C^2[a,b]$, ovvero $f$, $f'$ e $f''$ continue in $[a, b]$,
+3. $f'(x) \ne 0,\ \forall x \in [a, b]$
+4. $f''(x) \ne 0,\ \forall x \in [a,b]$ deve avere sempre segno positivo
+   o negativo, perciò deve avere concavità fissa
+
+e se si sceglie l'estremo di Fourier dell'intervallo $[a,b]$ come
+approssimazione iniziale $x_0$.
+
+Allora il metodo di Newton definisce una successione $\{x_i\}_{i \ge 1}$
+/monotona/ (strettamente crescente se $x_0 = a$, strettamente
+decrescente se $x_0 = b$) e /convergente/ all'unica radice
+$\alpha \in [a, b]$. *La convergenza è superlineare*.
+
+Se $f \in C^3[a, b]$, ovvero se $f$ /converge con maggiore regolarità/,
+*la convergenza è quadratica* e perciò vale:
+
+$$ \lim_{i \to + \infty} \frac{|x_{i + 1} - \alpha|}{(x_i - \alpha)^2} =
+\frac{f''(\alpha)}{2} f' (\alpha) = C $$
+
+#+BEGIN_QUOTE
+  *Nota*: se $\alpha$ è uno zero semplice, annulla $f(\alpha)$ ma non
+  $f'(\alpha)$.
+#+END_QUOTE
+
+#+BEGIN_QUOTE
+  *Nota*: la relazione $frac{f''(\alpha)}{2 f' (\alpha) = C$ non è stata
+  dimostrata.
+#+END_QUOTE
+
+*** Teorema sulla convergenza per valori vicini alla radice semplice
+    :PROPERTIES:
+    :CUSTOM_ID: teorema-sulla-convergenza-per-valori-vicini-alla-radice-semplice
+    :END:
+
+Se $ f : [a,b] to \mathbb{R}$ soddisfa le seguenti ipotesi:
+
+1. $f(a)f(b) < 0$,
+2. $f \in C^2[a,b]$, ovvero $f$, $f'$ e $f''$ continue in $[a, b]$,
+3. $f'(x) \ne 0,\ \forall x \in [a, b]$
+
+Allora esiste un $I \subseteq [a,b]$ dell'unica radice
+$\alpha \in [a,b]$ tale che, se $x_0 \in I$, la successione di Newton
+$\{x_i\}_{i \ge 1}$ converge ad $\alpha$.
+
+#+BEGIN_QUOTE
+  *Nota*: l'ordine di convergenza è $p = 2$ se $f''(\alpha) \ne 0$, si
+  ha $p > 2$ se $f''(\alpha) = 0$. Perché valga $p \ge 2$ deve valere
+  $f \in C^3[a, b]$.
+#+END_QUOTE
+
+*** Teorema per la scelta del valore di innesco ottimale
+    :PROPERTIES:
+    :CUSTOM_ID: teorema-per-la-scelta-del-valore-di-innesco-ottimale
+    :END:
+
+L'obiettivo è fornire un intervallo con cui effettuare la scelta del
+valore di innesco.
+
+Sia $f \in C^2(I_\{sigma}$ con
+$I_{sigma} = [\alpha − \sigma , \alpha + \sigma]$ intorno di raggio
+$\sigma > 0$ della radice $\alpha$.
+
+Se esistono due costanti positive $\beta$ e $\gamma$ tali che:
+
+1. $|f'(x)| \ge \beta,\ \forall x \in I_{sigma}$
+2. $|f'(x) - f'(y)| \le \gamma |x - y|,\ \forall x, y \in I_{sigma}$
+3. $\sigma < 2 \beta$
+
+Se l'approssimazione iniziale $x_0 \in I_{sigma}$, allora la successione
+di Newton ${x_i}_{i \ge 1}$ è tale che:
+
+- $x i \in I_{\sigma}, \forall i \ge 1$,
+- $\{x_i\}_{i \ge 1}$ converge ad $\alpha$ quadraticamente.
+
+** Metodo di Newton modificato
+   :PROPERTIES:
+   :CUSTOM_ID: metodo-di-newton-modificato
+   :END:
+
+Ricordando che il metodo di Newton può essere visto come un metodo di
+iterazione funzionale con funzione $g$ data da:
+
+$$ g(x) = x - \frac{f(x)}{f'(x)} $$
+
+Si dimostra, applicando il teorema sulla velocità di convergenza, che il
+metodo di Newton con radici semplici ha convergenza quadratica.
+
+DIMOSTRAZIONE NON SVOLTA
+
+Se $\alpha$ è una radice multipla di molteplicità $m > 1$, ovvero se:
+
+$$ f'(\alpha) = f''(\alpha) = ... = f^{(m - 1)}(\alpha) = 0,\ f^m(\alpha) \ne 
+0 $$
+
+Si dimostra applicando il teorema sulla velocità di convergenza che il
+metodo di Newton non ha più convergenza quadratica ma lineare.
+
+DIMOSTRAZIONE NON SVOLTA
+
+Se si modifica la funzione $g$ nel seguente modo:
+
+$$ x_{i + 1} = x_i - m \frac{f(x_i)}{f'(x_i)},\ i \ge 0 $$
+
+Si dimostra, applicando il teorema sulla velocità di convergenza, che il
+metodo di Newton modificato ha convergenza quadratica, per radici di
+molteplicità $m > 1$.
+
+DIMOSTRAZIONE NON SVOLTA
+
+**** Osservazioni
+     :PROPERTIES:
+     :CUSTOM_ID: osservazioni
+     :END:
+
+- La prima ipotesi garantisce che $\alpha$ sia una radice semplice,
+  ovvero che la derivata prima non si annulli.
+
+- La seconda ipotesi richiede che si abbia a che fare con una /funzione
+  lipschitziana/ ovvero che la funzione non sia troppo oscillante. In
+  altri termini la funzione $f$ non deve essere eccessivamente non
+  lineare. Ciò si ottiene richiedendo una condizione più forte della
+  continuità. $\gamma$ è detta /costante di Lipshitz/ e può essere
+  stimata come:
+
+$\gamma = \sup_{x \in I_{sigma} |f''(x)|$
+
+se $f''(x)$ è nota.
+
+- La terza ipotesi impone un upper bound sul raggio dell'intorno
+  $I_{\sigma}$ per garantire che $x_0$ sia sufficientemente vicino ad
+  $\alpha$.
+
+#+BEGIN_QUOTE
+  *Nota*: la seconda condizione richiede che valga la condizione di
+  Lipschitzianità della funzione $f'$.
+#+END_QUOTE
+
+* Metodi iterativi di punto fisso
+  :PROPERTIES:
+  :CUSTOM_ID: metodi-iterativi-di-punto-fisso
+  :END:
+
+Una nuova classe di metodi iterativi che dà luogo ad una famiglia di
+metodi numerici per determinare gli zeri di funzione.
+
+Si tratta di un approccio generale all'approssimazione degli zeri di una
+funzione lineare.
+
+Sapendo che $f(x) = 0$ può essere sempre riscritta nella forma
+$g(x) = x$ per una $g$ opportuna, la ricerca degli zeri di una funzione
+$f : [a,b] \to \mathbb{R}$ può essere ricondotta allo studio dei punti
+fissi di una funzione $g : [a,b] \to \mathbb{R}$.
+
+L'approssimazione di $\alpha$ può essere trovata se:
+
+$$ f(\alpha) = 0 \iff g(\alpha) = \alpha $$
+
+In generale bisogna studiare sotto quali condizioni la successione delle
+iterate $\{x_i\}_{i \ge 0}$ appartenga sempre al dominio di $f$ e sia
+convergente ad $\alpha$ e sotto quali condizioni sia possibile garantire
+una certa velocità di convergenza.
+
+#+BEGIN_QUOTE
+  *Nota* la funzione $g$ può essere costruita in più modi. Tuttavia solo
+  certe funzioni potranno garantire un certo grado di efficienza.
+#+END_QUOTE
+
+** Metodi iterativi di punto fisso già visti
+   :PROPERTIES:
+   :CUSTOM_ID: metodi-iterativi-di-punto-fisso-già-visti
+   :END:
+
+*Metodo delle corde*
+
+$$ g(x) = x - \frac{f(x)}{m} $$
+
+*Metodo di Newton*
+
+$$ g(x) = x - \frac{f(x)}{f'(x)} $$
+
+** Interpretazione geometrica
+   :PROPERTIES:
+   :CUSTOM_ID: interpretazione-geometrica
+   :END:
+
+A partire da $x_0$ si costruisce una successione di approssimazioni
+definita come $x_{i + 1} = g(x_i),\ i = 0,1,2,...$.
+
+$x_{i + 1}$ rappresenta il punto di intersezione dei grafici di:
+
+$$ y = g(x_i),\quad y = x $$
+
+Ad ogni iterazione per costruire $x_{i + 1}$ si disegna una poligonale
+orientata con lati paralleli agli assi $x$ e $y$.
+
+* Teorema di convergenza globale
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-convergenza-globale
+  :END:
+
+Si consideri la successione $x_{i + 1} = g(x_i),\ i = 0, 1, 2,...$ con
+$x_0$ assegnato. Si supponga che:
+
+1. $g : [a, b] \to [a, b]$
+2. $g \in C^1[a, b]$
+3. $\exists C < 1\ |\ |g'(x)| \le C \forall x \in [a, b]$
+
+Allora $g$ ha un unico punto fisso $\alpha \in [a, b]$ e la successione
+$\{x_i\}_{i \ge 0}$ converge ad $\alpha$ per ogni scelta di
+$x_0 \in [a, b]$. Inoltre:
+
+La prima ipotesi, insieme alla continuità di $g$, garantisce che:
+$\exists ! x\ |\ g(x) = x$.
+
+La seconda ipotesi richiede che $g$ sia differenziabile almeno una
+volta, in altri termini che $g'(x)$ sia continua su $[a,b]$.
+
+La terza ipotesi richiede che valga la /proprietà di contrazione/ su
+$g$. Ciò garantisce l'unicità del punto fisso.
+
+#+BEGIN_QUOTE
+  *Nota*: l'espressione /allora $g$ ha un unico punto fisso
+  $\alpha \in [a,b]$/ si traduce in:
+  $$ \lim_{i \to +\infty} x_i = \alpha,\ \forall x_0 \in [a,b] $$
+#+END_QUOTE
+
+#+BEGIN_QUOTE
+  *Nota*: dal punto di vista teorico è molto importante ma nella pratica
+  è difficile stabilire l'intervallo di valdità delle ipotesi.
+#+END_QUOTE
+
+* Teorema di convergenza locale
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-convergenza-locale
+  :END:
+
+Detto anche *teorema di Ostrowski*. Richiede che valgano le ipotesi del
+teorema di convergenza globale applicate ad un'intervallo ristretto.
+Permette di capire se una funzione $g$ converge o meno alla radice
+$\alpha$.
+
+*** Enunciato
+    :PROPERTIES:
+    :CUSTOM_ID: enunciato
+    :END:
+
+Sia $\alpha$ un punto fisso di
+$g \in C^1[\alpha - \rho, \alpha + \rho],\  \rho > 0$. Se:
+
+$$ |g'(x) < 1,\ \forall x \in [\alpha - \rho, \alpha + \rho] $$
+
+allora $\forall x_0 \in [\alpha - \rho, \alpha + \rho]$ la successione
+delle iterate $\{x_i\}_{i \ge 1}$ generata da $g$ è tale che:
+
+1. $x_i \in [\alpha - \rho, \alpha + \rho], \forall i \ge 1$
+2. $\lim_{i \to +\infty} x_i = \alpha$ unico punto fisso di $g$.
+
+*** Osservazioni
+    :PROPERTIES:
+    :CUSTOM_ID: osservazioni-1
+    :END:
+
+L'ipotesi di contrazione e la relativa condizione $|g'(\alpha)| < 1$
+individua due casisistiche:
+
+- *convergenza alternata*:
+
+  - $-1 < g'(\alpha) < 0$
+  - $\{x_i\}_{i \ge 0}$ monotona crescente se $x_0 < \alpha$
+  - $\{x_i\}_{i \ge 0}$ monotona decrescente se $x_0 > \alpha$
+
+- *convergenza monotona*:
+
+  - $0 < g'(\alpha) < 1$
+  - $\{x_i\}_{i \ge 0}$ monotona crescente se $x_0 < \alpha$
+  - $\{x_i\}_{i \ge 0}$ monotona crescente se $x_0 < \alpha$
+
+#+BEGIN_QUOTE
+  *Nota*: se non vale l'ipotesi di contrazione allora
+  $g'(\alpha) < -1 \vee g'(\alpha) > 1$ e si ha quindi divergenza. Si
+  dice che $g$ non è una contrazione in $I_{\alpha}$.
+#+END_QUOTE
+
+#+BEGIN_QUOTE
+  *Nota*: dal punto di vista pratico è molto più facile applicare il
+  teorema di Ostrowski rispetto al teorema di convergenza globale.
+#+END_QUOTE
+
+* Teorema sull'ordine di convergenza
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-sullordine-di-convergenza
+  :END:
+
+Per i metodi di /iterazione funzionale/ è possibile anche dare una
+relazione tra /ordine del metodo/ e /molteplicità di $\alpha$/ rispetto
+a $g_0$.
+
+** Enunciato
+   :PROPERTIES:
+   :CUSTOM_ID: enunciato-1
+   :END:
+
+Sia $\alpha \in I$ punto fisso di $g \in C^p [I]$ con $p \ge 2$ intero.
+Se per un punto $x_0 \in I$ la successione $\{x_i\}_{i \ge 0}$ è
+convergente se:
+
+$$ g'(\alpha) = g''(\alpha) = \dotsc = g^{p - 1} (\alpha) = 0, \quad g^p 
+(\alpha) \ne 0$$
+
+Allora il metodo ha ordine di convergenza $p$ e risulta:
+
+$$ \lim_{i \to + \infty} \frac{|x_{i +1} - \alpha|}{|x_i - \alpha|^p} = 
+\frac{g^p (\alpha)}{p!} = C $$
+
+DIMOSTRAZIONE SVOLTA
+
+** Osservazioni
+   :PROPERTIES:
+   :CUSTOM_ID: osservazioni-2
+   :END:
+
+La quantità:
+
+$$\lim_{i \to + \infty} \frac{|x_{i +1} - \alpha|}{|x_i - \alpha|^p}$$
+
+è detta *costante asitotica o di convergenza* o anche *fattore di
+convergenza asintotico*.
+
+Nel confronto tra due funzioni $g$, è preferibile il metodo che impiega
+la funzione $g$ con velocità di convergenza maggiore.
+
+A parità di ordine di convergenza, si preferisce il metodo con costante
+asintotica *più piccola*.
+
+A seconda del valore di $p$ si distinguono due casi:
+
+- $p = 1$: si ha $g'(\alpha) \ne 0$, la quantità $|g'(\alpha)|$ è il
+  *fattore asintotico di convergenza*.
+- $p \ge 2$, la quantità $\frac{|g^p(\alpha)|}{p!}$ è la *costante
+  asintotica di convergenza*.
+
+Tanto più piccoli sono, a seconda dei casi, il fattore asintotico di
+convergenza e la costante asintotica di convergenza, tanto più veloce
+sarà la convergenza delle iterate ad $\alpha$.
+

@@ -1,0 +1,738 @@
+#+TITLE: Interpolazione
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Confronto dei costi computazionali per la forma di Lagrange e quella
+di Newton
+  :PROPERTIES:
+  :CUSTOM_ID: confronto-dei-costi-computazionali-per-la-forma-di-lagrange-e-quella-di-newton
+  :END:
+| Forma    | Calc. coef.               | Val. in $1$ punto | Val. in $M$ punti  | Costo totale                             |
+|----------+---------------------------+-------------------+--------------------+------------------------------------------|
+| Lagrange | 0                         | $\Omicron(2 n^2)$ | $Omicron(2 n^2 M)$ | $Omicron(2 n^2 M)$                       |
+| Newton   | $\Omicron(\frac{n^2}{2})$ | $\Omicron(n)$     | $\Omicron(nM)$     | $\Omicron(nM) + \Omicron(\frac{n^2}{2})$ |
+
+Si deduce che conviene adottare la forma di Newton piuttosto che quella
+di Lagrange per valori di $M$ e $n$ grandi.
+
+Inoltre l'impiego della forma di Lagrange costringe a ricalcolare il
+polinomio di interpolazione se si vogliono aggiungere nuovi punti di
+interpolazione. Non si possono mantenere informazioni valide sui calcoli
+effettuati in precedenza.
+
+Al contrario la forma di Newton, con un piccolo incremento del costo
+computazionale, permette di estendere l'insieme dei punti di
+interpolazione.
+
+* Il problema dell'interpolazione
+  :PROPERTIES:
+  :CUSTOM_ID: il-problema-dellinterpolazione
+  :END:
+** Che cos'è l'interpolazione?
+   :PROPERTIES:
+   :CUSTOM_ID: che-cosè-linterpolazione
+   :END:
+Si tratta di un metodo per individuare nuovi punti del piano cartesiano
+a partire da un insieme finito di punti dati, nell'ipotesi che tutti i
+punti si possano riferire ad una funzione di una data famiglia di
+funzioni di una variabile reale.
+
+** Quando si ricorre all'interpolazione?
+   :PROPERTIES:
+   :CUSTOM_ID: quando-si-ricorre-allinterpolazione
+   :END:
+Si impiega la tecnica di interpolazione per la /rappresentazione di
+fenomeni fisici/ a partire da dati sperimentali e per l'/approssimazione
+di funzioni articolate/, che hanno un costo di calcolo elevato.
+
+Nel primo caso si forma l'insieme dei valori finiti di partenza a
+partire dal /campionamento del fenomeno fisico/, realizzato a partire da
+misure sperimentali.
+
+Nel secondo caso si raccolgono delle coppie di valori a partire dalla
+tabulazione della funzione articolata.
+
+** In cosa consiste l'interpolazione?
+   :PROPERTIES:
+   :CUSTOM_ID: in-cosa-consiste-linterpolazione
+   :END:
+A partire da un insieme di coppie di valori, detti *punti di
+interpolazione* si cerca una funzione $g$, detta *funzione
+interpolante*, che soddisfi la /condizione di interpolazione/:
+
+$$
+    g(x_i) = y_i,\ i = 0,..., n
+$$
+
+Per determinare l'interpolante si fissa una *base di rappresentazione*
+per lo spazio di funzioni che permetteranno di esprimere $g$.
+
+Fissata la base di rappresentazione la determinazione della funzione
+interpolante si riconduce al calcolo dei coefficienti del polinomio
+interpolante $a_0,...,a_n$ per cui vale:
+
+$$
+    g(x_i) = \sum_{j = 0}^{n} a_j \phi_{j} (x_i) = y_i
+$$
+
+Dove $\{\phi_{0} (x), \dotsc, \phi_{n} (x)\}$ è la base di
+rappresentazione di dimensione $n + 1$ e $i = 0,...,n$.
+
+Perciò il problema dell'interpolazione si riduce alla risoluzione del
+sistema lineare quadrato $Aa = y$.
+
+#+begin_quote
+  *Nota*: dati i punti di interpolazione $(x_0, y_0),...,(x_n, y_n)$,
+  gli $x_i \in [a,b]$ sono detti /nodi dell'interpolazione/.
+#+end_quote
+
+#+begin_quote
+  *Nota*: la scelta delle /funzioni base/ determina una certa funzione
+  interpolante per cui si approssimano i dati e determina le proprietà
+  della matrice $A$ del sistema lineare che ne deriva.
+#+end_quote
+
+** Quali sono le basi di rappresentazione tra cui è possibile scegliere?
+   :PROPERTIES:
+   :CUSTOM_ID: quali-sono-le-basi-di-rappresentazione-tra-cui-è-possibile-scegliere
+   :END:
+Esistono diversi approcci al problema che dipendono dalla base di
+rappresentazione scelta per il polinomio di interpolazione. Si hanno:
+
+- *base dei monomi*
+- *base dei polinomi fondamentali di Lagrange*
+- *base di Newton*
+
+* Teorema di esistenza ed unicità del polinomio interpolante
+  :PROPERTIES:
+  :CUSTOM_ID: teorema-di-esistenza-ed-unicità-del-polinomio-interpolante
+  :END:
+Dati gli $n + 1$ punti di interpolazione $(x_i, y_i),\ i = 0,...,n$ con
+$x_i \ne x_j$ per $i \ne j$, esiste ed è unico il polinomio
+interpolante:
+
+$$
+    P_n(x) = a_0 + a_1 x + a_2 x^2 + ... + a_{n} x^{n}
+$$
+
+Per cui vale: $p_{n} (x_i) = y_i,\ \forall i = 0,...,n$
+
+#+begin_quote
+  *Nota*: ciò si dimostra riconducendosi al fatto che la determinazione
+  del polinomio interpolante equivale alla risoluzione di un sistema
+  lineare con matrice dei coefficienti non singolare. Tale sistema può
+  avere un'unica soluzione.
+#+end_quote
+
+** Conseguenze del teorema
+   :PROPERTIES:
+   :CUSTOM_ID: conseguenze-del-teorema
+   :END:
+Dato che per $n + 1$ punti distinti passa uno ed un solo polinomio di
+grado $n$, un cambio di base dà lo stesso polinomio interpolante per uno
+stesso insieme di dati.
+
+In altri termini dato un set di dati si ottiene lo stesso polinomio
+interpolante sia con la base dei monomi che con i polinomi fondamentali
+di Lagrange. Tuttavia la differente rappresentazione permette di
+ottenere un algoritmo stabile se si impiegano i polinomi fondamentali di
+Lagrange.
+
+Quindi si impiega una differente rappresentazione del polinomio
+interpolante per risolvere il problema numerico dell'approssimazione di
+dati sperimentali in modo da ottenere una soluzione accurata.
+
+* Base dei monomi
+  :PROPERTIES:
+  :CUSTOM_ID: base-dei-monomi
+  :END:
+Date $m + 1$ coppie di dati sperimentali $(x_i, y_i),\ i = 0,..., m$ in
+cui tutte le ascisse sono distinte tra loro, si vuole determinare il
+polinomio:
+
+$$
+    p_n(x) = \sum_{j = 0}^{n} a_{j} x^{j}
+$$
+
+Per la rappresentazione del polinomio di interpolazione si impiega la
+*base dei monomi*. Si vuole imporre che la funzione rappresentata dal
+polinomio passi per questi punti. Perciò i coefficienti del polinomio
+$a_0,..., a_n$ si ottengono risolvendo /nel senso dei minimi quadrati/
+il /sistema lineare sovradeterminato/ formato dalle equazioni:
+
+$$
+    p_{n} (x_i) = y_i
+$$
+
+Se si definisce una /matrice dei coefficienti/ $B$, quadrata, nel
+seguente modo:
+
+$$ 
+    B = (b_{i, j})_{i = 0,...,m,\ j=0,...,n}
+$$
+
+Dove $b_{i, j} = (x_{i})^{j}$ e $B$ è detta *matrice di Vandermonde*.
+
+Si ottiene in questo modo il sistema lineare sovradeterminato:
+
+$$
+    B a = y,\ a = (a_0,..., a_n)^T,\ y = (y_0,...,y_m)^T
+$$
+
+Che ammette soluzioni e ammette soluzione unica. Il sistema ottenuto è
+nella forma:
+
+$$
+\begin{pmatrix}
+x_0 & \cdots & x_ {0}^{n} \\
+\vdots & \ddots & \vdots \\
+x_{m}^{0} & \cdots & x_{m}^{n}
+\end{pmatrix}
+\begin{pmatrix}
+a_0 \\
+\vdots \\
+a_m
+\end{pmatrix} = 
+\begin{pmatrix}
+y_0 \\
+\vdots \\
+y_m
+\end{pmatrix}
+$$
+
+La risoluzione del sistema lineare di Vandermonde pone un problema di
+carattere numerico. Infatti la matrice di Vandermonde è *mal
+condizionata*.
+
+Si dimostra che al crescere dell'ordine del polinomio $n$ il /numero di
+condizionamento/ della matrice /cresce esponenzialmente/.
+
+** Algoritmo per il calcolo del vettore dei coefficienti $a$
+   :PROPERTIES:
+   :CUSTOM_ID: algoritmo-per-il-calcolo-del-vettore-dei-coefficienti-a
+   :END:
+La tecnica di risoluzione dei sistemi lineari sovradeterminati con il
+metodo QRLS permette di risolvere problemi relativi all'approssimazione
+di dati sperimentali e all'approssimazione di funzioni articolate.
+
+1. Fattorizzazione $B = QR$ con
+   $Q \in \mathbb{R}^{(m + 1) \times (n +1)}$ ortogonale e $R$ matrice
+   trapezoidale superiore partizionata in due blocchi, di cui uno è
+   $R_1 \in \mathbb{R}^{(n + 1) \times (n + 1)}$ triangolare superiore
+   non singolare.
+2. Definizione del vettore $\tilde{y}_{1}$ costituito dalle prime
+   $n + 1$ componenti del vettore $y_1 = Q^T y \in \mathbb{R}^{m + 1}$,
+   ossia $\tilde{y}_{1} = y_{1} (1:n+1)$.
+3. Risoluzione del sistema triangolare $R_1 a = \tilde{y}_{1}$ con il
+   metodo delle sostituzioni all'indietro.
+
+** Polinomio lineare e quadratico
+   :PROPERTIES:
+   :CUSTOM_ID: polinomio-lineare-e-quadratico
+   :END:
+Si distinguono due casi principali:
+
+- $n = 1$: Polinomio lineare di approssimazione ai minimi quadrati
+  $p_1(x) = a_0 + a_1 x$
+- $n = 2$: Polinomio quadratico di approssimazione ai minimi quadrati
+  $p_2(x) = a_0 + a_1 x + a_2 x^2$
+
+* Funzioni di base di Lagrange
+  :PROPERTIES:
+  :CUSTOM_ID: funzioni-di-base-di-lagrange
+  :END:
+Per risolvere il problema numerico posto dalla rappresentazione del
+polinomio di interpolazione tramite la matrice di Vandermonde bisogna
+cambiare la rappresentazione del polinomio di interpolazione.
+
+Si considerano i *polinomi fondamentali di Lagrange*.
+
+Il j-esimo polinomio fondamentale di Lagrange di grado $n$ si denota nel
+seguente modo:
+
+$$
+    L_{j} (x) = \prod_{i = 0, i \ne j}^{n} \frac{x - x_i}{x_j - x_i}
+$$
+
+Per realizzare il /polinomio di interpolazione/ si costruiscono i
+singoli polinomi fondamentali di Lagrange.
+
+$$
+    P_n (x) = \sum_{j = 0}^{n} y_{j} L_{j} (x)
+$$
+
+Ad esempio il polinomio di interpolazione di grado $2$ /in forma di
+Lagrange/ è:
+
+$$
+    p_2 (x) = y_0 L_0 (x) + y_1 L_1 (x) + y_2 L_2 (x)
+$$
+
+** Proprietà
+   :PROPERTIES:
+   :CUSTOM_ID: proprietà
+   :END:
+Dipendono esclusivamente dalle ascisse dei punti di interpolazione.
+
+1. $L_{j}(x_i) = \begin{cases} 0 & i \ne j \\ 1 & i = j \end{cases}$
+   $L_0 (x_i)$ è un polinomio di grado $2$.
+
+2. Dalla proprietà $1$ deriva che i coefficienti del polinomio di
+   interpolazione nella base di Langrange sono esattamente le ordinate
+   dei punti che si interpolano. Dal punto di vista computazionale è
+   necessario solo calcolare i polinomi fondamentali di Lagrange mentre
+   il calcolo dei coefficienti ha costo nullo dato che sono le ordinate
+   dei punti da interpolare.
+
+   DIMOSTRAZIONE SVOLTA
+
+3. I polinomi $L_{j}$ sono polinomi di grado $\le n$ generatori dello
+   spazio dei polinomi di grado $\le n$ che linearmente indipendenti
+   perciò sono una base.
+
+   DIMOSTRAZIONE NON DA SVOLGERE
+
+4. Se si valutano i contributi dati dagli $n$ polinomi fondamentali di
+   Lagrange in un punto di ascissa $x$ e si sommano i risultati delle
+   valutazioni si ottiene sempre $1$. Ovvero:
+
+   $$
+       \sum_{j = 0}^{n} L_{j} (x) = 1
+   $$
+
+** Costo computazionale
+   :PROPERTIES:
+   :CUSTOM_ID: costo-computazionale
+   :END:
+Il costo computazionale dovuto alla costruzione del polinomio di
+interpolazione in forma di Langrange si ottiene considerando i seguenti
+costi:
+
+- /Calcolo dei coefficienti/: 0;
+- /Valutazione in un punto/: sono richieste $2 \cdot (n - 1)$
+  moltiplicazioni (numeratore e denominatore) per calcolare la
+  valutazione $L_{j} (\bar{x})$. Per valutare il polinomio di
+  interpolazione in un punto servono $n + 1$ valutazioni di polinomi
+  fondamentali di Lagrange. Si impiegano quindi: $2(n - 1)(n + 1)$
+  moltiplicazioni. Infine per calcolare la sommatoria si devono
+  aggiungere altre $n + 1$ moltiplicazioni. In conclusione si considera
+  il termine di grado massimo in $n$ e quindi il costo risulta pari a:
+  $\Omicron(2 n^2)$.
+- /Valutazione in $M$ punti/: si effettua una discretizzazione
+  dell'intervallo sul quale si vuole visualizzare il polinomio e si
+  valuta il polinomio nei punti che rappresentano l'intervallo. Il costo
+  è pari a: $\Omicron(2 n^2 M)$.
+
+Perciò il costo computazionale di costruzione del polinomio di
+interpolazione in forma di Lagrange è pari a: $\Omicron(2 n^2 M)$
+
+#+begin_quote
+  *Nota*: per stimare i costi si conteggiano il numero di
+  moltiplicazioni e divisione necessarie.
+#+end_quote
+
+* Funzioni di base di Newton
+  :PROPERTIES:
+  :CUSTOM_ID: funzioni-di-base-di-newton
+  :END:
+Il polinomio interpolante di Newton è della forma:
+
+$$
+    p_n (x) = \sum_{j = 0}^{n} a_{j} \prod_{k = 0}^{j - 1} (x - x_k)
+$$
+
+Dove i coefficienti incogniti $\{a_{j},\ j = 0,...,n\}$ sono determinati
+dalla soluzione del sistema triangolare: $Aa = y$.
+
+Ad esempio un polinomio di grado $2$ sarà espresso come:
+
+$$
+    p_2 (x) = a_0 + a_1 (x - x_0) + a_2 (x - x_0)(x - x_1)
+$$
+
+** Costo computazionale
+   :PROPERTIES:
+   :CUSTOM_ID: costo-computazionale-1
+   :END:
+Dal punto di vista dei costi computazionali, la costruzione della
+matrice $A$ ha un costo particolarmente elevato, dato che sono richieste
+molte moltiplicazioni.
+
+Per ottimizzare i costi e ridurre al massimo il costo di determinazione
+dei coefficienti $a_{j}$ si costruisce la *tabella delle differenze
+divise*.
+
+La tabella si costruisce a partire dalla seguente equazione soddisfatta
+dai coefficienti:
+
+$$
+    a_{i}^{j} = \frac{a_{i}^{j - 1} - a_{i - 1}^{j - 1}}{x_{i} - x_{i - j}}
+$$
+
+Si ha che il costo dell'algoritmo per la costruzione della tabella delle
+differenze divise è pari a: $\Omicron(\frac{n^2}{2})$
+
+Inoltre si può ottimizzare anche la costruzione del polinomio
+interpolante in forma di Newton impiegando l'*algoritmo di Horner*.
+
+Si sfrutta il raccoglimento e ad esempio si ottiene che il polinomio di
+grado $2$ /raccolto/ è nella seguente forma:
+
+$$
+    p_2 (x) = a_0 + (x - x_0) (a_1 + (x - x_1) a_2)
+$$
+
+Ciò permette di effettuare la valutazione del polinomio raccolto con un
+ciclo in cui si esegue una sola moltiplicazione. Con $n$ moltiplicazioni
+si può valutare il valore del polinomio di $x$ in un singolo punto.
+Perciò il costo di valutazione del polinomio di interpolazione in un
+punto $x$ è pari a: $\Omicron(n)$.
+
+#+begin_quote
+  *Nota*: per $j = 0$ si pone la produttoria
+  $\prod_{k = 0}^{-1} (x - x_k) := 1$ dato che la produttoria non
+  sarebbe ben definita.
+#+end_quote
+
+Per valutare il costo computazionale complessivo si considerano i costi
+di creazione della tabella delle differenze divise e dell'applicazione
+dell'algoritmo di Horner. Si ottiene che il costo complessivo è pari a:
+
+$$
+    \Omicron(\frac{n^2}{2} + \Omicron(Mn)
+$$
+
+** Estensione dell'insieme dei punti interpolanti
+   :PROPERTIES:
+   :CUSTOM_ID: estensione-dellinsieme-dei-punti-interpolanti
+   :END:
+Un polinomio di interpolazione espresso in forma di Newton può essere
+esteso con un punto di interpolazione $(x_{n + 1}, y_{n + 1})$
+calcolando una riga aggiuntiva nella tabella delle differenze divise.
+Ottenuto $a_{n + 1}$ si può costruire il nuovo polinomio di
+interpolazione a partire dal precedente nel seguente modo:
+
+$$
+    p_{n + 1} (x) = p_{n} (x) + a_{n + 1} (x - x_0) \dotsc 
+    (x - x_{n - 1})(x - x_n) 
+$$
+
+* Errore di interpolazione polinomiale
+  :PROPERTIES:
+  :CUSTOM_ID: errore-di-interpolazione-polinomiale
+  :END:
+** Teorema sulla stima dell'errore di interpolazione polinomiale
+   :PROPERTIES:
+   :CUSTOM_ID: teorema-sulla-stima-dellerrore-di-interpolazione-polinomiale
+   :END:
+Sia $p_n(x)$ il polinomio di interpolazione della funzione
+$f \from [a, b] \to mathbb{R}$ costruito sugli $n + 1$ nodi distinti
+$x_0,...,x_n$.
+
+La funzione:
+
+$$
+    r_{n + 1} (x) = f(x) - p_{n} (x)
+$$
+
+è detta *errore di interpolazione*.
+
+*** Proprietà dell'errore di interpolazione
+    :PROPERTIES:
+    :CUSTOM_ID: proprietà-dellerrore-di-interpolazione
+    :END:
+
+1. $r_{n + 1} (x_{i}) = 0,\ \forall i = 0,...,n$
+
+2. Se $f \in C^{n + 1} [a, b]$ allora:
+
+$$
+    r_{n + 1} (x) = \omega_{n + 1} (x) \frac{f^{(n + 1)}(\xi)}{(n + 1)!}
+$$
+
+#+begin_quote
+  *Nota*: dato che non si conosce il punto $\xi$ la formula
+  difficilmente può essere applicata nella pratica.
+#+end_quote
+
+*** Quali fattori influiscono sull'errore di interpolazione?
+    :PROPERTIES:
+    :CUSTOM_ID: quali-fattori-influiscono-sullerrore-di-interpolazione
+    :END:
+Dalla proprietà $2$ si deduce che questi fattori sono:
+
+- la /regolarità/ della funzione $f$;
+- il /numero di punti su cui si interpola/ $n + 1$ e quindi il grado $n$
+  del polinomio di interpolazione;
+- la /disposizione dei nodi di interpolazione/ $x_i$, con $i = 0,...,n$,
+  che determina univocamente la funzione $\omega_{n + 1} (x)$.
+
+*** Limitazioni sull'errore di interpolazione
+    :PROPERTIES:
+    :CUSTOM_ID: limitazioni-sullerrore-di-interpolazione
+    :END:
+Se $f \in C^{n + 1} [a, b]$ e $f^{(n + 1)}$ abbia i valori di minimo e
+massimo:
+
+- $m_{n + 1} := \min_{x \in [a, b]} |f^{(n + 1)}(x)|$
+- $M_{n + 1} := \max_{x \in [a, b]} |f^{(n + 1)}(x)|$
+
+Si possono ricavare le seguenti stime per eccesso e per difetto
+dell'errore $r_{n + 1} (x)$ in un dato $x \in [a, b]$:
+
+- Caso $\omega_{n + 1} (x) > 0$
+  $$ \frac{\omega_{n + 1} (x) m_{n + 1} \le \le \frac{\omega_{n + 1} (x) M_{n + 1} 
+  $$
+
+- Caso $\omega_{n + 1} (x) < 0$
+  $$ \frac{\omega_{n + 1} (x) M_{n + 1} \le \le \frac{\omega_{n + 1} (x) m_{n + 1} 
+  $$
+
+** Teorema sulla convergenza dei polinomi interpolanti
+   :PROPERTIES:
+   :CUSTOM_ID: teorema-sulla-convergenza-dei-polinomi-interpolanti
+   :END:
+
+#+begin_quote
+  Si possono determinare delle condizioni sufficienti a garantire la
+  convergenza uniforme della successione $\{p_{n}\}_{n}$ dei polinomi
+  interpolanti alla funzione che si vuole approssimare?
+#+end_quote
+
+Si vogliono determinare le condizioni per cui vale che:
+
+$$ \|r_{n + 1} (x) \|_{\infty} = \max_{x \in [a, b]} |r_{n + 1} (x)| 
+\Rightarrow^{n \to +\infty} 0 $$
+
+Per ipotesi deve valere che $f \in C^{\infty} [a, b]$ e
+$\lim_{n \to + \infty} \frac{(b - a)^{n}}{n!} \mu_{n} = 0$
+
+Dove
+$mu \ge |f^{n} (x)|, \forall n \in \mathbb{N},\ \forall x \in [a, b]$.
+
+Se le ipotesi sono verificate allora la *successione dei polinomi
+interpolanti* $\{p_{n}\}_{n}$ *converge uniformemente* a $f$ in
+$[a, b]$. Perciò vale la condizione indicata inizialmente.
+
+#+begin_quote
+  *Nota*: la condizione
+  $\lim_{n \to + \infty} \frac{(b - a)^{n}}{n!} \mu_{n} = 0$ è
+  soddisfata da funzioni che hanno /derivate equilimitate/ in $[a, b]$,
+  ovvero tutte le derivate di $f$ sono limitate dalla stessa costante.
+#+end_quote
+
+#+begin_quote
+  *Nota*: solo poche funzioni sono in grado di soddisfare le ipotesi
+  richieste da questo teorema di convergenza.
+#+end_quote
+
+** Il fenomeno di Runge
+   :PROPERTIES:
+   :CUSTOM_ID: il-fenomeno-di-runge
+   :END:
+In generale una funzione non soddisfa il teorema di convergenza dei
+polinomi interpolanti. In questo caso può accadere che aumentando il
+grado del polinomio di interpolazione non si approssimi la funzione $f$
+con maggior accuratezza.
+
+In particolare se si considerano dei nodi di interpolazione equispaziati
+nell'intervallo $[a, b]$ /non è/ in generale vero che al crescere del
+numero di punti di interpolazione e quindi al crescere del grado $n$ del
+polinomio di interpolazione, la successione dei polinomi interpolanti
+$\{p_{n}\}_{n}$ converga a $f$.
+
+Sia data $f \from [a, b] \to \mathbb{R]$ e sia $[a,b] = [-1, 1]$, si ha
+che $f$ è detta /funzione di Runge/ ed è nella forma:
+
+$$ 
+    f(x) = \frac{1}{1 + 25 x^2}
+$$
+
+Se si scelgono i /nodi di interpolazione/ *equispaziati* sull'intervallo
+$[a, b]$,ossia;
+
+$$
+    x_{i} = a + \frac{(b - a) i}{n},\ i = 0,...,n
+$$
+
+Tracciando il grafico della funzione interpolante si può osservare il
+*fenomeno di Runge*. Anziché diminuire, al crescere di $n$ l'errore di
+interpolazione aumenta alle estremità dell'intervallo $[a, b]$.
+
+In altri termini al centro dell'intervallo $[a, b]$ si ottiene una buona
+approssimazione di $f$ mentre si presentano delle /fitte oscillazioni
+agli estremi dell'intervallo/, tipiche di polinomi di grado elevato.
+
+** I nodi di Chebyshev
+   :PROPERTIES:
+   :CUSTOM_ID: i-nodi-di-chebyshev
+   :END:
+I nodi:
+
+$$
+    x_{i} = \cos \left( \frac{(2i + 1) \pi}{2 (n + 1)} \right),\ i = 0,...,n
+$$
+
+sono detti /nodi di Chebyshev/ poiché coincidono con gli $n + 1$ zeri
+reali distinti del /polinomio di Chebyshev/ di grado $n + 1$ della
+forma:
+
+$$
+    T_{n + 1} (x) = \cos \left( (n + 1) \arccos(x) \right)
+$$
+
+In generale:
+
+$$
+    T_{n + 1} (x) = 2x T_{n} (x) - T_{n - 1} (x),\ \forall n \ge 1
+$$
+
+*** Proprietà
+    :PROPERTIES:
+    :CUSTOM_ID: proprietà-1
+    :END:
+
+- I nodi di Chebyshev corrispondono alle /proiezioni/ sull'intervallo
+  $[-1, 1]$ di /punti equispaziati/ sulla /semicirconferenza unitaria/.
+
+- I nodi di Chebyshev sono distribuiti in modo più fitto vicino agli
+  estremi dell'intervallo $[-1 ,1]$, ovvero proprio dove si osserva il
+  comportamento critico dell'errore di interpolazione, ciò il /fenomeno
+  di Runge/.
+
+**** Nodi di Chebyshev ed errore polinomiale
+     :PROPERTIES:
+     :CUSTOM_ID: nodi-di-chebyshev-ed-errore-polinomiale
+     :END:
+Si dimostra che tra tutte le possibili distribuzioni di nodi, la scelta
+dei nodi Chebyshev è quella che rende la quantità:
+
+$$ \omega_{n + 1} := \|\omega_{n + 1} (x) \|_{\infty} = \max_{x \in [-1, 1]} 
+|\omega_{n + 1} (x)| $$
+
+più piccola possibile. Ciò significa che si può definire una
+*limitazione sul modulo dell'errore di interpolazione*, che risulta:
+
+$$ |r_{n + 1} (x)| \le \frac{\omega^{*}_{n + 1} \mu_{n + 1}}{(n + 1)!} = 
+\frac{\mu_{n + 1}}{2^{n} (n + 1)!}} $$
+
+Dove:
+
+- $\omega^{*}_{n + 1} = \frac{1}{2^n}$ per la scelta dei nodi di
+  Chebyshev;
+- $\mu_{n + 1} \ge M_{n + 1} = \max_{x \in [-1,1]} |f^{(n + 1)} (x)|$,
+  ovvero è possibile definire un /limite superiore/ sul valore della
+  derivata $(n+1)$-esima della funzione da interpolare.
+
+*** Estensione dei nodi di Chebyshev
+    :PROPERTIES:
+    :CUSTOM_ID: estensione-dei-nodi-di-chebyshev
+    :END:
+Si definiscono i nodi di Chebyshev relativi all'intervallo $[a, b]$ nel
+seguente modo:
+
+$$
+    x_{i} = \frac{a + b}{2} + \frac{b - a}{2} \cos(\frac{(2i + 1) \pi}{2 (n + 
+    1)}),\ i = 0,...,n
+$$
+
+*** Proprietà estese
+    :PROPERTIES:
+    :CUSTOM_ID: proprietà-estese
+    :END:
+
+1. Si dimostra che tra tutte le possibili distribuzioni di nodi, la
+   scelta dei nodi Chebyshev è quella che rende il più piccola possibile
+   la seguente quantità:
+   $$ \omega_{n + 1} := \|\omega_{n + 1} (x) \|_{\infty} = \max_{x \in [a, b]}
+    |\omega_{n + 1} (x)| $$ In particolare
+   $\| \omega_{n + 1} (x) \|_{\infty} = \frac{(b - a)^{n + 1}}{2^{2n + 1}}$
+   Perciò il modulo della funzione resto del polinomio di interpolazione
+   ha un limite superiore pari a: $$ $$
+
+#+begin_quote
+  *Nota*: la proprietà $1$, in particolare l'espressione relativa alla
+  funzione resto del problema di interpolazione, permette di sapere a
+  priori quanti punti di interpolazione sono necessari per raggiungere
+  una certa approssimazione di $f$ che è inferiore ad una tolleranza
+  scelta.
+#+end_quote
+
+2. La scelta dei nodi di Chebyshev è quella che garantisce un miglior
+   condizionamento del problema di interpolazione polinomiale. L'indice
+   di condizionamento del problema di interpolazione, ovvero la
+   *costante di Lebesque* è più bassa rispetto al caso dei nodi
+   equispaziati: $\Lambda_{n} \approx \frac{2}{\pi} \log_{e} (n)$, per
+   $n \to +\infty$
+
+** Teorema di convergenza con nodi di Chebyshev
+   :PROPERTIES:
+   :CUSTOM_ID: teorema-di-convergenza-con-nodi-di-chebyshev
+   :END:
+Se $f$ è una *funzione lipschitziana* in $[a, b]$, allora la successione
+$\{p_{n}\}_{n}$ dei polinomi di interpolazione della funzione $f$ *sui
+nodi di Chebyshev* /converge/ a $f$ uniformemente in $[a, b]$.
+
+#+begin_quote
+  *Nota*: una funzione è lipschitziana se:
+  $\exists\ L > 0 | |f(x) - f(y)| \le L |x - y|,\ \forall x,y \in [a, b]$
+#+end_quote
+
+#+begin_quote
+  *Nota*: si indebolisce la richiesta sulla $f$, non deve essere di
+  classe infinita ma solo lipschitziana, perciò potrebbe anche non
+  essere differenziabile. Ciò è possibile grazie al'impiego dei nodi di
+  Chebyshev.
+#+end_quote
+
+** Condizionamento del problema di interpolazione
+   :PROPERTIES:
+   :CUSTOM_ID: condizionamento-del-problema-di-interpolazione
+   :END:
+Si deve effettuare uno studio del condizionamento.
+
+L'indice di condizionamento del problema di interpolazione polinomiale è
+detto *costante di Lebesgue*. L'espressione è la seguente:
+
+$$ 
+    \Lambda_{n} = \max_{x \in [a, b]} \sum^{n}_{i = 0} |L_{i} (x)|
+$$
+
+Per la proprietà $4$ dei /polinomi fondamentali di Lagrange/ si ha che:
+
+$$
+    \sum^{n}_{i = 0} |L_{i} (x)| \ge  \sum^{n}_{i = 0} L_{i} (x) = 1
+$$
+
+Perciò vale: $\Lambda_{n} \ge 1$.
+
+La costante di Lebesque risulta essere crescente al crescere di $n$, sia
+impiegando noti equispaziati che i nodi di Chebyshev.
+
+#+begin_quote
+  *Nota*: se il grado del polinomio di interpolazione è abbastanza alto,
+  anche se si impiegano i nodi di Chebyshev il risultato inizierà a
+  perdere progressivamente accuratezza e la tecnica di interpolazione
+  polinomiale si rivelerà inadeguata.
+#+end_quote
+
+** Interpolazione spline
+   :PROPERTIES:
+   :CUSTOM_ID: interpolazione-spline
+   :END:
+
+#+begin_quote
+  In cosa consiste l'interpolazione spline?
+#+end_quote
+
+Si definiscono dei sottoinsiemi dei punti di interpolazione e si
+costruisce un polinomio di interpolazione per ognuno dei sottoinsiemi.
+Si ottiene un /polinomio a tratti/.
+
+La tecnica delle spline interpolatorie garantisce che il raccordo tra i
+singoli polinomi sia regolare (fino ad un certo ordine) tra i
+sottoinsiemi di punti consecutivi.
+
+Rappresenta una tecnica di interpolazione più raffinata
+dell'interpolazione polinomiale, particolarmente adeguata per un numero
+elevato di punti da interpolare.

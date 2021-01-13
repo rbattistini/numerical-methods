@@ -1,0 +1,150 @@
+#+TITLE: Introduzione all'analisi numerica
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Qual'è l'obiettivo dell'analisi numerica?
+  :PROPERTIES:
+  :CUSTOM_ID: qualè-lobiettivo-dellanalisi-numerica
+  :END:
+Dare una risposta numerica, mediante un calcolatore, ad un problema
+matematico che modellizza un problema reale.
+
+Si tratta di una tappa, la $6$, del percorso che porta a comprendere più
+a fondo la realtà che ci circonda:
+
+1. Realtà
+2. Osservazione
+3. Meditazione
+4. Rappresentazione schematica
+5. Modello matematico
+6. Modello numerico e algoritmo
+7. Programma di calcolo
+8. Analisi dei risultati
+
+--------------
+
+* Come risolvere un problema matematico che modellizza la realtà?
+  :PROPERTIES:
+  :CUSTOM_ID: come-risolvere-un-problema-matematico-che-modellizza-la-realtà
+  :END:
+Il passaggio dal problema reale a quello matematico avviene mediante un
+/processo di idealizzazione e approssimazione/ basato sull'esperienza e
+sulla comprensione del problema.
+
+Si traduce un problema reale complesso in un insieme di equazioni
+matematiche in grado di descriverlo.
+
+Successivamente si trasforma il /problema matematico, continuo/, in un
+/problema numerico, discreto/, che sia risolubile.
+
+Si costruisce un programma di calcolo a partire dall'applicazione di
+algoritmi numerici capaci di determinare la soluzione nel /minimo tempo
+possibile/ e con la /massima accuratezza/.
+
+Si interpreta la soluzione numerica nei termini della situazione reale,
+confrontando i risultati ottenuti tramite il modello scelto con quelli
+sperimentali raccolti.
+
+Si verifica così sia l'/adeguatezza del modello matematico/ che la
+/robustezza e l'efficienza dell'algoritmo risolutivo/.
+
+--------------
+
+* Quali sono le principali sorgenti di errore nella risoluzione di
+problemi
+  :PROPERTIES:
+  :CUSTOM_ID: quali-sono-le-principali-sorgenti-di-errore-nella-risoluzione-di-problemi
+  :END:
+* matematici al calcolatore?
+  :PROPERTIES:
+  :CUSTOM_ID: matematici-al-calcolatore
+  :END:
+
+1. *Errori nel modello matematico* Dovuti alle ipotesi introdotte per
+   semplificare il problema reale durante la costruzione del modello
+   matematico.
+
+2. *Errori nel modello numerico-computazionale* Detti anche *errori di
+   discretizzazione o troncamento*, errori introdotti quando si cerca di
+   approssimare un /procedimento infinito/ tramite un /procedimento
+   finito/.
+
+#+begin_quote
+  *Nota*: un esempio di errore dovuto al modello matematico si ha quando
+  si considerano alcune grandezze fisiche come trascurabili. Esempi di
+  errori di discretizzazione si hanno quando si approssima una derivata
+  con un rapporto incrementale o un integrale con una formula di
+  quadratura.
+#+end_quote
+
+3. *Errori presenti nei dati* Dovuti ad errori nelle misurazioni,
+   possono essere errori sistematici, dovuti alla sensibilità dello
+   strumento o errori casuali, causati da eventi imprevedibili.
+
+4. *Errori di arrotondamento nei dati e nei calcoli* Errori introdotti
+   con la rappresentazione dei numeri, dati in ingresso o risultati di
+   operazioni, sul calcolatore.
+
+A causa di tutti questi errori si giunge a questa affermazione sempre
+valida:
+
+*la soluzione del problema numerico ottenuta mediante l'algoritmo
+computazionale può solo essere un'approssimazione della soluzione del
+problema reale*
+
+#+begin_quote
+  *Nota*: bisogna assicurarsi che gli errori introdotti rendano la
+  soluzione accettabile; è inutile calcolare accuratamente la soluzione
+  di un problema numerico se questo deriva da una modellizzazione non
+  accurata.
+#+end_quote
+
+--------------
+
+* Esistono diverse classi di problemi computazionali. Elencale.
+  :PROPERTIES:
+  :CUSTOM_ID: esistono-diverse-classi-di-problemi-computazionali.-elencale.
+  :END:
+
+In generale un problema numerico si rappresenta come:
+
+$$ \Phi(y,x) $$
+
+Dove:
+
+- $y$ è la *soluzione* del problema numerico,
+- $x$ è l'*insieme dei dati* da cui dipende $y$,
+- $\Phi$ esprime la /relazione funzionale/ tra $x$ e $y$.
+
+A seconda del tipo di problema le variabili $x$ e $y$ possono essere
+numeri reali, vettori e funzioni.
+
+Si possono identificare tre tipologie di /problemi computazionali/:
+
+- *Problema diretto*: $x$ e $\Phi$ sono dati, $y$ è incognito. Calcolo
+  del valore di una funzione dato un valore di $x$.
+- *Problema inverso*: $\Phi$ e $y$ sono noti, $x$ è incognito. Soluzione
+  di un sistema lineare.
+- *Problema di identificazione*: $x$ e $y$ sono noti, $\Phi$ è
+  incognita. Approssimazione di dati sperimentali.
+
+--------------
+
+* Quando un problema si può definire "/ben posto/"?
+  :PROPERTIES:
+  :CUSTOM_ID: quando-un-problema-si-può-definire-ben-posto
+  :END:
+
+Un problema si dice /ben posto/ se la sua soluzione:
+
+- esiste
+- è unica
+- dipende in modo continuo dai dati del problema
+
+Altrimenti si dice che il problema è /mal posto/.
+
+Ogni problema $\Phi(y,x)$ ben posto ammette una ed una sola soluzione,
+perciò esisterà un'*applicazione risolvente* $f$ tra l'insieme dei dati
+$x$ e quello delle soluzioni $y$ per cui:
+
+$$ y = f(x) \Rightarrow \Phi(f(x),x) = 0 $$

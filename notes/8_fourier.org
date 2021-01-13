@@ -1,0 +1,395 @@
+#+TITLE: Analisi di Fourier di un segnale
+#+STARTUP: latexpreview
+
+* Concetti base dell'analisi di Fourier
+
+Ogni funzione (segnale o immagine) che gode di determinate proprietà può
+essere espressa come *combinazione lineare di funzioni sinusoidali di
+frequenza crescente* combinati con pesi opportuni. Questi pesi sono detti
+~coefficienti di Fourier~.
+
+** Funzioni goniometriche e trasformazioni geometriche
+
+$$ y = A \sin(\omega x + \phi) + \beta $$
+
+Dove:
+
+- $A$ è ~l'ampiezza~ ed esprime il grado di *dilatazione* ($0 < A < 1$) o
+  *contrazione*  ($A > 1$) della funzione;
+- $\omega$ determina il ~periodo~ della funzione periodica, si ha: $T = \frac{2 \pi}{|\omega|}$ dal periodo si definisce la frequenza come: $f = \frac{1}{T}$.
+- $\phi$ indica la ~fase~ ed è una parametro di un segnale sinusoidale che si misura in radianti e che rappresenta la *traslazione* di una sinusoide rispetto a un'altra, rispetto all'asse delle *ascisse*.
+- $\beta$ indica una *traslazione*, rispetto l'asse delle *ordinate*.
+
+*Nota:* ad una contrazione del dominio reale corrisponde una dilatazione nel
+dominio di Fourier. Ad una dilatazione nel dominio reale corrisponde una
+contrazione nel dominio di Fourier. Questo fenomeno è detto ~scalatura dell'asse~ ed indica se un segnale ha subito un *restingimento* o un'*espansione*.
+
+La ~scalatura nel dominio reale~, al quale corrisponde un restringimento del
+segnale per $k < 1$, si esprime nel seguente modo:
+
+$$ f(kx) \iff \frac{1}{|k|} \hat f \left( \frac{\omega}{k} \right) $$
+
+La ~scalatura nel dominio delle frequenze~, al quale corrisponde un'espansione del segnale per $k > 1$, si esprime nel seguente modo:
+
+$$ \frac{1}{|k|} f\left(\frac{x}{k} \right) \iff \hat f(k \omega) $$
+
+** Rappresentazione di una funzione sinusoidale
+
+Un qualunque andamento sinusoidale è rappresentabile mediante le componenti
+orizzontale e verticale del suo vettore iniziale di fase $\phi$ e mediante
+la velocità angolare $\omega$. In particolare vale la relazione:
+
+$$ A \sin(\omega t + \phi) = A \cos(\phi) \sin(\omega t) + A \sin(\phi) \cos(\omega t) $$
+
+Ricavata a partire dalla *formula di addizione*.
+
+
+* Analisi di Fourier
+
+Si distinguono tre campi a seconda delle caratteristiche della funzione che
+si vuole analizzare:
+
+1. Serie di Fourier
+2. Trasformata di Fourier
+3. Trasformata di Fourier discreta (discretizzazione di un fenomeno continuo)
+
+** Spazi delle funzioni periodiche
+
+$L^{2}(0, 2 \pi)$ è lo spazio delle funzioni periodiche di periodo $2 \pi$, *quadrato
+sommabili*, ovvero tali che:
+
+$$ \int_{0}^{2 \pi} |f(x)|^{2}\ dx < \infty $$
+
+Si dimostra che la famiglia di funzioni della ~sinusoide complessa~:
+
+$$ w_{n}(x) = e^{inx} = \cos(nx) + i \sin(nx),\ n \in [-\infty,+\infty] $$
+
+costituisce una *base ortonormale* di $L^{2}(0, 2 \pi)$. Perciò una qualunque
+funzione appartenente a questo spazio può essere espressa come
+*combinazione lineare* delle funzioni base seno e coseno di periodo $2 \pi$.
+
+In generale si definisce lo spazio $L^{2}(0, T_{0})$, al quale appartengono le
+funzioni periodiche di periodo $T_{0}$ quadrato sommabili, ovvero tali che:
+
+ $$ \int_{0}^{T_{0}} |f(x)|^{2}\ dx < \infty $$
+
+In generale si dimostra che la famiglia di funzioni della ~sinusoide complessa~:
+
+$$ w_{n}(x) = e^{in \frac{2 \pi}{T_0}} x} = \cos \left(n \frac{2 \pi}{T_{0}} x \right) + i \sin \left( n \frac{2 \pi}{T_0}} x \right),\ n \in [-\infty,+\infty]$$
+
+costituisce una *base ortonormale* di $L^{2}(0, T_{0})$. Perciò una qualunque
+funzione appartenente a questo spazio può essere espressa come
+*combinazione lineare* delle funzioni base seno e coseno con periodo $T_{0}$.
+
+
+$L^{2}(R)$ è lo spazio delle funzioni reali quadrato sommabili, ovvero tali che:
+
+$$ \int_{-\infty}^{+\infty} |f(x)|^{2}\ dx < \infty $$
+
+** Rappresentazione di una funzione periodica tramite funzioni goniometriche
+
+Una funzione periodica di periodo $2 \pi$, con $f(x) \in L^{2}(0, 2 \pi)$, può essere
+rappresentata come ~somma di infinite funzioni sinusoidali~ di frequenza
+multipla della sua frequenza, ognuna delle quali con una specificata
+ampiezza.
+
+L'affermazione si generalizza nella seguente:
+
+Una funzione periodica di periodo $T_{0}$, con $f(x) \in L^{2}(0, 2 T_{0})$, può essere
+rappresentata come ~somma di infinite funzioni sinusoidali~ di frequenza
+multipla della sua frequenza, ognuna delle quali con una specificata
+ampiezza.
+
+** Rappresentazione di una funzione periodica tramite teorema di Fourier
+
+Il Teorema di Fourier fornisce gli strumenti necessari per definire la
+*rappresentazione sintetica di funzioni periodiche*.
+
+Piuttosto che disegnare il grafico della funzione periodica è più efficace
+rappresentarne direttamente il ~contenuto spettrale~ tramite un sistema di
+assi cartesiani avente in *ascissa* le *frequenze delle armoniche* e in
+*ordinata* *l'ampiezza di ciascuna armonica*.
+
+Si ottiene una nuova rappresentazione della funzione nel dominio di Fourier,
+detto ~dominio delle frequenze~.
+
+Una funzione si dice *a banda limitata* se non sono presenti certe frequenze a
+partire da un indice $k$, ovvero se: $c_{k} = 0$, per $|k| > k_{0}$. In altri termini se esiste
+una frequenza massima per cui $\hat f(\omega) \ne 0$, per $|\omega| \le \omega_{max}$.
+
+Dato che la sinusoide complessa è base ortonormale di $L^{2}(0,2\pi)$ si ha che
+una qualsiasi funzione $f(x)$ appartenente a questo spazio si può rappresentare
+tramite serie di Fourier nel seguente modo:
+
+$$ f(x)  \in L^{2} (0, 2\pi) \Rightarrow f(x) = \sum_{n = -\infty}^{+\infty}
+c_{n} e^{inx} = \frac{a_0}{2} + \sum_{n = 1}^{+\infty} a_{n} \cos(nx) + \sum_{n =
+1}^{+\infty} b_{n} \sin(nx) $$
+
+Dove:
+
+- $f(x)$ è espressa in termini della ~serie di Fourier~;
+- $e^{inx}$ indica la *sinusoide complessa*;
+- $a_{n}, b_{n}, c_{n}$ sono detti *coefficienti di Fourier*.
+
+Il coefficiente di Fourier indica se la frequenza n-esima è presente nella
+funzione ed eventualmente ne rappresenta il *peso*, ovvero l'ampiezza che la
+sinusoide ha nella funzione. Dà *informazioni sul contenuto spettrale* della
+funzione considerata.
+
+I pesi $a_{n}, b_{n}$ e $c_{n}$ sono legati dalle relazioni:
+
+$$a_{n} = c_{n} + c_{-n}\qquad b_{n} = i(c_{n} - c_{-n}) $$
+
+In generale, dato che la sinusoide complessa è base ortonormale di $L^{2}(0,2\pi)$,
+si ha che una qualsiasi funzione $f(x)$ appartenente a questo spazio si può
+rappresentare tramite la serie di Fourier nel seguente modo:
+
+$$ f(x)  \in L^{2} (0, T_{0}) \Rightarrow f(x) = \sum_{n = -\infty}^{+\infty}
+c_{n} e^{in \frac{2 \pi}{T_{0}} x} = \frac{a_0}{2} + \sum_{n = 1}^{+\infty} a_{n}
+\cos \left(n \frac{2 \pi}{T_{0}} x \right) + \sum_{n = 1}^{+\infty} b_{n} \sin
+\left(n \frac{2 \pi}{T_{0}} x \right) $$
+
+Estendendo queste considerazioni allo spazio $L^{2}(\mathbb{R})$ e impiegando la definizione di
+prodotto scalare si ottiene la seguente espressione del coefficiente di Fourier:
+
+$$ c_{n} T_{0} = \int_{- \frac{T_{0}}{2}}^{\frac{T_{0}}{2}} f(x) e^{- 2 \pi i \omega_{n} x}\ dx$$
+
+Dove $\omega_{n} = \frac{n}{T_{0}}$ è una ~frequenza discreta~ e, per $T_{0} \to \infty$, si ha che $\omega$ diventa
+continua. Perciò *i pesi di ciascuna frequenza diventeranno una funzione
+continua* di frequenza:
+
+$$ \hat f(\omega) = \int_{-\infty}^{+\infty} f(x) e^{-2 \pi i \omega x}\ dx
+\iff f(\omega) = \int_{-\infty}^{+\infty} \hat f(x) e^{2 \pi i \omega x}\
+dx $$
+
+La prima relazione è detta *formula di analisi* e costitusce una rappresentazione
+nel dominio di Fourier, la seconda si dice *formula di sintesi* e costituisce la
+rappresentazione nel dominio reale della funzione.
+
+> *Nota*: La funzione $\hat f (x)$ esprime il contenuto spettrale nel continuo.
+
+> *Nota*: se si conosce la rappresentazione in un dominio, si può sempre ottenere
+> la rappresentazione anche nell'altro dominio.
+
+** Trasformata di Fourier continua della funzione box
+
+$$ f(x) = \begin{cases} 1 & -T_{0} \le x \le T_{0} \\
+0 & x < -T_{0} \vee x > T_{0} \end{cases}\qquad \hat f (\omega) = \frac{\sin(2 \pi T_{0} \omega)}{\pi \omega} $$
+
+Le frequenze più alte hanno valori più bassi, danno informazioni sui dettagli di
+un'immagine, mentre le frequenze più basse, hanno valori più alti e danno
+informazioni sulla "grana grossa" di un'immagine.
+
+La funzione box è detta anche funzione =sinc=. Un'espressione della funzione box
+$f(x)$ nel dominio reale in termini di funzione $\hat f(\omega)$ nel dominio di Fourier è la
+seguente:
+
+$$ \hat f(\omega) = \frac{2T_{0} \sin(2 \pi T_{0} \omega)}{2 T_{0} \pi \omega}=2T_{0}\ \mbox{sinc} (2\pi T_{0} \omega) $$
+
+** TODO Trasformata di Fourier continua della funzione impulso
+
+** Proprietà della trasformata di Fourier
+
+*** Linearità
+
+Date $f(x) \iff \hat f(\omega) \quad g(x) \iff \hat g(\omega)$ si ha:
+
+$$ f(x) + g(x) \iff \hat f(\omega) + \hat g(\omega) $$
+
+*** Dualità
+
+Se $f(x) \iff \hat f(\omega)$ allora: $\hat f(x) \iff f(-\omega)$
+
+*** Simmetria
+
+Se $f(x) \iff \hat f(\omega)$ allora: $f(-x) \iff \hat f(-\omega)$
+
+
+* Convoluzione tra due funzioni
+
+Date due funzioni $f(x)$ e $g(x)$ definite in $R$ e a valori in $R$ ed integrabili, si
+dice ~convoluzione~, o prodotto di convoluzione, di $f$ e $g$ e si indica con $f(t) * g(t)$ la seguente funzione $h(t)$:
+
+$$ h(t) = f(t) * g(t) = \int_{-\infty}^{+\infty} f(\tau) g(t - \tau)\ dr $$
+
+** Convoluzione discreta in una dimensione
+
+Date due funzioni $f(x)$ e $g(x)$ definite sull'insieme degli interi $\mathbb{Z}$, la
+convoluzione discreta di $f$ con $g$ è data da:
+
+$$ (f * g)(n) \overset{\underset{\mathrm{def}}{}}{=} \sum_{m = -\infty}^{\infty} f(m) g(n - m) = \sum_{m = -\infty}^{\infty} f(n - m) g(m) $$
+
+Nell'ambito della teoria dei segnali si applica un filtro, detto *kernel*, ai
+dati in input per ottenere un vettore di dati in output.
+
+** Convoluzione di una funzione box con un treno di impulsi
+
+Una convoluzione di questo tipo equivale a replicare la box tante volte quanti
+sono gli impulsi, ovvero a *periodicizzare* la box.
+
+** Teorema di Convoluzione
+
+Date due funzioni $f(x)$ e $g(x)$  per cui si può calcolare la trasformata di
+Fourier si ha che:
+
+$$ f(x) * g(x) \iff \hat f(\omega) \cdot \hat g(\omega), \quad f(x) \cdot g(x) \iff \hat f(\omega) * \hat g(\omega) $$
+
+Fare la convoluzione tra due funzioni nel dominio reale, corrisponde a fare nel
+dominio di Fourier il prodotto delle loro trasformate di Fourier.
+
+In altri termini *periodicizzare* nel dominio reale equivale a *campionare* nel
+dominio di Fourier.
+
+Fare il prodotto tra due funzioni nel dominio reale, corrisponde a fare nel
+dominio di Fourier la convoluzione delle loro trasformate di Fourier.
+
+In altri termini *campionare* nel dominio reale equivale a *periodicizzare* nel
+dominio di Fourier.
+
+** Teorema di Parseval
+
+Date due funzioni $f(x)$ e $g(x)$  per cui si può calcolare la trasformata di
+Fourier si ha che:
+
+$$ \int_{-\infty}^{+\infty} f(x) g(x)\ dx = \int_{-\infty}^{+\infty} f(\omega) g(\omega)\ d\omega $$
+
+Se $f(x) = g(x)$:
+
+$$\int_{-\infty}^{+\infty} |f(x)|^2\ dx = \int_{-\infty}^{+\infty} |\hat f(\omega)|^2\ dx $$
+
+Ciò significa che la quantità di informazione fornita da $f$ nel dominio reale è
+pari alla quantità di informazione che la funzione $\hat f$ fornisce nel dominio di
+Fourier.
+
+> *Nota*: l'integrale $\int_{-\infty}^{+\infty}$ si legge come "integrale su
+tutto il dominio".
+
+
+* Campionamento di una funzione
+
+Per effettuare un campionamento con passo $T$ si moltiplica nel dominio reale
+la funzione $f$ per un treno di impulsi a distanza $T$.
+
+Campionare nel dominio reale con passo $T$ equivale a periodicizzare la
+trasformata di Fourier a distanza $\frac{1}{T}$.
+
+In altri termini lo spettro di un segnale campionato a passo $T$ è uguale allo
+spettro del segnale replicato a frequenza $\frac{1}{T}$.
+
+*** Fenomeno dell'aliasing
+
+Si verifica se nel dominio di Fourier le repliche della trasformata di Fourier della funzione di partenza ovvero del segnale campionato si sovrappongono.
+Ciò comporta l'impossibilità di ricostruire il segnale originale e comporta
+perdita di informazione.
+
+Questo fenomeno si verifica a causa dell'undersampling, ovvero alla presenza
+di un numero insufficiente di campioni.
+
+Ciò avviene se la distanza tra due impulsi successivi è più piccola di $2 \omega_{max}$, ovvero della ~frequenza di Nyquist~.
+In particolare il fenomeno di aliasing si verifica per: $\frac{1}{T} \le 2 \omega_{max}$.
+
+*** Campionamento critico
+
+Per il ~teorema di Nyquist~ è possibile definire un campionamento ottimale
+per evitare il fenomeno dell'aliasing. In particolare per il passo di
+campionamento deve valere la seguente condizione:
+
+$$ T \le \frac{1}{2 \omega_{max} $$
+
+Dove $2 \omega_{max}$ è detta ~frequenza di Nyquist~.
+
+*** Campionamento di un segnale audio
+
+Il segnale audio è un ~segnale limitato in banda~ ossia le sinusoidi che lo
+compongono hanno frequenze che sono comprese in un intervallo di valori
+definito.
+
+La *banda tipica di un segnale audio*, che corrisponde alle frequenze
+udibili dall'uomo, viene delimitata dai seguenti valori di
+frequenze: $20\ Hz$ - $20\ KHz$.
+
+> *Nota*: L'hertz è l'unità di misura della frequenza. Indica il numero di
+ripetizioni di un evento periodico in un intervallo di tempo di 1 secondo.
+
+**** Applicazione del teorema di Nyquist al campionamento di un segnale audio
+
+Il teorema di Nyquist afferma che, se il campionamento viene eseguito ad
+una frequenza pari almeno al doppio della banda del segnale che si sta
+campionando, *il passaggio dall'analogico al digitale avviene senza perdita di informazione*.
+
+Per il segnale audio scegliamo una ~frequenza di campionamento~ pari a
+$44.1\ KHz$ , ovvero la frequenza utilizzata per i CD musicali.
+
+*** Ricostruzione del segnale
+
+Il ~teorema di Wittaker-Shannon~ permette di ottenere dei campioni di un
+segnale nel dominio reale senza aver effettuato un campionamento iniziale.
+
+Se $f(x)$ è una funzione a banda limitata e se la sua frequenza massima
+è $\omega_{max}$, allora $f(x)$ può essere univocamente determinata a partire dai
+suoi infiniti valori campionati a distanza: $T \le \frac{1}{\omega_{max}$.
+
+Ciò avviene impiegando la seguente formula interpolatrice:
+
+$$ f(x) = T \sum_{n = -\infty}^{\infty} f(nT) \frac{\sin(2\pi \omega_{max}(x - nT)}{\pi (x - nt)} $$
+
+
+* Trasformata di Fourier discreta
+
+Per discretizzare la Trasformata di Fourier bisogna effettuare i
+seguenti passi:
+
+1. *Campionamento nel dominio del tempo*
+   -> se la frequenza di campionamento non è sufficientemente grande si
+   verifica il ~fenomeno dell'aliasing~
+2. *Troncamento* della sequenza ottenuta dal campionamento
+   -> se la finestra di troncamento non è abbastanza grande si verifica
+   ~fenomeno del rippling~.
+3. *Campionamento nel dominio delle frequenze*
+
+
+Effettuando questi passi si ottiene una funzione periodicizzata nel dominio
+reale con relativa trasformata di Fourier troncata e discretizzata.
+
+Dati $N$ campioni, ottenuti campionando una funzione periodica discreta a
+passo $\Delta x$, si ottiene la seguente espressione della ~trasformata discreta di
+Fourier~:
+
+$$ F(u) = \frac{1}{N} \sum_{k  = 0}^{N - 1} f(k) e^{-i \frac{2 \pi k u}{N}},\ u
+= 0,...,N - 1 $$
+
+Dove $u$ è la frequenza di una variabile discreta.
+
+Gli $F(u)$ sono i coefficienti di Fourier a partire dalla frequenza più bassa.
+
+** Trasformata di Fourier discreta e continua
+
+La Trasformata discreta di Fourier e la Trasformata di Fourier di una funzione $f$ coincidono, a meno di una costante moltiplicativa, solo se:
+
+- $f$ è periodica;
+- $f$ è a banda limitata;
+- La finestra di campionamento sia diversa da zero su un intervallo
+  esattamente pari ad un periodo della funzione.
+  
+La Trasformata di Fourier discreta nel caso di forme d’onda generica
+può presentare:
+
+- Aliasing -> Campionamento nel dominio reale
+- Rippling -> Troncamento nel dominio temporale
+
+Perciò potrebbe non valere la coincidenza fra Trasformata di Fourier continua e
+discreta.
+
+** Proprietà della Trasformata di Fourier
+
+*** Shift nel dominio del tempo
+
+$$ f(k - l) \iff F(u) e^{\frac{- i 2 \pi u l}{N}} $$
+
+*** Shift nel dominio delle frequenze
+
+$$ f(k) e^{\frac{i 2 \pi l k}{N}} \iff F(u - l) $$
+
+** Algoritmo per il calcolo della Trasformata di Fourier discreta
+
+

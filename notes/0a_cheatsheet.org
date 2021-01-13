@@ -1,0 +1,696 @@
+#+TITLE: Cheatsheet Metodi Numerici
+#+STARTUP: latexpreview
+#+STARTUP: inlineimages
+
+* Teoria
+  :PROPERTIES:
+  :CUSTOM_ID: teoria
+  :END:
+** Come calcolare il determinante delle sottomatrici principali di testa
+di una matrice $A$?
+   :PROPERTIES:
+   :CUSTOM_ID: come-calcolare-il-determinante-delle-sottomatrici-principali-di-testa-di-una-matrice-a
+   :END:
+Data una matrice $A$ di ordine $n$:
+
+#+begin_src octave
+  for i = 1:n
+      det(A(1:i, 1:i));
+  end
+#+end_src
+
+Restituisce i determinanti di:
+
+- una sottomatrice $A_1$ di ordine $1 \times 1$,
+- una sottomatrice $A_2$ di ordine $2 \times 2$,
+- la matrice $A$ di ordine $n \times n$.
+
+** Determinare per quali valori di $k$ il sistema ammette soluzione
+unica.
+   :PROPERTIES:
+   :CUSTOM_ID: determinare-per-quali-valori-di-k-il-sistema-ammette-soluzione-unica.
+   :END:
+Data la matrice $A$ dipendente da $k$,
+
+#+begin_quote
+  per quali valori del parametro $k$ il sistema ammette soluzione unica?
+#+end_quote
+
+#+begin_src octave
+  syms k
+  determinante = det(A);
+  k = solve(determinante, k); % vettore con i valori di k ammessi
+#+end_src
+
+** Determinare per quali valori di $k$ per cui $A$, matrice simmetrica, risulta definita positiva.
+   :PROPERTIES:
+   :CUSTOM_ID: determinare-per-quali-valori-di-k-per-cui-a-matrice-simmetrica-risulta-definita-positiva.
+   :END:
+Bisogna determinare un intervallo $[0, k]$ in cui $A$ risulta definita
+positiva. Dato che $A$ è simmetrica tutte le /sottomatrici principali/
+hanno determinante positivo.
+
+In generale bisogna verificare per quali valori di $k$ le sottomatrici
+dipendenti da $k$ di ordine $1,...,n - 1$ sono definite positive, ovvero
+hanno =det(A) > 0=
+
+Per le espressioni del determinante dipendenti da $k$ si risolve la
+relativa equazione e si sfruttano le soluzioni trovate per definire un
+intervallo nel quale calcolare gli autovalori della matrice. Posto che
+la matrice è simmetrica, se gli autovalori sono tutti positivi allora la
+matrice è definita positiva. (o semidefinita positiva)
+
+#+begin_src octave
+  syms k
+  determinante = det(A);
+  k = solve(determinante, k); % vettore con i valori di k ammessi
+  assume(0 < k < sqrt(7) / 2);
+  % tutti gli autovalori di A nel range definito di k sono positivi?
+  if sign(eig(A)) == 1; 
+  ...
+#+end_src
+
+In alternativa, un altro approccio che sfrutta gli eigenvalues è:
+
+#+begin_src octave
+  A = [1 2 3;4 5 6;7 8 9]; % Example matrix
+  eig_A = eig(A);
+  flag = 0;
+  for i = 1:rank(A)
+    if eig_A(i) <= 0 
+    flag = 1;
+    end
+  end
+
+  if flag == 1
+    disp('the matrix is not positive definite')
+    else
+    disp('the matrix is positive definite')
+  end
+#+end_src
+
+La condizione =if eig_A(i) <= 0= si può cambiare per verificare se la
+matrice è definita positiva, semidefinita positiva, definita negativa o
+semidefinita negativa.
+
+Visto nel forum di MATLAB, [[https://it.mathworks.com/matlabcentral/answers/101132-how-do-i-determine-if%20-a-matrix-is-positive-definite-using-matlab][qui]].
+
+#+begin_quote
+  *Nota*: la matrice $A$ deve essere simmetrica perché il risultato sia
+  valido.
+#+end_quote
+
+** Quando una matrice è semidefinita positiva?
+   :PROPERTIES:
+   :CUSTOM_ID: quando-una-matrice-è-semidefinita-positiva
+   :END:
+#+begin_src octave
+  [~,r] = chol(A);
+  if r == 0
+  ...
+#+end_src
+
+#+begin_quote
+  *Nota*: la matrice $A$ deve essere simmetrica perché il risultato sia
+  valido.
+#+end_quote
+
+** Quando una matrice è definita positiva?
+   :PROPERTIES:
+   :CUSTOM_ID: quando-una-matrice-è-definita-positiva
+   :END:
+#+begin_src octave
+  [~,r] = chol(A);
+  if r == 0 && rank(A) == size(A,1)
+  ...
+#+end_src
+
+#+begin_quote
+  *Nota*: la matrice $A$ deve essere simmetrica perché il risultato sia
+  valido.
+#+end_quote
+
+* Tipi di dato
+  :PROPERTIES:
+  :CUSTOM_ID: tipi-di-dato
+  :END:
+| Tipo           | Tipo dato                    | Occupazione in memoria |
+|----------------+------------------------------+------------------------|
+| Double         | reali in $[10^{-37,10^{37}]$ | 8 byte                 |
+| Complex Double | numeri complessi             | 16 byte                |
+| Logical Double | ris. op. logica [0-1]        | 8 byte                 |
+| Char           | carattere                    | 2 byte                 |
+
+* Funzioni elementari in MATLAB
+  :PROPERTIES:
+  :CUSTOM_ID: funzioni-elementari-in-matlab
+  :END:
+| Codice  | Nome funzione   |
+|---------+-----------------|
+| =sin=   | seno            |
+| =cos=   | coseno          |
+| =asin=  | arcoseno        |
+| =acos=  | arcocoseno      |
+| =tan=   | tangente        |
+| =atan=  | arcotangente    |
+| =exp=   | esponenziale    |
+| =log=   | logaritmo       |
+| =log2=  | log. base $2$   |
+| =log10= | log. base $10$  |
+| =sqrt=  | radice quadrata |
+| =abs=   | modulo          |
+| =sign=  | funzione segno  |
+
+...
+
+* Formati di output
+  :PROPERTIES:
+  :CUSTOM_ID: formati-di-output
+  :END:
+| Nome formato | Descrizione                                       |
+|--------------+---------------------------------------------------|
+| =short=      | virgola fissa 5 cifre                             |
+| =short e=    | virgola mobile 5 cifre                            |
+| =short g=    | ibrido a 5 cifre                                  |
+| =long=       | virgola fissa 15 cifre                            |
+| =long e=     | virgola mobile 15 cifre                           |
+| =long g=     | virgola mobile 15 cifre                           |
+| =rat=        | appr. mediante rapporto ridotto ai minimi termini |
+
+* L'insieme $\mathcal{F}$ e le principali tipologie di errore
+  :PROPERTIES:
+  :CUSTOM_ID: linsieme-mathcalf-e-le-principali-tipologie-di-errore
+  :END:
+
+- =eps= permette di calcolare *l'errore relativo* che si commette
+  approssimando un numero reale $x$ con un numero floating-point
+  $fl(x)$.
+
+- =realmin= il più piccolo numero positivo di $\mathcal{F}$.
+
+- =realmax= il più grande numero positivo di $\mathcal{F}$.
+
+Dato un numero positivo qualsiasi $a$, il più piccolo numero di
+$\mathcal{F}$ successivo ad $a$ è =a + eps(a)=.
+
+*Errore di cancellazione delle cifre significative*: fenomeno che si
+verifica quando si sommano tra loro numeri che hanno all'incirca lo
+stesso modulo ma segno opposto.
+
+=NaN=: Not a Number, per rappresentare i /non numeri/, ovvero le forme
+indeterminate.
+
+*Errori di arrotondamento*: anche se sono generalmente piccoli, se
+ripetuti in algoritmi lunghi e complessi possono portare alla crescita
+dell'errore relativo con potenziali conseguenze catastrofiche.
+
+*Errori commessi nel processo computazionale*
+
+[[./attachments/errori_processo_computazionale.png]]
+
+=PF=: problema fisico
+=PM=: problema matematico
+=PN=: problema numerico
+
+$x_f$: soluzione problema fisico
+$x$: soluzione problema matematico
+$\hat x$: soluzione problema numerico
+
+$e_m$: errori commessi nella rappresentazione della realtà
+
+$e_t$: errore di troncamento, $x_n$ differisce da $x$ ed errori dovuti all'eliminazione di operazioni di passaggio al limite.
+
+$e_a$: errori di arrotondamento introdotti nel passaggio dal modello matematico alla
+risoluzione sul calcolatore.
+
+$e_c$: errore computazionale, comprende sia $e_a$ che $e_t$
+
+----
+
+Si ha che *l'errore computazionale assoluto* vale:
+
+$$ e^{ass}_c = |x - \hat x| $$
+
+Mentre l'errore relativo è pari a:
+
+$$ e^{rel}_c = \frac{|x - \hat x|}{|x|} $$
+
+*Gli errori non si possono evitare, però si può cercare di ridurne la grandezza.*
+
+* Symbolic toolbox
+  :PROPERTIES:
+  :CUSTOM_ID: symbolic-toolbox
+  :END:
+
+- =diff(f, n)= permette di calcolare, data la stringa $f$ che definisce
+  la funzione, la sua /derivata/ di ordine $n$.
+
+- =int(f, x)c= permette di calcolare l'/integrale indefinito/ della
+  funzione $f$ usando come variabile di integrazione $x$
+
+  -> =int(f, x, a, b)= permette di calcolare l'/integrale definito/
+  della funzione $f$ usando come variabile di integrazione $x$
+  nell'intervallo $[a, b]$.
+
+- =taylor(f, x, n+1)= permette di calcolare il /polinomio di Taylor/ di
+  grado $n$ in un intorno di $x$ della funzione $f$.
+
+- =syms= parola chiave con la quale devono essere dichiarate le
+  variabili simboliche, alle quali si possono applicare le funzioni di
+  questo toolbox.
+
+- =limit(f, n, a)= permette di calcolare il /limite/ a cui tende la
+  funzione $f$ con variabile $n \to a$
+
+- =copy = subs(f, old, new)= data un'espressione simbolica di una
+  funzione $f$, restituisce una copia =copy= di $s$ sostituendo tutte le
+  occorrenze della variabile =old= con =new=.
+
+- =expand(f)= forza la funzione $f$ in una versione espansa, ad esempio
+  sviluppando il cubo di un binomio.
+
+- =simplify(f)= forza la funzione $f$ in una versione fattorizzata, ad
+  esempio fattorizza un'espressione in un quadrato di binomio.
+
+- =[sol] = solve(eq, x)= permette di risolvere un'equazione algebrica o
+  trascendente rispetto ad una variabile. A partire dall'equazione =eq=
+  risolta rispetto la variabile $x$ si ottiene la soluzione =sol=.
+
+  -> =S = solve(eq1, eq2, x, y)= permette di risolvere un sistema di
+  equazioni algebriche o trascendenti rispetto ad una o più variabili. A
+  partire dalle equazioni =eq1= e =eq2= ricava, rispetto alle variabili
+  $x$ e $y$, una struttura $S$ contenente le soluzioni $sol_x$ e $sol_y$
+  accessibili tramite $S.x$ e $S.y$. In generale permette di risolvere
+  un sistema di $n$ equazioni.
+
+* Numeri complessi
+  :PROPERTIES:
+  :CUSTOM_ID: numeri-complessi
+  :END:
+
+- =complex(x,y)= rappresenta il numero complesso $x + iy$.
+
+- =abs(z)= dato un numero complesso $z$ restituisce il suo modulo,
+  impiegato nella rappresentazione trigonometrica di un numero
+  complesso.
+
+- =angle(z)= restituisce l'angolo che si impiega nella rappresentazione
+  trigonometrica di un numero complesso $z$.
+
+- =compass(z)= restituisce la rappresentazione polare di un numero
+  complesso $z$.
+
+- =real(z)= estrae la parte reale da un numero complesso $z$.
+
+- =imag(z)= estrae la parte immaginaria da un numero complesso $z$.
+
+- =conj(z)= restituisce il coniugato del numero complesso $z$.
+
+* Matrici
+  :PROPERTIES:
+  :CUSTOM_ID: matrici
+  :END:
+
+- =size(A)= restituisce la dimensione della matrice, ovvero il numero di
+  elementi che la compone.
+
+- matrice come concatenazione di vettori
+
+  - =c=[a;b]= concatenazione di vettori riga (per formare diverse righe
+    o colonne)
+  - =d=[a b]= affiancamento di vettori (su stessa riga o colonna)
+
+- =hilb(n)= genera la matrice di Hilbert $A = (a_{ij})_{i, j = 1,..,n}$,
+  con $a_{ij} = x^{n - j}_{i}$
+
+- =vander(x)= genera la matrice di VanderMonde
+  $A = (a_{ij})_{i,j = 1,...,n}. con a_{ij} = x^{n - j}$
+
+- =zeros(m,n)= matrice di dimensione $m \times n$ con tutti elementi
+  nulli.
+
+- =ones(m,n)= matrice di dimensione $m \times n$ con tutti elementi pari
+  a $1$.
+
+- =eye(m,n)= matrice di dimensione $m \times n$ con tutti elementi
+  nulli, ad eccezione di quelli della diagonale principale che sono pari
+  ad $1$.
+
+  -> =eye(n)=: matrice quadrata detta *matrice identità*. Si denota con
+  $I$.
+
+- =inv(A)= restituisce matrice inversa di $A$. (il determinante deve
+  essere non nullo)
+
+- =det(A)= restituisce il determinante della matrice $A$.
+
+- =diag(v)= costruisce una matrice diagonale a partire dal vettore $v$
+
+  -> =diag(v,m)=: crea una matrice quadrata di dimensione =n + abs(m)=
+  che presenta l'm-esima sopra/sotto-diagonale con elementi uguali a
+  quelli contenuti nel vettore $v$.
+
+- =tril(A)= estrae la parte triangolare inferiore della matrice quadrata
+  $A$.
+
+  -> =tril(A,m)=: estrae la parte triangolare inferiore aumentata o
+  diminuita di $m$ sovra/sotto-diagonali della matrice $A$ di dimensioni
+  $n$. ($-n < m < n$)
+
+- =triu(A)= estrae la parte triangolare superiore della matrice quadrata
+  $A$.
+
+  -> =triu(A,m)=: estrae la parte triangolare superiore aumentata o
+  diminuita di $m$ sovra/sotto-diagonali della matrice $A$ di dimensioni
+  $n$. ($-n < m < n$)
+
+- =sort(A)= dispone le clonne dell'array $A$ in ordine crescente e
+  restituisce un array con la stessa dimensione di $A$.
+
+- =sum(A)= restituisce la somma degli elementi di ogni colonna
+  dell'array $A$ e restituisce un vettore riga che contiene le somme
+  risultati.
+
+- =min(A)= restituisce un vettore riga contenente gli elementi minimi di
+  ogni colonna $A$.
+
+- =max(A)= restituisce un vettore riga contenente gli elementi massimi
+  di ogni colonna $A$.
+
+- =norm(A)= restituisce la norma della matrice $A$. Per il calcolo di
+  una specifica norma:
+
+  - =norm(v, 1)=, norma $1$
+  - =norm(v, 2)=, norma $2$
+  - =norm(v,'inf')=, norma infinito
+
+- =A(r, c) = []= rimuove gli elementi di $A$ i cui indici riga e colonna
+  sono specificati in $(r, c)$.
+
+- =A(r, c) = C= assegna agli elementi di $A$, i cui indici riga e
+  colonna sono specificati in $(r,c)$ i valori definiti in $C$
+  rispettivamente.
+
+- =A([i, j], c) = A([j, i], c)= scambia gli elementi delle righe $i$ e
+  $j$ di $A$ appartenenti alle /colonne/ specificate in $c$.
+
+- =A(r, [i, j]) = A(r, [j, i])= scambia gli elementi delle colonne $i$ e
+  $j$ di $A$ appartenenti alle /righe/ specificate in $r$.
+
+/Somma di matrici/: $A + B$ Somma/sottrazione tra elementi
+corrispondenti purchè le dimensioni siano compatibili.
+
+/Operazioni component-wise/
+
+- =C = A./B= genera matrice $C$ data dalla divisione tra elementi
+  corrispondenti delle matrici $A$ e $B$.
+
+- =C = A.*B= genera matrice $C$ data dalla moltiplicazione di elementi
+  corrispondenti delle matrici $A$ e $B$.
+
+- =C = A.^B= genera la matrice $C$, con $c_{ij} = a^{b_{i, j}}_{i, j}$
+
+  -> =A.^n= elevamento alla potenza n-esima di ciascun elemento della
+  matrice $A$.
+
+/Prodotto di matrici/: $A * B$ ($A$ deve essere $m \times p$, $B$ deve
+essere $p \times n$)
+
+/Trasposta di una matrice/ Data una matrice $A$ si può ottenere la
+trasposta col comando =A'=. La matrice trasposta si ottiene scambiando
+righe e colonne.
+
+/Accedere agli elementi di una matrice/ Sia tramite notazione =a(m,n)=
+sia tramite =a(j)=. In Matlab le matrici sono memorizzate in un /array
+unidimensionale/.
+
+- =A(j)= indica l'elemento della matrice $A$ di posto $j$ secondo la
+  *numerazione progressiva per colonne*.
+
+* Vettori
+  :PROPERTIES:
+  :CUSTOM_ID: vettori
+  :END:
+
+- =v=[p:step:u]= genera un *vettore riga con elementi in progressione
+  aritmetica*, ovvero regolarmente intervallati.
+
+  - =p= indica il primo elemento
+  - =u= indica l'ultimo elemento
+  - =step= indica l'incremento (se =step=1= si può omettere)
+
+- =linspace(p,u,n)= genera un vettore riga con un numero predefinito $n$
+  di *elementi linearmente intervallati* in $[p, u]$.
+
+#+begin_quote
+  *Nota*: =a=[0,1,2,3,4] = [0:1:4] = linspace(0,4,5)=.
+#+end_quote
+
+- =length(v)= restituisce un numero indicante la lunghezza del vettore
+  (numero componenti).
+
+- =zeros(n,1)= produce un *vettore colonna* di dimensione $n$ con
+  elementi tutti nulli.
+
+- =zeros(1,n)= produce un *vettore riga* di dimensione $n$ con elementi
+  tutti nulli.
+
+- =ones(n,1)= produce un *vettore colonna* di dimensione $n$ con
+  elementi tutti pari a $1$.
+
+- =ones(1,n)= produce un *vettore riga* di dimensione $n$ con elementi
+  tutti pari a $1$.
+
+- =dot(v,w)= equivale a =w'*v=, permette di effettuare il *prodotto
+  scalare* tra i due vettori colonna $v$ e $w$. (=w'= permette di
+  trasporre il vettore $w$)
+
+- =norm(v)= restituisce la norma del vettore $v$. Per il calcolo di una
+  specifica norma:
+
+  - =norm(v, 1)=, norma $1$
+  - =norm(v, 2)=, norma $2$
+  - =norm(v,'inf')=, norma infinito
+
+- =sort(v)= dispone in ordine crescente le componenti del vettore $v$.
+
+- =v(r)= estrae le componenti del vettore $v$ i cui indici sono
+  specificati in $r$.
+
+- =v(r)=z= assegna alle componenti del vettore $v$ i cui indici sono
+  specificati in $r$ i valori definiti in $z$.
+
+- =v(r)=[]= rimuove le componenti del vettore $v$ i cui indici sono
+  specificati in $r$.
+
+- =v([i j])=v([j i])= scambia le componenti $i$ e $j$ del vettore $v$.
+
+- =cross(v,w)= restituisce il *prodotto vettoriale* tra i due vettori
+  $v$ e $w$.
+
+- =x.*y=restituisce non il prodotto scalare ma un vettore con componente
+  i-esima pari a: $x_i y_i$. Significa per ogni elemento di $x$
+  moltiplica per $y$.
+
+- =quiver= e =quiver3=si possono impiegare per visualizzare i vettori in
+  un grafico rispettivamente bidimensionale o tridimensionale.
+
+- =a=sum(v)= genera lo scalare dato dalla somma delle componenti del
+  vettore $v$.
+
+- =a=prod(v)= genera lo scalare dato dalla moltiplicazione delle
+  componenti del vettore $v$.
+
+- =a=max(v)= estrae la componente di valore massimo.
+
+- =a=min(v)= estrae la componente di valore minimo.
+
+/Operazioni component-wise/
+
+- =C = A./B= genera matrice $C$ data dalla divisione tra elementi
+  corrispondenti delle matrici $A$ e $B$.
+
+- =C = A.*B= genera matrice $C$ data dalla moltiplicazione di elementi
+  corrispondenti delle matrici $A$ e $B$.
+
+- =C = A.^B= genera la matrice $C$, con $c_{ij} = a^{b_{i, j}}_{i, j}$
+
+  -> =A.^n= elevamento alla potenza n-esima di ciascun elemento della
+  matrice $A$.
+
+/Risoluzione di sistemi lineari/
+
+- =chol(A)= applica la fattorizzazione di Cholensky alla matrice $A$.
+  Restituisce una matrice /triangolare superiore/ $L$ tale che
+  $L L^T = A$.
+
+  -> =chol(A, 'lower')= applica la fattorizzazione di Cholensky e
+  restituisce una matrice /triangolare inferiore/ $L$ tale che
+  $L L^T = A$.
+
+- =[Q, R] = qr(A)= restituisce la matrice ortogonale $Q$ e la matrice
+  trapezoidale superiore $R$ ottenute a seguito della fattorizzazione
+  $QR$, attuata tramite l'/algoritmo di Householder/.
+
+- =\= l'operatore backlash può essere impiegato per risolvere sistemi
+  lineari quadrati (meno accurato e costoso delle fattorizzazioni)
+
+* Funzioni
+  :PROPERTIES:
+  :CUSTOM_ID: funzioni
+  :END:
+
+- =fplot(fun, lims)= visualizza il grafico di una funzione =fun=
+  (stringa) sull'intervallo $(lims(1), lims(2))$.
+
+  Per aumentare l'accuratezza della rappresentazione si può richiamare
+  =fplot= nel seguente modo:
+
+  =fplot(fun, lims, tol, LineSpec)=
+
+  Dove:
+
+  - =LineSpec= indica il tratto grafico e il colore da impiegare per la
+    rappresentazione.
+
+- =y = feval(fun,x)= permette di valutare la funzione in uno o più punti
+  $x_n$ e restituisce la valutazione nel vettore $y$.
+
+- =grid on= permette di visualizzare una griglia di riferimento.
+
+- =fzero(fun,x_0)= permette il calcolo di uno zero di =fun=, quello più
+  vicino a =x_0=.
+
+  -> =fzero(fun,[x_0 x_1])=: permette di cercare uno zero di =fun=
+  nell'intervallo specificato.
+
+- =nargin= numero di argomenti di input che sono specificati nella
+  chiamata alla function in cui si trova =nargin=.
+
+- =nargout= numero di argomenti di output che sono specificati nella
+  chiamata alla function in cui si trova =nargout=.
+
+#+begin_quote
+  *Nota*: ogni funzione ha un proprio workspace, una singola funzione
+  può usare i parametri in ingresso ma non le variabili dello spazio di
+  lavoro dell'ambiente globale a meno che non siano esplicitamente
+  dichiarate globali tramite la parola chiave =global=.
+#+end_quote
+
+#+begin_quote
+  *Nota*: per definire /funzioni del primo ordine/, ovvero funzioni che
+  prendono un'altra funzione come parametro in input si impiegano i
+  puntatori di funzione. Per passare funzioni in input ad una funzione
+  di questo tipo si impiega la seguente notazione:
+  =calcolo(@funprova,-1,1)=
+#+end_quote
+
+* Polinomi
+  :PROPERTIES:
+  :CUSTOM_ID: polinomi
+  :END:
+=polyval(p,x)=: permette di valutare un polinomio in uno o più punti e
+riceve in ingresso due vettori: $p$ e $x$. In $p$ devono essere
+memorizzati tutti i coefficienti del polinomio ordinati da $a_n$ fino ad
+$a_0$. In $x$ devono essere specificati le ascisse nelle quali si vuole
+valutare il polinomio.
+
+=roots(p)=: permette di calcolare in modo approssimato gli zeri di un
+polinomio. Richiede in ingresso solo il vettore $p$.
+
+=p = conv(p1,p2)=: permette di calcolare i coefficienti del polinomio
+ottenuto come prodotto dei polinomi i cui coefficienti sono precisati in
+$p_1$ w $p_2$.
+
+=[q,r] = deconv(p1,p2)=: calcola i coefficienti del quoziente e del
+resto della divisione fra $p_1$ e $p_2$ ovvero $q$ e $r$ tali che:
+
+=p1 = conv(p2,q) + r=
+
+=polyint(p)=: fornisce i coefficienti della primitiva del polinomio $p$.
+
+=polyder(p)=: fornisce i coefficienti della derivata del polinomio $p$.
+
+=polyfit(p)=: consente di calcolare gli $n + 1$ coefficienti di un
+polinomio $p$ di grado $n$ una volta noti i valori di p in $n + 1$ punti
+distinti.
+
+* Grafici e visualizzazione
+  :PROPERTIES:
+  :CUSTOM_ID: grafici-e-visualizzazione
+  :END:
+
+- =disp(x)= stampa il contenuto della matrice/vettore/stringa $x$ senza
+  visualizzarne il nome.
+
+- =choice = menu(Header, Option1, Option2)= input interattivo con scelta
+  attraverso un menu. =choice= assume il valore scelto tra =opt1= e
+  =opt2=.
+
+- =x = input= input interattivo, ad esempio si può assegnare una
+  variabile in base al valore digitato.
+
+- =fprintf= stampare input /formattato/, per tabelle ad esempio. Alcuni
+  formati:
+
+- =%i=: formato intero, si indica il numero di cifre;
+
+  - =%f=: formato virgola fissa, si indica numero cifre=.=numero di
+    cifre decimali;
+  - =%e=: formato esponenziale, si indica numero cifre=.=numero di cifre
+    decimali;
+  - =\t= per tabulazione;
+  - =\n= indica andata a capo.
+
+- =echo= modalità "verbosa".
+
+- =pause(n)= mette in pausa l'esecuzione per $n$ secondi.
+
+  -> =pause= mette in pausa l'esecuzione fino a quando non si preme un
+  tasto.
+
+- =loglog(x,y)= permette di tracciare grafici in scala logaritmica. $x$  e $y$ sono vettori che contengono le ascisse e le ordinate dei dati che si vogliono rappresentare.
+
+* Analisi dei costi e dei tempi di esecuzione
+  :PROPERTIES:
+  :CUSTOM_ID: analisi-dei-costi-e-dei-tempi-di-esecuzione
+  :END:
+
+- =tic= avvia il cronometro
+
+- =toc= ferma il cronometro
+
+- =cputime= permette di stabilire il /tempo di CPU/ impiegato per
+  eseguire un programma.
+
+- =etime= permette di stabilire /l'elapsed time/, ovvero il tempo di CPU e i tempi dovuti alle fasi di input e di output. (acquisizione dei dati e salvataggio dei risultati ottenuti)
+
+* Buone pratiche
+  :PROPERTIES:
+  :CUSTOM_ID: buone-pratiche
+  :END:
+
+1. *Preallocazione*: conviene allocare a priori un vettore o una matrice impiegando il comando =zeros=, questa soluzione è più efficiente perché:
+
+   - nel caso dei vettori si ha il controllo sull'orientamento (se non
+     specificato si crea un vettore riga, in questo modo invece si può
+     scegliere).
+   - si evitano errori di compatibilità di dimensionamento nelle
+     operazioni vettoriali
+   - si evita l'uso intensivo del /gestore della memoria/ risparmiando
+     tempo.
+
+2. *Vettorizzazione*: si rimpiazza un ciclo con un'operazione vettoriale, si hanno tre vantaggi in particolare:
+
+   - maggiore efficienza in termini di tempo di esecuzione
+   - maggiore leggibilità dell'algoritmo
+   - potenziale miglioramento delle prestazioni dovuto alla possibilità
+     di usare macchine ottimizzate a livello hardware per gestire
+     operazioni di tipo vettoriale.
+
+#+begin_quote
+  *Nota*: in MATLAB le variabili non sono dichiarate preventivamente al
+  loro uso dall'utente, ma sono create quando sono necessarie da un
+  gestore della memoria che alloca lo spazio necessario per una matrice
+  dinamicamente, mediante il /dimensionamento automatico/,
+#+end_quote
