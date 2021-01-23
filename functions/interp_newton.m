@@ -1,4 +1,4 @@
-function [yy] = interpPolNewton(x, y, xx)
+function [yy] = interp_newton(x, y, xx)
 
 % FASE 1 creazione della tabella delle differenze divise
 % Calcolo dei coefficienti del polinomio di Newton

@@ -1,4 +1,4 @@
-function [yy] = interpPolLagrange(x, y, xx)
+function [yy] = interp_lagrange(x, y, xx)
 
 n = length(x);
 
